@@ -19,6 +19,6 @@ matrix:
            - fakeroot
 
 script:
-     - sh build.sh
+     - sh .build.sh
 after_success:
-     - sh after_success.sh
+     - sh .after_success.sh
