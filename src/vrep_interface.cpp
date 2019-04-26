@@ -50,7 +50,7 @@ int VrepInterface::__get_handle_from_map(const std::string &objectname)
         return name_to_handle_map_.at(objectname);
     }
     else
-        return getObjectHandle(objectname);
+        return get_object_handle(objectname);
 }
 
 void VrepInterface::__retry_function(const std::function<simxInt(void)> &f)
@@ -150,22 +150,22 @@ void VrepInterface::disconnect()
         simxFinish(clientid_);
 }
 
-void VrepInterface::disconnectAll()
+void VrepInterface::disconnect_all()
 {
     simxFinish(-1);
 }
 
-void VrepInterface::startSimulation() const
+void VrepInterface::start_simulation() const
 {
     simxStartSimulation(clientid_,simx_opmode_blocking);
 }
 
-void VrepInterface::stopSimulation() const
+void VrepInterface::stop_simulation() const
 {
     simxStopSimulation(clientid_,simx_opmode_blocking);
 }
 
-bool VrepInterface::isSimulationRunning() const
+bool VrepInterface::is_simulation_running() const
 {
     simxInt simulation_state;
     simxGetInMessageInfo(clientid_,simx_headeroffset_server_state,&simulation_state);
@@ -188,7 +188,7 @@ int VrepInterface::getHandle(const std::string& objectname, const VREP_INTERFACE
     return hp;
 }
 
-int VrepInterface::getObjectHandle(const std::string &objectname)
+int VrepInterface::get_object_handle(const std::string &objectname)
 {
     int hp;
     const std::function<simxInt(void)> f = std::bind(simxGetObjectHandle,clientid_,objectname.c_str(),&hp,simx_opmode_blocking);
@@ -198,18 +198,18 @@ int VrepInterface::getObjectHandle(const std::string &objectname)
     return hp;
 }
 
-std::vector<int> VrepInterface::getObjectHandles(const std::vector<std::string>& objectnames)
+std::vector<int> VrepInterface::get_object_handles(const std::vector<std::string>& objectnames)
 {
     int n = objectnames.size();
     std::vector<int> handles(n);
     for(int i=0;i<n;i++)
     {
-        handles[i]=getObjectHandle(objectnames[i]);
+        handles[i]=get_object_handle(objectnames[i]);
     }
     return handles;
 }
 
-DQ VrepInterface::getObjectTranslation(const int &handle, const int &relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
+DQ VrepInterface::get_object_translation(const int &handle, const int &relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
 {
     simxFloat tp[3];
     const std::function<simxInt(void)> f = std::bind(simxGetObjectPosition,clientid_,handle,relative_to_handle,tp,__remap_op_mode(opmode));
@@ -218,7 +218,7 @@ DQ VrepInterface::getObjectTranslation(const int &handle, const int &relative_to
     return t;
 }
 
-DQ VrepInterface::getObjectRotation(const int &handle, const int &relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
+DQ VrepInterface::get_object_rotation(const int &handle, const int &relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
 {
     simxFloat rp[4];
     const std::function<simxInt(void)> f = std::bind(simxGetObjectQuaternion,clientid_,handle,relative_to_handle,rp,__remap_op_mode(opmode));
@@ -227,26 +227,26 @@ DQ VrepInterface::getObjectRotation(const int &handle, const int &relative_to_ha
     return normalize(r);
 }
 
-DQ VrepInterface::getObjectPose(const int &handle, const int &relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
+DQ VrepInterface::get_object_pose(const int &handle, const int &relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
 {
-    DQ t = getObjectTranslation(handle,relative_to_handle,opmode);
-    DQ r = getObjectRotation(handle,relative_to_handle,opmode);
+    DQ t = get_object_translation(handle,relative_to_handle,opmode);
+    DQ r = get_object_rotation(handle,relative_to_handle,opmode);
     DQ h = r+0.5*E_*t*r;
     return h;
 }
 
-std::vector<DQ> VrepInterface::getObjectPoses(const std::vector<int> &handles, const int &relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
+std::vector<DQ> VrepInterface::get_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
 {
     int n = handles.size();
     std::vector<DQ> hs(n);
     for(int i=0;i<n;i++)
     {
-        hs[i]=getObjectPose(handles[i],relative_to_handle,opmode);
+        hs[i]=get_object_pose(handles[i],relative_to_handle,opmode);
     }
     return hs;
 }
 
-void VrepInterface::setObjectTranslation(const int &handle, const int &relative_to_handle, const DQ& t, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
+void VrepInterface::set_object_translation(const int &handle, const int &relative_to_handle, const DQ& t, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
 {
     simxFloat tp[3];
     tp[0]=t.q(1);
@@ -256,7 +256,7 @@ void VrepInterface::setObjectTranslation(const int &handle, const int &relative_
     simxSetObjectPosition(clientid_,handle,relative_to_handle,tp,__remap_op_mode(opmode));
 }
 
-void VrepInterface::setObjectRotation(const int &handle, const int &relative_to_handle, const DQ& r, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
+void VrepInterface::set_object_rotation(const int &handle, const int &relative_to_handle, const DQ& r, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
 {
     simxFloat rp[4];
     rp[0]=r.q(1);
@@ -268,23 +268,23 @@ void VrepInterface::setObjectRotation(const int &handle, const int &relative_to_
 }
 
 
-void VrepInterface::setObjectPose(const int &handle, const int &relative_to_handle, const DQ& h, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
+void VrepInterface::set_object_pose(const int &handle, const int &relative_to_handle, const DQ& h, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
 {
-    setObjectTranslation(handle,relative_to_handle,translation(h),opmode);
-    setObjectRotation(handle,relative_to_handle,P(h),opmode);
+    set_object_translation(handle,relative_to_handle,translation(h),opmode);
+    set_object_rotation(handle,relative_to_handle,P(h),opmode);
 }
 
-void VrepInterface::setObjectPoses(const std::vector<int> &handles, const int &relative_to_handle, const std::vector<DQ> &hs, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
+void VrepInterface::set_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const std::vector<DQ> &hs, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
 {
     int n = handles.size();
     for(int i=0;i<n;i++)
     {
-        setObjectPose(handles[i],relative_to_handle,hs[i],opmode);
+        set_object_pose(handles[i],relative_to_handle,hs[i],opmode);
     }
 }
 
 
-double VrepInterface::getJointPosition(const int &handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
+double VrepInterface::get_joint_position(const int &handle, const VREP_INTERFACE_COMMAND_TYPES &opmode)
 {
     simxFloat angle_rad_f;
     const std::function<simxInt(void)> f = std::bind(simxGetJointPosition,clientid_,handle,&angle_rad_f,__remap_op_mode(opmode));
@@ -292,30 +292,30 @@ double VrepInterface::getJointPosition(const int &handle, const VREP_INTERFACE_C
     return double(angle_rad_f);
 }
 
-void VrepInterface::setJointPosition(const int &handle, const double &angle_rad, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
+void VrepInterface::set_joint_position(const int &handle, const double &angle_rad, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
     simxSetJointPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
 }
 
 
-VectorXd VrepInterface::getJointPositions(const std::vector<int> &handles, const VREP_INTERFACE_COMMAND_TYPES &opmode)
+VectorXd VrepInterface::get_joint_positions(const std::vector<int> &handles, const VREP_INTERFACE_COMMAND_TYPES &opmode)
 {
     int n = handles.size();
     VectorXd joint_positions(n);
     for(int i=0;i<n;i++)
     {
-        joint_positions(i)=getJointPosition(handles[i],opmode);
+        joint_positions(i)=get_joint_position(handles[i],opmode);
     }
     return joint_positions;
 }
 
-void VrepInterface::setJointPositions(const std::vector<int> &handles, const VectorXd &angles_rad, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
+void VrepInterface::set_joint_positions(const std::vector<int> &handles, const VectorXd &angles_rad, const VREP_INTERFACE_COMMAND_TYPES &opmode) const
 {
     int n = handles.size();
     for(int i=0;i<n;i++)
     {
-        setJointPosition(handles[i],angles_rad(i),opmode);
+        set_joint_position(handles[i],angles_rad(i),opmode);
     }
 }
 
