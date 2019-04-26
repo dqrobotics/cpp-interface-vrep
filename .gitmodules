@@ -1,6 +1,3 @@
-[submodule "remoteApi"]
-	path = remoteApi
-	url = https://github.com/CoppeliaRobotics/remoteApi.git
 [submodule "cpp"]
 	path = cpp
 	url = https://github.com/dqrobotics/cpp.git
