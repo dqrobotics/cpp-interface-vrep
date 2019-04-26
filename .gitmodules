@@ -1,3 +1,9 @@
 [submodule "cpp"]
 	path = cpp
 	url = https://github.com/dqrobotics/cpp.git
+[submodule "coppeliarobotics/include"]
+	path = coppeliarobotics/include
+	url = https://github.com/CoppeliaRobotics/include.git
+[submodule "coppeliarobotics/remoteApi"]
+	path = coppeliarobotics/remoteApi
+	url = https://github.com/CoppeliaRobotics/remoteApi.git
