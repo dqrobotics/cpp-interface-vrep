@@ -4,6 +4,19 @@ BUILDDIR = build_dir
 
 # secondly called by launchpad
 build:
+    # Try to clone cpp submodule
+    mkdir -p cpp
+    cd cpp
+    git clone https://github.com/dqrobotics/cpp.git
+    cd ..
+    
+    #Try to clone coppeliarobotics submodules
+    mkdir -p coppeliarobotics
+    cd coppeliarobotics
+    git clone https://github.com/CoppeliaRobotics/include.git
+    git clone https://github.com/CoppeliaRobotics/remoteApi.git
+    cd ..    
+    
 	mkdir $(BUILDDIR);
 	cd $(BUILDDIR); cmake -DCMAKE_CXX_FLAGS="-fdebug-prefix-map=$(shell pwd)/src/=/usr/src/dqrobotics/ -fdebug-prefix-map=$(shell pwd)/include/=/usr/include/" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=../debian/tmp/usr ..
 	make -C $(BUILDDIR) 
