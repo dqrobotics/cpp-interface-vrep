@@ -1,6 +1,5 @@
 #!/bin/bash
 
-mkdir build
-cd build
-cmake ..
-make
+chmod +x debian/rules
+fakeroot debian/rules clean
+fakeroot debian/rules build
