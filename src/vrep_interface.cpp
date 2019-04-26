@@ -298,6 +298,11 @@ void VrepInterface::set_joint_position(const int &handle, const double &angle_ra
     simxSetJointPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
 }
 
+void VrepInterface::set_joint_target_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
+{
+    simxFloat angle_rad_f = simxFloat(angle_rad);
+    simxSetJointTargetPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
+}
 
 VectorXd VrepInterface::get_joint_positions(const std::vector<int> &handles, const OP_MODES &opmode)
 {
@@ -316,6 +321,15 @@ void VrepInterface::set_joint_positions(const std::vector<int> &handles, const V
     for(int i=0;i<n;i++)
     {
         set_joint_position(handles[i],angles_rad(i),opmode);
+    }
+}
+
+void VrepInterface::set_joint_target_positions(const std::vector<int> &handles, const VectorXd &angles_rad, const OP_MODES &opmode) const
+{
+    int n = handles.size();
+    for(int i=0;i<n;i++)
+    {
+        set_joint_target_position(handles[i],angles_rad(i),opmode);
     }
 }
 
