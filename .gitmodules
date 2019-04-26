@@ -1,0 +1,3 @@
+[submodule "remoteApi"]
+	path = remoteApi
+	url = https://github.com/CoppeliaRobotics/remoteApi.git
