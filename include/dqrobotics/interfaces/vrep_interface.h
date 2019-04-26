@@ -11,13 +11,6 @@
 #include<extApi.h>
 #include<v_repConst.h>
 
-enum VREP_INTERFACE_COMMAND_TYPES{
-    VREP_OP_BLOCKING,
-    VREP_OP_STREAMING,
-    VREP_OP_ONESHOT,
-    VREP_OP_BUFFER
-};
-
 const std::string VREP_OBJECTNAME_ABSOLUTE("VREP_OBJECTNAME_ABSOLUTE");
 
 using namespace DQ_robotics;
@@ -25,37 +18,15 @@ using namespace Eigen;
 
 class VrepInterface
 {
-private:
-    std::map<std::string,int> name_to_handle_map_;
-
-    int MAX_TRY_COUNT_;
-    int TIMEOUT_IN_MILISECONDS_;
-    int clientid_;
-    long int global_retry_count_;
-    std::atomic_bool* no_blocking_loops_;
-
-    void __insert_or_update_map(const std::string& objectname, const int& handle);
-
-    int __get_handle_from_map(const std::string& objectname);
-    /**
-     * @brief __remap_op_mode
-     * Maps the VREP_INTERFACE_COMMAND_TYPES into operation modes that
-     * VREP's remote API can understand.
-     * @param opmode
-     * @return
-     */
-    simxInt __remap_op_mode(const VREP_INTERFACE_COMMAND_TYPES& opmode) const;
-
-    /**
-     * @brief __retry_function
-     * Used to retry a function for MAX_TRY_COUNT_ times, each of which makes
-     * the running thread sleep for TIMEOUT_IN_MILISECONDS_.
-     * @param opmode
-     * @return
-     */
-    void    __retry_function(const std::function<simxInt(void)> &f);
-
 public:
+    enum OP_MODES
+    {
+        OP_BLOCKING,
+        OP_STREAMING,
+        OP_ONESHOT,
+        OP_BUFFER
+    };
+
     /**
      * @brief vrepInterface
      * Default constructor
@@ -121,16 +92,16 @@ public:
      * @param opmode
      * @return
      */
-    DQ   get_object_translation(const int& handle, const int& relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES& opmode);
-    DQ   get_object_translation(const int& handle, const std::string& relative_to_objectname, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    DQ   get_object_translation(const int& handle, const int& relative_to_handle, const OP_MODES& opmode);
+    DQ   get_object_translation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
     {
         return get_object_translation(handle,__get_handle_from_map(relative_to_objectname),opmode);
     }
-    DQ   get_object_translation(const std::string& objectname, const int& relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    DQ   get_object_translation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
     {
         return get_object_translation(__get_handle_from_map(objectname),relative_to_handle,opmode);
     }
-    DQ   get_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    DQ   get_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
     {
         return get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
     }
@@ -143,16 +114,16 @@ public:
      * @param t
      * @param opmode
      */
-    void set_object_translation(const int& handle, const int& relative_to_handle, const DQ& t, const VREP_INTERFACE_COMMAND_TYPES& opmode) const;
-    void set_object_translation(const int& handle, const std::string& relative_to_objectname, const DQ& t, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    void set_object_translation(const int& handle, const int& relative_to_handle, const DQ& t, const OP_MODES& opmode) const;
+    void set_object_translation(const int& handle, const std::string& relative_to_objectname, const DQ& t, const OP_MODES& opmode)
     {
         return set_object_translation(handle,__get_handle_from_map(relative_to_objectname),t,opmode);
     }
-    void set_object_translation(const std::string& objectname, const int& relative_to_handle, const DQ& t, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    void set_object_translation(const std::string& objectname, const int& relative_to_handle, const DQ& t, const OP_MODES& opmode)
     {
         return set_object_translation(__get_handle_from_map(objectname),relative_to_handle,t,opmode);
     }
-    void set_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const DQ& t, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    void set_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const DQ& t, const OP_MODES& opmode)
     {
         return set_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),t,opmode);
     }
@@ -165,16 +136,16 @@ public:
      * @param opmode
      * @return
      */
-    DQ   get_object_rotation(const int& handle, const int& relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES& opmode);
-    DQ   get_object_rotation(const int& handle, const std::string& relative_to_objectname, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    DQ   get_object_rotation(const int& handle, const int& relative_to_handle, const OP_MODES& opmode);
+    DQ   get_object_rotation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
     {
         return get_object_rotation(handle,__get_handle_from_map(relative_to_objectname),opmode);
     }
-    DQ   get_object_rotation(const std::string& objectname, const int& relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    DQ   get_object_rotation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
     {
         return get_object_rotation(__get_handle_from_map(objectname),relative_to_handle,opmode);
     }
-    DQ   get_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    DQ   get_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
     {
         return get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
     }
@@ -188,16 +159,16 @@ public:
      * @param r
      * @param opmode
      */
-    void set_object_rotation(const int& handle, const int& relative_to_handle, const DQ& r, const VREP_INTERFACE_COMMAND_TYPES& opmode) const;
-    void set_object_rotation(const int& handle, const std::string& relative_to_objectname, const DQ& r, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    void set_object_rotation(const int& handle, const int& relative_to_handle, const DQ& r, const OP_MODES& opmode) const;
+    void set_object_rotation(const int& handle, const std::string& relative_to_objectname, const DQ& r, const OP_MODES& opmode)
     {
         return set_object_rotation(handle,__get_handle_from_map(relative_to_objectname),r,opmode);
     }
-    void set_object_rotation(const std::string& objectname, const int& relative_to_handle, const DQ& r, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    void set_object_rotation(const std::string& objectname, const int& relative_to_handle, const DQ& r, const OP_MODES& opmode)
     {
         return set_object_rotation(__get_handle_from_map(objectname),relative_to_handle,r,opmode);
     }
-    void set_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const DQ& r, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    void set_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const DQ& r, const OP_MODES& opmode)
     {
         return set_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),r,opmode);
     }
@@ -210,16 +181,16 @@ public:
      * @param opmode
      * @return
      */
-    DQ get_object_pose(const int& handle, const int& relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES& opmode);
-    DQ get_object_pose(const int& handle, const std::string& relative_to_objectname, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    DQ get_object_pose(const int& handle, const int& relative_to_handle, const OP_MODES& opmode);
+    DQ get_object_pose(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
     {
         return get_object_pose(handle,__get_handle_from_map(relative_to_objectname),opmode);
     }
-    DQ get_object_pose(const std::string& objectname, const int& relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    DQ get_object_pose(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
     {
         return get_object_pose(__get_handle_from_map(objectname),relative_to_handle,opmode);
     }
-    DQ get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    DQ get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
     {
         return get_object_pose(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
     }
@@ -231,16 +202,16 @@ public:
      * @param h
      * @param opmode
      */
-    void set_object_pose(const int& handle, const int& relative_to_handle, const DQ& h, const VREP_INTERFACE_COMMAND_TYPES& opmode) const;
-    void set_object_pose(const int& handle, const std::string& relative_to_objectname, const DQ& h, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    void set_object_pose(const int& handle, const int& relative_to_handle, const DQ& h, const OP_MODES& opmode) const;
+    void set_object_pose(const int& handle, const std::string& relative_to_objectname, const DQ& h, const OP_MODES& opmode)
     {
         return set_object_pose(handle,__get_handle_from_map(relative_to_objectname),h,opmode);
     }
-    void set_object_pose(const std::string& objectname, const int& relative_to_handle, const DQ& h, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    void set_object_pose(const std::string& objectname, const int& relative_to_handle, const DQ& h, const OP_MODES& opmode)
     {
         return set_object_pose(__get_handle_from_map(objectname),relative_to_handle,h,opmode);
     }
-    void set_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const DQ& h, const VREP_INTERFACE_COMMAND_TYPES& opmode)
+    void set_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const DQ& h, const OP_MODES& opmode)
     {
         return set_object_pose(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),h,opmode);
     }
@@ -253,7 +224,7 @@ public:
      * @param opmode
      * @return
      */
-    std::vector<DQ> get_object_poses(const std::vector<int>& handles, const int& relative_to_handle, const VREP_INTERFACE_COMMAND_TYPES& opmode);
+    std::vector<DQ> get_object_poses(const std::vector<int>& handles, const int& relative_to_handle, const OP_MODES& opmode);
     /**
      * @brief setObjectPoses
      * Calls setObjectPose for a collection of handles.
@@ -262,7 +233,7 @@ public:
      * @param hs
      * @param opmode
      */
-    void            set_object_poses(const std::vector<int>& handles, const int& relative_to_handle, const std::vector<DQ>& hs, const VREP_INTERFACE_COMMAND_TYPES& opmode) const;
+    void            set_object_poses(const std::vector<int>& handles, const int& relative_to_handle, const std::vector<DQ>& hs, const OP_MODES& opmode) const;
 
     /**
      * @brief getJointPosition
@@ -271,7 +242,7 @@ public:
      * @param opmode
      * @return
      */
-    double   get_joint_position(const int& handle, const VREP_INTERFACE_COMMAND_TYPES& opmode);
+    double   get_joint_position(const int& handle, const OP_MODES& opmode);
     /**
      * @brief setJointPosition
      * Sets the position of a joint.
@@ -279,7 +250,7 @@ public:
      * @param angle_rad
      * @param opmode
      */
-    void     set_joint_position(const int& handle, const double& angle_rad, const VREP_INTERFACE_COMMAND_TYPES& opmode) const;
+    void     set_joint_position(const int& handle, const double& angle_rad, const OP_MODES& opmode) const;
     /**
      * @brief getJointPositions
      * Gets the position of a collection of joints.
@@ -287,7 +258,7 @@ public:
      * @param opmode
      * @return
      */
-    VectorXd get_joint_positions(const std::vector<int>& handles, const VREP_INTERFACE_COMMAND_TYPES& opmode);
+    VectorXd get_joint_positions(const std::vector<int>& handles, const OP_MODES& opmode);
     /**
      * @brief setJointPositions
      * Sets the positions of a collection of joints.
@@ -295,10 +266,40 @@ public:
      * @param angles_rad
      * @param opmode
      */
-    void     set_joint_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const VREP_INTERFACE_COMMAND_TYPES& opmode) const;
+    void     set_joint_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const OP_MODES& opmode) const;
 
     ///Deprecated
-    int getHandle(const std::string& objectname, const VREP_INTERFACE_COMMAND_TYPES& opmode);
+    int getHandle(const std::string& objectname, const OP_MODES& opmode);
+
+private:
+    std::map<std::string,int> name_to_handle_map_;
+
+    int MAX_TRY_COUNT_;
+    int TIMEOUT_IN_MILISECONDS_;
+    int clientid_;
+    long int global_retry_count_;
+    std::atomic_bool* no_blocking_loops_;
+
+    void __insert_or_update_map(const std::string& objectname, const int& handle);
+
+    int __get_handle_from_map(const std::string& objectname);
+    /**
+     * @brief __remap_op_mode
+     * Maps the VREP_INTERFACE_COMMAND_TYPES into operation modes that
+     * VREP's remote API can understand.
+     * @param opmode
+     * @return
+     */
+    simxInt __remap_op_mode(const OP_MODES& opmode) const;
+
+    /**
+     * @brief __retry_function
+     * Used to retry a function for MAX_TRY_COUNT_ times, each of which makes
+     * the running thread sleep for TIMEOUT_IN_MILISECONDS_.
+     * @param opmode
+     * @return
+     */
+    void    __retry_function(const std::function<simxInt(void)> &f);
 };
 
 #endif
