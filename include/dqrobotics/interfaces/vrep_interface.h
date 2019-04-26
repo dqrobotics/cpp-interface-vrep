@@ -251,6 +251,16 @@ public:
      * @param opmode
      */
     void     set_joint_position(const int& handle, const double& angle_rad, const OP_MODES& opmode) const;
+
+    /**
+     * @brief set_joint_target_position
+     * Sets the target position of a joint.
+     * @param handle
+     * @param angle_rad
+     * @param opmode
+     */
+    void     set_joint_target_position(const int& handle, const double& angle_rad, const OP_MODES& opmode) const;
+
     /**
      * @brief getJointPositions
      * Gets the position of a collection of joints.
@@ -267,6 +277,15 @@ public:
      * @param opmode
      */
     void     set_joint_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const OP_MODES& opmode) const;
+
+    /**
+     * @brief set_joint_target_positions
+     * Sets the target joint positions of a collection of joints
+     * @param handles
+     * @param angles_rad
+     * @param opmode
+     */
+    void     set_joint_target_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const OP_MODES& opmode) const;
 
     ///Deprecated
     int getHandle(const std::string& objectname, const OP_MODES& opmode);
