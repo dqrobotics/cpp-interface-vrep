@@ -6,12 +6,12 @@ BUILDDIR = build_dir
 build:
 	mkdir -p cpp
 	cd cpp
-	git clone https://www.github.com/dqrobotics/cpp.git
+	wget http://github.com/dqrobotics/cpp/zipball/master/
 	cd ..
 	mkdir -p coppeliarobotics
 	cd coppeliarobotics
-	git clone https://www.github.com/CoppeliaRobotics/include.git
-	git clone https://www.github.com/CoppeliaRobotics/remoteApi.git
+	wget http://github.com/CoppeliaRobotics/include/zipball/master/
+	wget http://github.com/CoppeliaRobotics/remoteApi/zipball/master/
 	cd ..
 	mkdir $(BUILDDIR);
 	cd $(BUILDDIR); cmake -DCMAKE_CXX_FLAGS="-fdebug-prefix-map=$(shell pwd)/src/=/usr/src/dqrobotics/ -fdebug-prefix-map=$(shell pwd)/include/=/usr/include/" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=../debian/tmp/usr ..
