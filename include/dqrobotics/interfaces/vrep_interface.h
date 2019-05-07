@@ -8,8 +8,6 @@
 #include<string>
 
 #include<dqrobotics/DQ.h>
-#include<extApi.h>
-#include<v_repConst.h>
 
 const std::string VREP_OBJECTNAME_ABSOLUTE("VREP_OBJECTNAME_ABSOLUTE");
 
@@ -242,7 +240,11 @@ public:
      * @param opmode
      * @return
      */
-    double   get_joint_position(const int& handle, const OP_MODES& opmode);
+    double   get_joint_position(const int& handle, const OP_MODES& opmode) const;
+    double   get_joint_position(const std::string& jointname, const OP_MODES& opmode)
+    {
+        return get_joint_position(__get_handle_from_map(jointname),opmode);
+    }
     /**
      * @brief setJointPosition
      * Sets the position of a joint.
@@ -251,6 +253,10 @@ public:
      * @param opmode
      */
     void     set_joint_position(const int& handle, const double& angle_rad, const OP_MODES& opmode) const;
+    void     set_joint_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
+    {
+        return set_joint_position(__get_handle_from_map(jointname),angle_rad,opmode);
+    }
 
     /**
      * @brief set_joint_target_position
@@ -260,6 +266,10 @@ public:
      * @param opmode
      */
     void     set_joint_target_position(const int& handle, const double& angle_rad, const OP_MODES& opmode) const;
+    void     set_joint_target_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
+    {
+        return set_joint_target_position(__get_handle_from_map(jointname),angle_rad,opmode);
+    }
 
     /**
      * @brief getJointPositions
@@ -268,7 +278,8 @@ public:
      * @param opmode
      * @return
      */
-    VectorXd get_joint_positions(const std::vector<int>& handles, const OP_MODES& opmode);
+    VectorXd get_joint_positions(const std::vector<int>& handles, const OP_MODES& opmode) const;
+    VectorXd get_joint_positions(const std::vector<std::string>& jointnames, const OP_MODES& opmode);
     /**
      * @brief setJointPositions
      * Sets the positions of a collection of joints.
@@ -277,6 +288,7 @@ public:
      * @param opmode
      */
     void     set_joint_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const OP_MODES& opmode) const;
+    void     set_joint_positions(const std::vector<std::string>& jointnames, const VectorXd& angles_rad, const OP_MODES& opmode);
 
     /**
      * @brief set_joint_target_positions
@@ -286,9 +298,7 @@ public:
      * @param opmode
      */
     void     set_joint_target_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const OP_MODES& opmode) const;
-
-    ///Deprecated
-    int getHandle(const std::string& objectname, const OP_MODES& opmode);
+    void     set_joint_target_positions(const std::vector<std::string>& jointnames, const VectorXd& angles_rad, const OP_MODES& opmode);
 
 private:
     std::map<std::string,int> name_to_handle_map_;
@@ -302,23 +312,6 @@ private:
     void __insert_or_update_map(const std::string& objectname, const int& handle);
 
     int __get_handle_from_map(const std::string& objectname);
-    /**
-     * @brief __remap_op_mode
-     * Maps the VREP_INTERFACE_COMMAND_TYPES into operation modes that
-     * VREP's remote API can understand.
-     * @param opmode
-     * @return
-     */
-    simxInt __remap_op_mode(const OP_MODES& opmode) const;
-
-    /**
-     * @brief __retry_function
-     * Used to retry a function for MAX_TRY_COUNT_ times, each of which makes
-     * the running thread sleep for TIMEOUT_IN_MILISECONDS_.
-     * @param opmode
-     * @return
-     */
-    void    __retry_function(const std::function<simxInt(void)> &f);
 };
 
 #endif
