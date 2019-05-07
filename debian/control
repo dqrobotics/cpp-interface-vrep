@@ -2,7 +2,7 @@ Source: libdqrobotics-interface-vrep
 Section: devel
 Priority: optional
 Maintainer: Murilo Marinho <murilo@nml.t.u-tokyo.ac.jp>
-Build-Depends: cmake, libeigen3-dev, wget, unzip
+Build-Depends: cmake, libeigen3-dev, git
 Homepage: https://dqrobotics.github.io/
 
 Package: libdqrobotics-interface-vrep
