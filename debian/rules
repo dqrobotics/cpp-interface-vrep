@@ -7,6 +7,7 @@ build:
 ifeq ($(TRAVIS),)
 	echo "Not travis, hopefully launchpad. Clonning submodules manually..."
 	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp cpp
+	mkdir -p coppeliarobotics
 	cd coppeliarobotics
 	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include include
 	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi remoteApi
