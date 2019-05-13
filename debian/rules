@@ -13,11 +13,11 @@ ifeq ($(TRAVIS),)
 	cd coppeliarobotics
 	mkdir -p include
 	cd include 
-	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include
+	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include include
 	cd ..
 	mkdir -p remoteApi
 	cd remoteApi
-	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi
+	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi remoteApi
 	cd ..
 	cd ..
 else
