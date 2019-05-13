@@ -7,21 +7,12 @@ build:
 ifeq ($(TRAVIS),)
 	echo "Not travis, hopefully launchpad. Clonning submodules manually..."
 	rm -rf cpp
-	mkdir cpp
-	cd cpp
-	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp .
-	cd ..
+	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp cpp
 	rm -rf coppeliarobotics
 	mkdir -p coppeliarobotics
 	cd coppeliarobotics
-	mkdir -p include
-	cd include
-	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include .
-	cd ..
-	mkdir -p remoteApi
-	cd remoteApi
-	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi .
-	cd ..
+	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include include
+	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi remoteApi
 	cd ..
 else
 	echo "Travis detected, skipping manual submodule load"
