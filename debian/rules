@@ -6,19 +6,10 @@ BUILDDIR = build_dir
 build:
 ifeq ($(TRAVIS),)
 	echo "Not travis, hopefully launchpad. Clonning submodules manually..."
-	mkdir -p cpp
-	cd cpp
-	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp
-	cd ..
+	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp cpp
 	cd coppeliarobotics
-	mkdir -p include
-	cd include 
 	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include include
-	cd ..
-	mkdir -p remoteApi
-	cd remoteApi
 	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi remoteApi
-	cd ..
 	cd ..
 else
 	echo "Travis detected, skipping manual submodule load"
