@@ -4,7 +4,7 @@ BUILDDIR = build_dir
 
 # secondly called by launchpad
 build:
-        if [ -z "${TRAVIS}" ]; then
+	if [ -z "${TRAVIS}" ]; then
 		mkdir -p cpp
 		cd cpp
 		git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp
