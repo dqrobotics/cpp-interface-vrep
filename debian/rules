@@ -6,7 +6,7 @@ BUILDDIR = build_dir
 build:
 	mkdir -p cpp
 	cd cpp
-	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/main
+	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp
 	cd ..
 	cd coppeliarobotics
 	mkdir -p include
