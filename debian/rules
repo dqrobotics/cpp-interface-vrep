@@ -8,6 +8,16 @@ build:
 	cd cpp
 	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/main
 	cd ..
+	cd coppeliarobotics
+	mkdir -p include
+	cd include 
+	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include
+	cd ..
+	mkdir -p remoteApi
+	cd remoteApi
+	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi
+	cd ..
+	cd ..
 	mkdir $(BUILDDIR);
 	cd $(BUILDDIR); cmake -DCMAKE_CXX_FLAGS="-fdebug-prefix-map=$(shell pwd)/src/=/usr/src/dqrobotics/ -fdebug-prefix-map=$(shell pwd)/include/=/usr/include/" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=../debian/tmp/usr ..
 	make -C $(BUILDDIR) 
