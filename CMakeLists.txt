@@ -10,27 +10,27 @@ add_definitions(-DMAX_EXT_API_CONNECTIONS=255)
 add_definitions(-DDO_NOT_USE_SHARED_MEMORY)
 
 INCLUDE_DIRECTORIES(EIGEN3_INCLUDE_DIR)
-INCLUDE_DIRECTORIES(dqrobotics-vrep-interface include)
-INCLUDE_DIRECTORIES(dqrobotics-vrep-interface coppeliarobotics/remoteApi)
-INCLUDE_DIRECTORIES(dqrobotics-vrep-interface coppeliarobotics/include)
-INCLUDE_DIRECTORIES(dqrobotics-vrep-interface cpp/include)
+INCLUDE_DIRECTORIES(${PROJECT_NAME} include)
+INCLUDE_DIRECTORIES(${PROJECT_NAME} coppeliarobotics/remoteApi)
+INCLUDE_DIRECTORIES(${PROJECT_NAME} coppeliarobotics/include)
+INCLUDE_DIRECTORIES(${PROJECT_NAME} cpp/include)
 
 ################################################################
 # DEFINE AND INSTALL LIBRARY AND INCLUDE FOLDER
 ################################################################
 
-ADD_LIBRARY(dqrobotics-interface-vrep SHARED 
+ADD_LIBRARY(${PROJECT_NAME} SHARED 
     src/vrep_interface.cpp
     coppeliarobotics/remoteApi/extApi.c
     coppeliarobotics/remoteApi/extApiPlatform.c
     )
 
-SET_TARGET_PROPERTIES(dqrobotics-interface-vrep 
+SET_TARGET_PROPERTIES(${PROJECT_NAME} 
     PROPERTIES PUBLIC_HEADER
     include/dqrobotics/interfaces/vrep_interface.h
     )
 
-INSTALL(TARGETS dqrobotics-interface-vrep 
+INSTALL(TARGETS ${PROJECT_NAME} 
     LIBRARY DESTINATION "lib"
     PUBLIC_HEADER DESTINATION "include/dqrobotics/interfaces"
     PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
