@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
-PROJECT(dqrobotics-vrep-interface)
+PROJECT(dqrobotics-interface-vrep)
 set (CMAKE_CXX_STANDARD 11)
 
 #ADD_DEFINITIONS(-g -O2 -Wall)
@@ -19,19 +19,18 @@ INCLUDE_DIRECTORIES(dqrobotics-vrep-interface cpp/include)
 # DEFINE AND INSTALL LIBRARY AND INCLUDE FOLDER
 ################################################################
 
-ADD_LIBRARY(dqrobotics-vrep-interface SHARED 
+ADD_LIBRARY(dqrobotics-interface-vrep SHARED 
     src/vrep_interface.cpp
     coppeliarobotics/remoteApi/extApi.c
-    coppeliarobotics/remoteApi/extApiPlatform.h
     coppeliarobotics/remoteApi/extApiPlatform.c
     )
 
-SET_TARGET_PROPERTIES(dqrobotics-vrep-interface 
+SET_TARGET_PROPERTIES(dqrobotics-interface-vrep 
     PROPERTIES PUBLIC_HEADER
     include/dqrobotics/interfaces/vrep_interface.h
     )
 
-INSTALL(TARGETS dqrobotics-vrep-interface 
+INSTALL(TARGETS dqrobotics-interface-vrep 
     LIBRARY DESTINATION "lib"
     PUBLIC_HEADER DESTINATION "include/dqrobotics/interfaces"
     PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
@@ -44,4 +43,3 @@ INSTALL(TARGETS dqrobotics-vrep-interface
 INSTALL(FILES 
     src/vrep_interface.cpp
     DESTINATION "src/dqrobotics/interfaces")
-
