@@ -18,7 +18,7 @@ else
 	echo "Travis detected, skipping manual submodule load"
 endif
 	mkdir $(BUILDDIR);
-	cd $(BUILDDIR); cmake -DCMAKE_CXX_FLAGS="-fdebug-prefix-map=$(shell pwd)/src/=/usr/src/dqrobotics/ -fdebug-prefix-map=$(shell pwd)/include/=/usr/include/" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=../debian/tmp/usr ..
+	cd $(BUILDDIR); cmake -DCMAKE_CXX_FLAGS="-fdebug-prefix-map=$(shell pwd)/src/=/usr/src/dqrobotics/interfaces/ -fdebug-prefix-map=$(shell pwd)/include/=/usr/include/" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=../debian/tmp/usr ..
 	make -C $(BUILDDIR) 
 
 # thirdly called by launchpad
