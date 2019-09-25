@@ -25,10 +25,8 @@ Contributors:
 #include"extApi.h"
 #include"v_repConst.h"
 
-#include<unistd.h>
 #include<thread>
 #include<chrono>
-#include<iostream>
 
 ///****************************************************************************************
 ///                        PRIVATE FUNCTIONS
@@ -56,7 +54,7 @@ int VrepInterface::__get_handle_from_map(const std::string &objectname)
 void __retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_COUNT, const int& TIMEOUT_IN_MILISECONDS, std::atomic_bool* no_blocking_loops)
 {
     int retry_counter = 0;
-    int function_result;
+    int function_result = 0;
     while(retry_counter<MAX_TRY_COUNT)
     {
         if(no_blocking_loops!=nullptr)
@@ -99,16 +97,15 @@ VrepInterface::VrepInterface(std::atomic_bool* no_blocking_loops)
 {
     no_blocking_loops_ = no_blocking_loops;
     global_retry_count_ = 0;
-    std::cout << "****************************************" << std::endl;
-    std::cout << "VrepInterface LGPLv3 Murilo@NML (c) 2018" << std::endl;
-    std::cout << "****************************************" << std::endl;
     clientid_ = -1;
     __insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,-1);
 }
 
-bool VrepInterface::connect(const int&port, const int& TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
+bool VrepInterface::connect(const int &port, const int& TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
 {
-    clientid_ = simxStart("127.0.0.1",port,true,true,TIMEOUT_IN_MILISECONDS_,5);
+    //The timeout for simxStart makes more sense as a negative number
+    //http://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctions.htm#simxStart
+    clientid_ = simxStart("127.0.0.1",port,true,true,-TIMEOUT_IN_MILISECONDS_,5);
     TIMEOUT_IN_MILISECONDS_ = TIMEOUT_IN_MILISECONDS;
     MAX_TRY_COUNT_          = MAX_TRY_COUNT;
     if(clientid_!=-1)
@@ -125,7 +122,9 @@ bool VrepInterface::connect(const int&port, const int& TIMEOUT_IN_MILISECONDS, c
 
 bool VrepInterface::connect(const std::string &ip, const int &port, const int &TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
 {
-    clientid_ = simxStart(ip.c_str(),port,true,true,TIMEOUT_IN_MILISECONDS_,5);
+    //The timeout for simxStart makes more sense as a negative number
+    //http://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctions.htm#simxStart
+    clientid_ = simxStart(ip.c_str(),port,true,true,-TIMEOUT_IN_MILISECONDS_,5);
     TIMEOUT_IN_MILISECONDS_ = TIMEOUT_IN_MILISECONDS;
     MAX_TRY_COUNT_          = MAX_TRY_COUNT;
     if(clientid_!=-1)
@@ -211,7 +210,7 @@ DQ VrepInterface::get_object_rotation(const int &handle, const int &relative_to_
     const std::function<simxInt(void)> f = std::bind(simxGetObjectQuaternion,clientid_,handle,relative_to_handle,rp,__remap_op_mode(opmode));
     __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_);
     DQ r(rp[3],rp[0],rp[1],rp[2],0,0,0,0);
-    return normalize(r);
+    return normalize(r); //We need to normalize here because vrep uses 32bit precision and our doubles are 64bit precision.
 }
 
 DQ VrepInterface::get_object_pose(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
