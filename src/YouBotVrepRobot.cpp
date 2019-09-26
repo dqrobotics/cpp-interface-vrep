@@ -32,6 +32,8 @@ namespace DQ_robotics
 
 YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, VrepInterface* vrep_interface): DQ_VrepRobot(robot_name, vrep_interface)
 {
+    adjust_ = ((cos(pi/2) + i_*sin(pi/2)) * (cos(pi/4) + j_*sin(pi/4)))*(1+0.5*E_*-0.1*k_);
+
     std::vector<std::string> splited_name = strsplit(robot_name_,'#');
     std::string robot_label = splited_name[0];
 
@@ -59,9 +61,9 @@ DQ_robotics::DQ_WholeBody YouBotVrepRobot::kinematics()
 
     Matrix<double,4,5> dh(4,5);
     dh <<    0,      pi2,       0,      pi2,    0,
-             0.147,    0,       0,        0,    0.218,
-             0.033,    0.155,   0.135,    0,    0,
-             pi2,      0,       0,      pi2,    0;
+            0.147,    0,       0,        0,    0.218,
+            0.033,    0.155,   0.135,    0,    0,
+            pi2,      0,       0,      pi2,    0;
 
 
     auto arm = std::make_shared<DQ_SerialManipulator>(DQ_SerialManipulator(dh,"standard"));
@@ -82,11 +84,27 @@ DQ_robotics::DQ_WholeBody YouBotVrepRobot::kinematics()
 
 void YouBotVrepRobot::send_q_to_vrep(const VectorXd &q)
 {
-    vrep_interface_->set_joint_positions(joint_names_,q,VrepInterface::OP_ONESHOT);
+    double x = q(0);
+    double y = q(1);
+    double phi = q(2);
+
+    DQ r = cos(phi/2.0)+k_*sin(phi/2.0);
+    DQ p = x * i_ + y * j_;
+    DQ pose = (1 +E_*0.5*p)*r;
+
+    vrep_interface_->set_joint_positions(joint_names_,q.tail<4>());
+    vrep_interface_->set_object_pose(base_frame_name_, pose * conj(adjust_));
+
 }
 
 VectorXd YouBotVrepRobot::get_q_from_vrep()
 {
-    return vrep_interface_->get_joint_positions(joint_names_,VrepInterface::OP_BUFFER);
+    DQ base_x = vrep_interface_->get_object_pose(base_frame_name_) * adjust_;
+    VectorXd base_t = vec4(translation(base_x));
+    double base_phi = rotation_angle(rotation(base_x));
+    VectorXd base_arm_q = vrep_interface_->get_joint_positions(joint_names_);
+
+    VectorXd q(8);
+    q << base_t(0), base_t(1), base_phi, base_arm_q;
 }
 }

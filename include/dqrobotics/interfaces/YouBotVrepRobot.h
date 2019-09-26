@@ -34,6 +34,7 @@ class YouBotVrepRobot: public DQ_VrepRobot
 private:
     std::vector<std::string> joint_names_;
     std::string base_frame_name_;
+    DQ adjust_;
 public:
     YouBotVrepRobot(const std::string& robot_name, VrepInterface* vrep_interface);
 
