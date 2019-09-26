@@ -22,8 +22,8 @@ Contributors:
 
 #ifndef DQ_ROBOTICS_LBR4P_VREP_ROBOT_HEADER_GUARD
 #define DQ_ROBOTICS_LBR4P_VREP_ROBOT_HEADER_GUARD
-#include <vector>
 
+#include <vector>
 #include <dqrobotics/interfaces/DQ_VrepRobot.h>
 #include <dqrobotics/robot_modeling/DQ_SerialManipulator.h>
 

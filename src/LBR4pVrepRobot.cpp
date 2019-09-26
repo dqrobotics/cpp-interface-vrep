@@ -1,5 +1,26 @@
-#include<dqrobotics/interfaces/LBR4pVrepRobot.h>
+/**
+(C) Copyright 2019 DQ Robotics Developers
 
+This file is part of DQ Robotics.
+
+    DQ Robotics is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    DQ Robotics is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with DQ Robotics.  If not, see <http://www.gnu.org/licenses/>.
+
+Contributors:
+- Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
+*/
+
+#include<dqrobotics/interfaces/LBR4pVrepRobot.h>
 #include<dqrobotics/utils/DQ_Constants.h>
 
 namespace DQ_robotics
@@ -28,7 +49,7 @@ LBR4pVrepRobot::LBR4pVrepRobot(const std::string& robot_name, VrepInterface* vre
 
 }
 
-DQ_SerialManipulator LBR4pVrepRobot::kinematics()
+DQ_robotics::DQ_SerialManipulator LBR4pVrepRobot::kinematics()
 {
     const double pi2 = pi/2.0;
 
