@@ -21,13 +21,19 @@ INCLUDE_DIRECTORIES(${PROJECT_NAME} cpp/include)
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED 
     src/vrep_interface.cpp
+    src/DQ_VrepRobot.cpp
+    src/LBR4pVrepRobot.cpp
+    src/YouBotVrepRobot.cpp
     coppeliarobotics/remoteApi/extApi.c
     coppeliarobotics/remoteApi/extApiPlatform.c
     )
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} 
     PROPERTIES PUBLIC_HEADER
-    include/dqrobotics/interfaces/vrep_interface.h
+    "include/dqrobotics/interfaces/vrep_interface.h;
+    include/dqrobotics/interfaces/DQ_VrepRobot.h;
+    include/dqrobotics/interfaces/LBR4pVrepRobot.h;
+    include/dqrobotics/interfaces/YouBotVrepRobot.h"
     )
 
 INSTALL(TARGETS ${PROJECT_NAME} 
@@ -42,4 +48,7 @@ INSTALL(TARGETS ${PROJECT_NAME}
 # base folder
 INSTALL(FILES 
     src/vrep_interface.cpp
+    src/DQ_VrepRobot.cpp
+    src/LBR4pVrepRobot.cpp
+    src/YouBotVrepRobot.cpp
     DESTINATION "src/dqrobotics/interfaces")
