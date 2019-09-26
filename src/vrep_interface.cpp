@@ -32,23 +32,35 @@ Contributors:
 ///                        PRIVATE FUNCTIONS
 /// ***************************************************************************************
 
-void VrepInterface::__insert_or_update_map(const std::string &objectname, const int &handle)
+void VrepInterface::__insert_or_update_map(const std::string &objectname, const VrepInterfaceMapElement &element)
 {
-    std::pair<std::map<std::string,int>::iterator,bool> ret;
-    ret = name_to_handle_map_.insert ( std::pair<std::string,int>(objectname,handle));
+    auto ret = name_to_element_map_.insert ( std::pair<std::string,VrepInterfaceMapElement>(objectname,element));
     if (ret.second==false) {
-        name_to_handle_map_.at(objectname)=handle;
+        name_to_element_map_.at(objectname)=element;
     }
 }
 
 int VrepInterface::__get_handle_from_map(const std::string &objectname)
 {
-    if(name_to_handle_map_.count(objectname)==1)
+    if(name_to_element_map_.count(objectname)==1)
     {
-        return name_to_handle_map_.at(objectname);
+        return name_to_element_map_.at(objectname).get_handle();
     }
     else
         return get_object_handle(objectname);
+}
+
+VrepInterfaceMapElement& VrepInterface::__get_element_from_map(const std::string &objectname)
+{
+    //Update map if needed
+    __get_handle_from_map(objectname);
+
+    if(name_to_element_map_.count(objectname)==1)
+    {
+        return name_to_element_map_.at(objectname);
+    }
+    else
+        throw std::runtime_error("Unexpected error @ __get_element_from_map");
 }
 
 void __retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_COUNT, const int& TIMEOUT_IN_MILISECONDS, std::atomic_bool* no_blocking_loops)
@@ -98,7 +110,7 @@ VrepInterface::VrepInterface(std::atomic_bool* no_blocking_loops)
     no_blocking_loops_ = no_blocking_loops;
     global_retry_count_ = 0;
     clientid_ = -1;
-    __insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,-1);
+    __insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,VrepInterfaceMapElement(-1));
 }
 
 bool VrepInterface::connect(const int &port, const int& TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
@@ -180,7 +192,7 @@ int VrepInterface::get_object_handle(const std::string &objectname)
     const std::function<simxInt(void)> f = std::bind(simxGetObjectHandle,clientid_,objectname.c_str(),&hp,simx_opmode_blocking);
     __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_);
     ///Updates handle map
-    __insert_or_update_map(objectname,hp);
+    __insert_or_update_map(objectname,VrepInterfaceMapElement(hp));
     return hp;
 }
 
@@ -195,6 +207,7 @@ std::vector<int> VrepInterface::get_object_handles(const std::vector<std::string
     return handles;
 }
 
+
 DQ VrepInterface::get_object_translation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     simxFloat tp[3];
@@ -203,6 +216,29 @@ DQ VrepInterface::get_object_translation(const int &handle, const int &relative_
     DQ t(0,tp[0],tp[1],tp[2]);
     return t;
 }
+DQ VrepInterface::get_object_translation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
+{
+    return get_object_translation(handle,__get_handle_from_map(relative_to_objectname),opmode);
+}
+DQ VrepInterface::get_object_translation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
+{
+    return get_object_translation(__get_handle_from_map(objectname),relative_to_handle,opmode);
+}
+DQ VrepInterface::get_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
+{
+    if(opmode == OP_AUTOMATIC)
+    {
+        VrepInterfaceMapElement& element = __get_element_from_map(objectname);
+        if(!element.state_from_function_signature(std::string("get_object_translation")))
+        {
+            get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_STREAMING);
+        }
+        return get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_BUFFER);
+    }
+    else
+        return get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
+}
+
 
 DQ VrepInterface::get_object_rotation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
@@ -212,6 +248,28 @@ DQ VrepInterface::get_object_rotation(const int &handle, const int &relative_to_
     DQ r(rp[3],rp[0],rp[1],rp[2],0,0,0,0);
     return normalize(r); //We need to normalize here because vrep uses 32bit precision and our doubles are 64bit precision.
 }
+DQ VrepInterface::get_object_rotation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
+{
+    return get_object_rotation(handle,__get_handle_from_map(relative_to_objectname),opmode);
+}
+DQ VrepInterface::get_object_rotation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
+{
+    return get_object_rotation(__get_handle_from_map(objectname),relative_to_handle,opmode);
+}
+DQ VrepInterface::get_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
+{
+    if(opmode == OP_AUTOMATIC)
+    {
+        VrepInterfaceMapElement& element = __get_element_from_map(objectname);
+        if(!element.state_from_function_signature(std::string("get_object_rotation")))
+        {
+            get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_STREAMING);
+        }
+        return get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_BUFFER);
+    }
+    else
+        return get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
+}
 
 DQ VrepInterface::get_object_pose(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
@@ -219,6 +277,18 @@ DQ VrepInterface::get_object_pose(const int &handle, const int &relative_to_hand
     DQ r = get_object_rotation(handle,relative_to_handle,opmode);
     DQ h = r+0.5*E_*t*r;
     return h;
+}
+DQ VrepInterface::get_object_pose(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
+{
+    return get_object_pose(handle,__get_handle_from_map(relative_to_objectname),opmode);
+}
+DQ VrepInterface::get_object_pose(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
+{
+    return get_object_pose(__get_handle_from_map(objectname),relative_to_handle,opmode);
+}
+DQ VrepInterface::get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
+{
+    return get_object_pose(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
 }
 
 std::vector<DQ> VrepInterface::get_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const OP_MODES &opmode)
@@ -241,6 +311,18 @@ void VrepInterface::set_object_translation(const int &handle, const int &relativ
 
     simxSetObjectPosition(clientid_,handle,relative_to_handle,tp,__remap_op_mode(opmode));
 }
+void VrepInterface::set_object_translation(const int& handle, const std::string& relative_to_objectname, const DQ& t, const OP_MODES& opmode)
+{
+    return set_object_translation(handle,__get_handle_from_map(relative_to_objectname),t,opmode);
+}
+void VrepInterface::set_object_translation(const std::string& objectname, const int& relative_to_handle, const DQ& t, const OP_MODES& opmode)
+{
+    return set_object_translation(__get_handle_from_map(objectname),relative_to_handle,t,opmode);
+}
+void VrepInterface::set_object_translation(const std::string& objectname, const DQ& t, const std::string& relative_to_objectname, const OP_MODES& opmode)
+{
+    return set_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),t,opmode);
+}
 
 void VrepInterface::set_object_rotation(const int &handle, const int &relative_to_handle, const DQ& r, const OP_MODES &opmode) const
 {
@@ -252,12 +334,36 @@ void VrepInterface::set_object_rotation(const int &handle, const int &relative_t
 
     simxSetObjectQuaternion(clientid_,handle,relative_to_handle,rp,__remap_op_mode(opmode));
 }
+void VrepInterface::set_object_rotation(const int& handle, const std::string& relative_to_objectname, const DQ& r, const OP_MODES& opmode)
+{
+    return set_object_rotation(handle,__get_handle_from_map(relative_to_objectname),r,opmode);
+}
+void VrepInterface::set_object_rotation(const std::string& objectname, const int& relative_to_handle, const DQ& r, const OP_MODES& opmode)
+{
+    return set_object_rotation(__get_handle_from_map(objectname),relative_to_handle,r,opmode);
+}
+void VrepInterface::set_object_rotation(const std::string& objectname, const DQ& r, const std::string& relative_to_objectname, const OP_MODES& opmode)
+{
+    return set_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),r,opmode);
+}
 
 
 void VrepInterface::set_object_pose(const int &handle, const int &relative_to_handle, const DQ& h, const OP_MODES &opmode) const
 {
     set_object_translation(handle,relative_to_handle,translation(h),opmode);
     set_object_rotation(handle,relative_to_handle,P(h),opmode);
+}
+void VrepInterface::set_object_pose(const int& handle, const std::string& relative_to_objectname, const DQ& h, const OP_MODES& opmode)
+{
+    return set_object_pose(handle,__get_handle_from_map(relative_to_objectname),h,opmode);
+}
+void VrepInterface::set_object_pose(const std::string& objectname, const int& relative_to_handle, const DQ& h, const OP_MODES& opmode)
+{
+    return set_object_pose(__get_handle_from_map(objectname),relative_to_handle,h,opmode);
+}
+void VrepInterface::set_object_pose(const std::string& objectname, const DQ& h, const std::string& relative_to_objectname, const OP_MODES& opmode)
+{
+    return set_object_pose(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),h,opmode);
 }
 
 void VrepInterface::set_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const std::vector<DQ> &hs, const OP_MODES &opmode) const
@@ -278,16 +384,39 @@ double VrepInterface::get_joint_position(const int &handle, const OP_MODES &opmo
     return double(angle_rad_f);
 }
 
+double VrepInterface::get_joint_position(const std::string& jointname, const OP_MODES& opmode)
+{
+    if(opmode == OP_AUTOMATIC)
+    {
+        VrepInterfaceMapElement& element = __get_element_from_map(jointname);
+        if(!element.state_from_function_signature(std::string("get_joint_position")))
+        {
+            get_joint_position(element.get_handle(),OP_STREAMING);
+        }
+        return get_joint_position(element.get_handle(),OP_BUFFER);
+    }
+    else
+        return get_joint_position(__get_handle_from_map(jointname),opmode);
+}
+
 void VrepInterface::set_joint_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
     simxSetJointPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
+}
+void VrepInterface::set_joint_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
+{
+    return set_joint_position(__get_handle_from_map(jointname),angle_rad,opmode);
 }
 
 void VrepInterface::set_joint_target_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
     simxSetJointTargetPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
+}
+void VrepInterface::set_joint_target_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
+{
+    return set_joint_target_position(__get_handle_from_map(jointname),angle_rad,opmode);
 }
 
 VectorXd VrepInterface::get_joint_positions(const std::vector<int> &handles, const OP_MODES &opmode) const
