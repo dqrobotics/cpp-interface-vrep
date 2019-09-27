@@ -26,6 +26,8 @@ Contributors:
 #include <vector>
 #include <dqrobotics/interfaces/DQ_VrepRobot.h>
 #include <dqrobotics/robot_modeling/DQ_WholeBody.h>
+#include <dqrobotics/robot_modeling/DQ_SerialManipulator.h>
+#include <dqrobotics/robot_modeling/DQ_HolonomicBase.h>
 
 namespace DQ_robotics
 {

@@ -24,8 +24,6 @@ Contributors:
 
 #include<dqrobotics/interfaces/YouBotVrepRobot.h>
 #include<dqrobotics/utils/DQ_Constants.h>
-#include<dqrobotics/robot_modeling/DQ_SerialManipulator.h>
-#include<dqrobotics/robot_modeling/DQ_HolonomicBase.h>
 
 namespace DQ_robotics
 {
