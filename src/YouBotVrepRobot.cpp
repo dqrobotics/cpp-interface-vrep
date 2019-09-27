@@ -37,18 +37,18 @@ YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, VrepInterface* v
     std::vector<std::string> splited_name = strsplit(robot_name_,'#');
     std::string robot_label = splited_name[0];
 
-    if(robot_label.compare(std::string("LBR4p")) != 0)
+    if(robot_label.compare(std::string("youBot")) != 0)
     {
-        std::runtime_error("Expected LBR4p");
+        std::runtime_error("Expected youBot");
     }
 
     std::string robot_index("");
     if(splited_name.size() > 1)
         robot_index = splited_name[1];
 
-    for(int i=1;i<8;i++)
+    for(int i=0;i<5;i++)
     {
-        std::string current_joint_name = robot_label + std::string("_joint") + std::to_string(i) + robot_index;
+        std::string current_joint_name = robot_label + std::string("ArmJoint") + std::to_string(i) + robot_index;
         joint_names_.push_back(current_joint_name);
     }
     base_frame_name_ = joint_names_[0];

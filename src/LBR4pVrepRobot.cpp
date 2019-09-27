@@ -60,8 +60,8 @@ DQ_robotics::DQ_SerialManipulator LBR4pVrepRobot::kinematics()
                  pi2,   -pi2,  pi2,-pi2, pi2, -pi2, 0;
     DQ_SerialManipulator kin(dh,"standard");
 
-    kin.set_reference_frame(vrep_interface_->get_object_pose(base_frame_name_, VREP_OBJECTNAME_ABSOLUTE, VrepInterface::OP_BLOCKING));
-    kin.set_base_frame(vrep_interface_->get_object_pose(base_frame_name_, VREP_OBJECTNAME_ABSOLUTE, VrepInterface::OP_BLOCKING));
+    kin.set_reference_frame(vrep_interface_->get_object_pose(base_frame_name_));
+    kin.set_base_frame(vrep_interface_->get_object_pose(base_frame_name_));
     kin.set_effector(1+0.5*E_*k_*0.07);
 
     return kin;
@@ -69,11 +69,11 @@ DQ_robotics::DQ_SerialManipulator LBR4pVrepRobot::kinematics()
 
 void LBR4pVrepRobot::send_q_to_vrep(const VectorXd &q)
 {
-    vrep_interface_->set_joint_positions(joint_names_,q,VrepInterface::OP_ONESHOT);
+    vrep_interface_->set_joint_positions(joint_names_,q);
 }
 
 VectorXd LBR4pVrepRobot::get_q_from_vrep()
 {
-    return vrep_interface_->get_joint_positions(joint_names_,VrepInterface::OP_BUFFER);
+    return vrep_interface_->get_joint_positions(joint_names_);
 }
 }

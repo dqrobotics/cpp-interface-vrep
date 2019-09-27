@@ -288,7 +288,10 @@ DQ VrepInterface::get_object_pose(const std::string& objectname, const int& rela
 }
 DQ VrepInterface::get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return get_object_pose(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
+    DQ t = get_object_translation(objectname,objectname,opmode);
+    DQ r = get_object_rotation(objectname,objectname,opmode);
+    DQ h = r+0.5*E_*t*r;
+    return h;
 }
 
 std::vector<DQ> VrepInterface::get_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const OP_MODES &opmode)

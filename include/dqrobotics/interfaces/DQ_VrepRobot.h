@@ -37,6 +37,7 @@ protected:
     std::vector<std::string> strsplit(const std::string& str, const char& delimiter);
 
     std::string robot_name_;
+    //Just an observing pointer, we do not take or share ownership (As implied by the raw pointer)
     VrepInterface* vrep_interface_;
 
     DQ_VrepRobot(const std::string& robot_name, VrepInterface* vrep_interface);
