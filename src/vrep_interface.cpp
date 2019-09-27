@@ -288,8 +288,8 @@ DQ VrepInterface::get_object_pose(const std::string& objectname, const int& rela
 }
 DQ VrepInterface::get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    DQ t = get_object_translation(objectname,objectname,opmode);
-    DQ r = get_object_rotation(objectname,objectname,opmode);
+    DQ t = get_object_translation(objectname,relative_to_objectname,opmode);
+    DQ r = get_object_rotation(objectname,relative_to_objectname,opmode);
     DQ h = r+0.5*E_*t*r;
     return h;
 }
@@ -456,6 +456,10 @@ void VrepInterface::set_joint_positions(const std::vector<int> &handles, const V
 
 void VrepInterface::set_joint_positions(const std::vector<std::string> &jointnames, const VectorXd &angles_rad, const OP_MODES &opmode)
 {
+    if(jointnames.size() != angles_rad.size())
+    {
+        throw std::runtime_error("Incompatible sizes in set_joint_positions");
+    }
     int n = jointnames.size();
     for(int i=0;i<n;i++)
     {

@@ -49,7 +49,7 @@ YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, VrepInterface* v
         std::string current_joint_name = robot_label + std::string("ArmJoint") + std::to_string(i) + robot_index;
         joint_names_.push_back(current_joint_name);
     }
-    base_frame_name_ = joint_names_[0];
+    base_frame_name_ = std::string("youBot");
 
 }
 
@@ -90,9 +90,8 @@ void YouBotVrepRobot::send_q_to_vrep(const VectorXd &q)
     DQ p = x * i_ + y * j_;
     DQ pose = (1 +E_*0.5*p)*r;
 
-    vrep_interface_->set_joint_positions(joint_names_,q.tail<4>());
+    vrep_interface_->set_joint_positions(joint_names_,q.tail<5>());
     vrep_interface_->set_object_pose(base_frame_name_, pose * conj(adjust_));
-
 }
 
 VectorXd YouBotVrepRobot::get_q_from_vrep()
@@ -103,6 +102,7 @@ VectorXd YouBotVrepRobot::get_q_from_vrep()
     VectorXd base_arm_q = vrep_interface_->get_joint_positions(joint_names_);
 
     VectorXd q(8);
-    q << base_t(0), base_t(1), base_phi, base_arm_q;
+    q << base_t(1), base_t(2), base_phi, base_arm_q;
+    return q;
 }
 }
