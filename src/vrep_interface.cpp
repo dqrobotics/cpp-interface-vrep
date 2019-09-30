@@ -63,7 +63,29 @@ VrepInterfaceMapElement& VrepInterface::__get_element_from_map(const std::string
         throw std::runtime_error("Unexpected error @ __get_element_from_map");
 }
 
-void __retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_COUNT, const int& TIMEOUT_IN_MILISECONDS, std::atomic_bool* no_blocking_loops)
+std::string __simx_int_to_string(const simxInt& ret)
+{
+    std::string output("");
+    //http://www.coppeliarobotics.com/helpFiles/en/remoteApiConstants.htm
+    if(ret & simx_return_novalue_flag)
+        output += " {No Value Error} ";
+    if(ret & simx_return_timeout_flag)
+        output += " {Timeout Error} ";
+    if(ret & simx_return_illegal_opmode_flag)
+        output += " {Illegal Opmode} ";
+    if(ret & simx_return_remote_error_flag)
+        output += " {Remote Error}";
+    if(ret & simx_error_split_progress_flag)
+        output += " {Split Progress}";
+    if(ret & simx_error_local_error_flag)
+        output += " {Local Error}";
+    if(ret & simx_error_initialize_error_flag)
+        output += " {Initialize Error}";
+
+    return output;
+}
+
+void __retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_COUNT, const int& TIMEOUT_IN_MILISECONDS, std::atomic_bool* no_blocking_loops, const VrepInterface::OP_MODES& opmode)
 {
     int retry_counter = 0;
     int function_result = 0;
@@ -79,10 +101,14 @@ void __retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_
         {
             return;
         }
+        if((function_result == simx_error_novalue_flag) && (opmode == VrepInterface::OP_STREAMING))
+        {
+            return;
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(TIMEOUT_IN_MILISECONDS));
         retry_counter++;
     }
-    throw std::runtime_error("Timeout in VREP communication. Error: " + std::to_string(function_result) +".");
+    throw std::runtime_error("Timeout in VREP communication. Error: " + __simx_int_to_string(function_result) +".");
 }
 
 simxInt __remap_op_mode(const VrepInterface::OP_MODES& opmode)
@@ -96,7 +122,7 @@ simxInt __remap_op_mode(const VrepInterface::OP_MODES& opmode)
     case VrepInterface::OP_ONESHOT:
         return simx_opmode_oneshot;
     case VrepInterface::OP_STREAMING:
-        return simx_opmode_streaming;
+        return simx_opmode_streaming+5;
     }
     throw std::range_error("Unknown opmode in __remap_op_mode");
 }
@@ -115,11 +141,13 @@ VrepInterface::VrepInterface(std::atomic_bool* no_blocking_loops)
 
 bool VrepInterface::connect(const int &port, const int& TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
 {
-    //The timeout for simxStart makes more sense as a negative number
-    //http://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctions.htm#simxStart
-    clientid_ = simxStart("127.0.0.1",port,true,true,-TIMEOUT_IN_MILISECONDS_,5);
     TIMEOUT_IN_MILISECONDS_ = TIMEOUT_IN_MILISECONDS;
     MAX_TRY_COUNT_          = MAX_TRY_COUNT;
+
+    //The timeout for simxStart makes more sense as a negative number
+    //http://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctions.htm#simxStart
+
+    clientid_ = simxStart("127.0.0.1",port,1,1,-TIMEOUT_IN_MILISECONDS_,1);
     if(clientid_!=-1)
     {
         //We'll start at least one streaming service at connection time so that we can grab the simulation
@@ -134,11 +162,12 @@ bool VrepInterface::connect(const int &port, const int& TIMEOUT_IN_MILISECONDS, 
 
 bool VrepInterface::connect(const std::string &ip, const int &port, const int &TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
 {
-    //The timeout for simxStart makes more sense as a negative number
-    //http://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctions.htm#simxStart
-    clientid_ = simxStart(ip.c_str(),port,true,true,-TIMEOUT_IN_MILISECONDS_,5);
     TIMEOUT_IN_MILISECONDS_ = TIMEOUT_IN_MILISECONDS;
     MAX_TRY_COUNT_          = MAX_TRY_COUNT;
+
+    //The timeout for simxStart makes more sense as a negative number
+    //http://www.coppeliarobotics.com/helpFiles/en/remoteApiFunctions.htm#simxStart
+    clientid_ = simxStart(ip.c_str(),port,1,1,-TIMEOUT_IN_MILISECONDS_,1);
     if(clientid_!=-1)
     {
         //We'll start at least one streaming service at connection time so that we can grab the simulation
@@ -190,7 +219,7 @@ int VrepInterface::get_object_handle(const std::string &objectname)
 {
     int hp;
     const std::function<simxInt(void)> f = std::bind(simxGetObjectHandle,clientid_,objectname.c_str(),&hp,simx_opmode_blocking);
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_);
+    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,OP_BLOCKING);
     ///Updates handle map
     __insert_or_update_map(objectname,VrepInterfaceMapElement(hp));
     return hp;
@@ -212,8 +241,8 @@ DQ VrepInterface::get_object_translation(const int &handle, const int &relative_
 {
     simxFloat tp[3];
     const std::function<simxInt(void)> f = std::bind(simxGetObjectPosition,clientid_,handle,relative_to_handle,tp,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_);
-    DQ t(0,tp[0],tp[1],tp[2]);
+    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    const DQ t(0,tp[0],tp[1],tp[2]);
     return t;
 }
 DQ VrepInterface::get_object_translation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
@@ -244,9 +273,9 @@ DQ VrepInterface::get_object_rotation(const int &handle, const int &relative_to_
 {
     simxFloat rp[4];
     const std::function<simxInt(void)> f = std::bind(simxGetObjectQuaternion,clientid_,handle,relative_to_handle,rp,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_);
-    DQ r(rp[3],rp[0],rp[1],rp[2],0,0,0,0);
-    return normalize(r); //We need to normalize here because vrep uses 32bit precision and our doubles are 64bit precision.
+    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    const DQ r(rp[3],rp[0],rp[1],rp[2],0,0,0,0);
+    return normalize(r); //We need to normalize here because vrep uses 32bit precision and our DQ are 64bit precision.
 }
 DQ VrepInterface::get_object_rotation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -296,9 +325,9 @@ DQ VrepInterface::get_object_pose(const std::string& objectname, const std::stri
 
 std::vector<DQ> VrepInterface::get_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const OP_MODES &opmode)
 {
-    int n = handles.size();
+    std::vector<double>::size_type n = handles.size();
     std::vector<DQ> hs(n);
-    for(int i=0;i<n;i++)
+    for(std::vector<double>::size_type i=0;i<n;i++)
     {
         hs[i]=get_object_pose(handles[i],relative_to_handle,opmode);
     }
@@ -308,9 +337,9 @@ std::vector<DQ> VrepInterface::get_object_poses(const std::vector<int> &handles,
 void VrepInterface::set_object_translation(const int &handle, const int &relative_to_handle, const DQ& t, const OP_MODES &opmode) const
 {
     simxFloat tp[3];
-    tp[0]=t.q(1);
-    tp[1]=t.q(2);
-    tp[2]=t.q(3);
+    tp[0]=float(t.q(1));
+    tp[1]=float(t.q(2));
+    tp[2]=float(t.q(3));
 
     simxSetObjectPosition(clientid_,handle,relative_to_handle,tp,__remap_op_mode(opmode));
 }
@@ -330,10 +359,10 @@ void VrepInterface::set_object_translation(const std::string& objectname, const 
 void VrepInterface::set_object_rotation(const int &handle, const int &relative_to_handle, const DQ& r, const OP_MODES &opmode) const
 {
     simxFloat rp[4];
-    rp[0]=r.q(1);
-    rp[1]=r.q(2);
-    rp[2]=r.q(3);
-    rp[3]=r.q(0);
+    rp[0]=float(r.q(1));
+    rp[1]=float(r.q(2));
+    rp[2]=float(r.q(3));
+    rp[3]=float(r.q(0));
 
     simxSetObjectQuaternion(clientid_,handle,relative_to_handle,rp,__remap_op_mode(opmode));
 }
@@ -371,8 +400,8 @@ void VrepInterface::set_object_pose(const std::string& objectname, const DQ& h, 
 
 void VrepInterface::set_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const std::vector<DQ> &hs, const OP_MODES &opmode) const
 {
-    int n = handles.size();
-    for(int i=0;i<n;i++)
+    std::vector<double>::size_type n = handles.size();
+    for(std::vector<double>::size_type i=0;i<n;i++)
     {
         set_object_pose(handles[i],relative_to_handle,hs[i],opmode);
     }
@@ -383,7 +412,7 @@ double VrepInterface::get_joint_position(const int &handle, const OP_MODES &opmo
 {
     simxFloat angle_rad_f;
     const std::function<simxInt(void)> f = std::bind(simxGetJointPosition,clientid_,handle,&angle_rad_f,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_);
+    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
     return double(angle_rad_f);
 }
 
@@ -424,9 +453,9 @@ void VrepInterface::set_joint_target_position(const std::string& jointname, cons
 
 VectorXd VrepInterface::get_joint_positions(const std::vector<int> &handles, const OP_MODES &opmode) const
 {
-    int n = handles.size();
+    std::vector<double>::size_type n = handles.size();
     VectorXd joint_positions(n);
-    for(int i=0;i<n;i++)
+    for(std::vector<double>::size_type i=0;i<n;i++)
     {
         joint_positions(i)=get_joint_position(handles[i],opmode);
     }
@@ -435,20 +464,22 @@ VectorXd VrepInterface::get_joint_positions(const std::vector<int> &handles, con
 
 VectorXd VrepInterface::get_joint_positions(const std::vector<std::string> &jointnames, const OP_MODES &opmode)
 {
-    int n = jointnames.size();
+    std::vector<double>::size_type n = jointnames.size();
     VectorXd joint_positions(n);
-    for(int i=0;i<n;i++)
+    simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
     {
         joint_positions(i)=get_joint_position(jointnames[i],opmode);
     }
+    simxPauseSimulation(clientid_,0);
     return joint_positions;
 }
 
 
 void VrepInterface::set_joint_positions(const std::vector<int> &handles, const VectorXd &angles_rad, const OP_MODES &opmode) const
 {
-    int n = handles.size();
-    for(int i=0;i<n;i++)
+    std::vector<double>::size_type n = handles.size();
+    for(std::vector<double>::size_type i=0;i<n;i++)
     {
         set_joint_position(handles[i],angles_rad(i),opmode);
     }
@@ -460,17 +491,19 @@ void VrepInterface::set_joint_positions(const std::vector<std::string> &jointnam
     {
         throw std::runtime_error("Incompatible sizes in set_joint_positions");
     }
-    int n = jointnames.size();
-    for(int i=0;i<n;i++)
+    std::vector<double>::size_type n = jointnames.size();
+    simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
     {
         set_joint_position(jointnames[i],angles_rad(i),opmode);
     }
+    simxPauseSimulation(clientid_,0);
 }
 
 void VrepInterface::set_joint_target_positions(const std::vector<int> &handles, const VectorXd &angles_rad, const OP_MODES &opmode) const
 {
-    int n = handles.size();
-    for(int i=0;i<n;i++)
+    std::vector<double>::size_type n = handles.size();
+    for(std::vector<double>::size_type i=0;i<n;i++)
     {
         set_joint_target_position(handles[i],angles_rad(i),opmode);
     }
@@ -478,11 +511,17 @@ void VrepInterface::set_joint_target_positions(const std::vector<int> &handles, 
 
 void VrepInterface::set_joint_target_positions(const std::vector<std::string> &jointnames, const VectorXd &angles_rad, const OP_MODES &opmode)
 {
-    int n = jointnames.size();
-    for(int i=0;i<n;i++)
+    if(int(jointnames.size()) != int(angles_rad.size()))
+    {
+        throw std::runtime_error("Incompatible sizes in set_joint_positions");
+    }
+    std::vector<double>::size_type n = jointnames.size();
+    simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
     {
         set_joint_target_position(jointnames[i],angles_rad(i),opmode);
     }
+    simxPauseSimulation(clientid_,0);
 }
 
 

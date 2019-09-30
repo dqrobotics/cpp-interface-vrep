@@ -71,8 +71,8 @@ DQ_robotics::DQ_WholeBody YouBotVrepRobot::kinematics()
 
     base->set_frame_displacement(x_bm);
 
-    DQ_WholeBody kin(std::static_pointer_cast<DQ_Kinematics>(arm));
-    kin.add(std::static_pointer_cast<DQ_Kinematics>(base));
+    DQ_WholeBody kin(std::static_pointer_cast<DQ_Kinematics>(base));
+    kin.add(std::static_pointer_cast<DQ_Kinematics>(arm));
 
     DQ effector = 1 + E_*0.5*0.3*k_;
     kin.set_effector(effector);
