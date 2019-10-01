@@ -30,14 +30,14 @@ Contributors:
 #include<string>
 
 #include<dqrobotics/DQ.h>
-#include<dqrobotics/interfaces/VrepInterfaceMapElement.h>
+#include<dqrobotics/interfaces/vrep/DQ_VrepInterfaceMapElement.h>
 
 const std::string VREP_OBJECTNAME_ABSOLUTE("VREP_OBJECTNAME_ABSOLUTE");
 
 using namespace DQ_robotics;
 using namespace Eigen;
 
-class VrepInterface
+class DQ_VrepInterface
 {
 public:
     enum OP_MODES
@@ -53,7 +53,7 @@ public:
      * @brief vrepInterface
      * Default constructor
      */
-    VrepInterface(std::atomic_bool *no_blocking_loops=nullptr);
+    DQ_VrepInterface(std::atomic_bool *no_blocking_loops=nullptr);
 
     /**
      * @brief connect
@@ -263,7 +263,7 @@ public:
     void     set_joint_target_positions(const std::vector<std::string>& jointnames, const VectorXd& angles_rad, const OP_MODES& opmode=OP_ONESHOT);
 
 private:
-    std::map<std::string,VrepInterfaceMapElement> name_to_element_map_;
+    std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
 
     int MAX_TRY_COUNT_;
     int TIMEOUT_IN_MILISECONDS_;
@@ -271,11 +271,11 @@ private:
     long int global_retry_count_;
     std::atomic_bool* no_blocking_loops_;
 
-    void __insert_or_update_map(const std::string& objectname, const VrepInterfaceMapElement& element);
+    void __insert_or_update_map(const std::string& objectname, const DQ_VrepInterfaceMapElement& element);
 
     int __get_handle_from_map(const std::string& objectname);
 
-    VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
+    DQ_VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
 };
 
 #endif

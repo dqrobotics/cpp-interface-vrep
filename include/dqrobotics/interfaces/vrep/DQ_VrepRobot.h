@@ -28,7 +28,7 @@ Contributors:
 #include<eigen3/Eigen/Dense>
 
 #include<dqrobotics/robot_modeling/DQ_Kinematics.h>
-#include<dqrobotics/interfaces/vrep_interface.h>
+#include<dqrobotics/interfaces/vrep/DQ_VrepInterface.h>
 namespace DQ_robotics
 {
 class DQ_VrepRobot
@@ -38,9 +38,9 @@ protected:
 
     std::string robot_name_;
     //Just an observing pointer, we do not take or share ownership (As implied by the raw pointer)
-    VrepInterface* vrep_interface_;
+    DQ_VrepInterface* vrep_interface_;
 
-    DQ_VrepRobot(const std::string& robot_name, VrepInterface* vrep_interface);
+    DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
 public:
     virtual ~DQ_VrepRobot(){};
     virtual void send_q_to_vrep(const VectorXd& q) = 0;

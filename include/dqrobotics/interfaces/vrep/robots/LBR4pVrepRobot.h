@@ -24,7 +24,7 @@ Contributors:
 #define DQ_ROBOTICS_LBR4P_VREP_ROBOT_HEADER_GUARD
 
 #include <vector>
-#include <dqrobotics/interfaces/DQ_VrepRobot.h>
+#include <dqrobotics/interfaces/vrep/DQ_VrepRobot.h>
 #include <dqrobotics/robot_modeling/DQ_SerialManipulator.h>
 
 namespace DQ_robotics
@@ -35,7 +35,7 @@ private:
     std::vector<std::string> joint_names_;
     std::string base_frame_name_;
 public:
-    LBR4pVrepRobot(const std::string& robot_name, VrepInterface* vrep_interface);
+    LBR4pVrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
 
     void send_q_to_vrep(const VectorXd &q) override;
     VectorXd get_q_from_vrep() override;

@@ -20,15 +20,15 @@ Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
 */
 
-#include<dqrobotics/interfaces/VrepInterfaceMapElement.h>
+#include<dqrobotics/interfaces/vrep/DQ_VrepInterfaceMapElement.h>
 namespace DQ_robotics
 {
-VrepInterfaceMapElement::VrepInterfaceMapElement(const int& handle)
+DQ_VrepInterfaceMapElement::DQ_VrepInterfaceMapElement(const int& handle)
 {
     handle_ = handle;
 }
 
-bool VrepInterfaceMapElement::state_from_function_signature(const std::string &function_signature)
+bool DQ_VrepInterfaceMapElement::state_from_function_signature(const std::string &function_signature)
 {
     if(set_states_map_.count(function_signature)==1)
         set_states_map_.at(function_signature) = true;
@@ -39,7 +39,7 @@ bool VrepInterfaceMapElement::state_from_function_signature(const std::string &f
     return set_states_map_.at(function_signature);
 }
 
-int VrepInterfaceMapElement::get_handle()
+int DQ_VrepInterfaceMapElement::get_handle()
 {
     return handle_;
 }

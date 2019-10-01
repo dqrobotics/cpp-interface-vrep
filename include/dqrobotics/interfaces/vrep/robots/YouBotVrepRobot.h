@@ -23,11 +23,10 @@ Contributors:
 #ifndef DQ_ROBOTICS_YOUBOT_VREP_ROBOT_HEADER_GUARD
 #define DQ_ROBOTICS_YOUBOT_VREP_ROBOT_HEADER_GUARD
 
+#include <string>
 #include <vector>
-#include <dqrobotics/interfaces/DQ_VrepRobot.h>
+#include <dqrobotics/interfaces/vrep/DQ_VrepRobot.h>
 #include <dqrobotics/robot_modeling/DQ_WholeBody.h>
-#include <dqrobotics/robot_modeling/DQ_SerialManipulator.h>
-#include <dqrobotics/robot_modeling/DQ_HolonomicBase.h>
 
 namespace DQ_robotics
 {
@@ -38,7 +37,7 @@ private:
     std::string base_frame_name_;
     DQ adjust_;
 public:
-    YouBotVrepRobot(const std::string& robot_name, VrepInterface* vrep_interface);
+    YouBotVrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
 
     void send_q_to_vrep(const VectorXd &q) override;
     VectorXd get_q_from_vrep() override;

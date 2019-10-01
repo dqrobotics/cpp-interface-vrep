@@ -25,13 +25,13 @@ Contributors:
 #include<map>
 namespace DQ_robotics
 {
-class VrepInterfaceMapElement
+class DQ_VrepInterfaceMapElement
 {
 private:
     std::map<std::string,double> set_states_map_;
     int handle_;
 public:
-    explicit VrepInterfaceMapElement(const int& handle);
+    explicit DQ_VrepInterfaceMapElement(const int& handle);
     bool state_from_function_signature(const std::string& function_signature);
     int get_handle();
 };

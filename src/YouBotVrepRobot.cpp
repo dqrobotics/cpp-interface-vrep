@@ -22,13 +22,15 @@ Contributors:
 
 #include<memory>
 
-#include<dqrobotics/interfaces/YouBotVrepRobot.h>
+#include<dqrobotics/robot_modeling/DQ_SerialManipulator.h>
+#include<dqrobotics/robot_modeling/DQ_HolonomicBase.h>
+#include<dqrobotics/interfaces/vrep/robots/YouBotVrepRobot.h>
 #include<dqrobotics/utils/DQ_Constants.h>
 
 namespace DQ_robotics
 {
 
-YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, VrepInterface* vrep_interface): DQ_VrepRobot(robot_name, vrep_interface)
+YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface): DQ_VrepRobot(robot_name, vrep_interface)
 {
     adjust_ = ((cos(pi/2) + i_*sin(pi/2)) * (cos(pi/4) + j_*sin(pi/4)))*(1+0.5*E_*-0.1*k_);
 

@@ -20,13 +20,13 @@ Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
 */
 
-#include<dqrobotics/interfaces/LBR4pVrepRobot.h>
+#include<dqrobotics/interfaces/vrep/robots/LBR4pVrepRobot.h>
 #include<dqrobotics/utils/DQ_Constants.h>
 
 namespace DQ_robotics
 {
 
-LBR4pVrepRobot::LBR4pVrepRobot(const std::string& robot_name, VrepInterface* vrep_interface): DQ_VrepRobot(robot_name, vrep_interface)
+LBR4pVrepRobot::LBR4pVrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface): DQ_VrepRobot(robot_name, vrep_interface)
 {
     std::vector<std::string> splited_name = strsplit(robot_name_,'#');
     std::string robot_label = splited_name[0];

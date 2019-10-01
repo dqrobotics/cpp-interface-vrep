@@ -20,7 +20,7 @@ Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
 */
 
-#include<dqrobotics/interfaces/DQ_VrepRobot.h>
+#include<dqrobotics/interfaces/vrep/DQ_VrepRobot.h>
 
 namespace DQ_robotics
 {
@@ -46,7 +46,7 @@ std::vector<std::string> DQ_VrepRobot::strsplit(const std::string& str, const ch
 }
 
 
-DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, VrepInterface* vrep_interface)
+DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface)
 {
     robot_name_ = robot_name;
     if(vrep_interface == nullptr)
