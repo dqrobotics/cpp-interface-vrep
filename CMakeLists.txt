@@ -2,7 +2,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 PROJECT(dqrobotics-interface-vrep)
 set (CMAKE_CXX_STANDARD 11)
 
-#ADD_DEFINITIONS(-g -O2 -Wall)
 FIND_PACKAGE(Eigen3 REQUIRED)
 
 add_definitions(-DNON_MATLAB_PARSING)
@@ -20,7 +19,8 @@ INCLUDE_DIRECTORIES(${PROJECT_NAME} cpp/include)
 ################################################################
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED 
-    src/vrep_interface.cpp
+    src/DQ_VrepInterface.cpp
+    src/DQ_VrepInterfaceMapElement.cpp
     src/DQ_VrepRobot.cpp
     src/LBR4pVrepRobot.cpp
     src/YouBotVrepRobot.cpp
@@ -30,16 +30,28 @@ ADD_LIBRARY(${PROJECT_NAME} SHARED
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} 
     PROPERTIES PUBLIC_HEADER
-    "include/dqrobotics/interfaces/vrep_interface.h;
-    include/dqrobotics/interfaces/DQ_VrepRobot.h;
-    include/dqrobotics/interfaces/LBR4pVrepRobot.h;
-    include/dqrobotics/interfaces/YouBotVrepRobot.h"
+    "include/dqrobotics/interfaces/vrep/DQ_VrepInterface.h"
     )
 
 INSTALL(TARGETS ${PROJECT_NAME} 
     LIBRARY DESTINATION "lib"
-    PUBLIC_HEADER DESTINATION "include/dqrobotics/interfaces"
+    PUBLIC_HEADER DESTINATION "include/dqrobotics/interfaces/vrep"
     PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+
+################################################################
+# INSTALL HEADERS IN SUBFOLDERS
+################################################################
+
+# Other Headers
+INSTALL(FILES
+    include/dqrobotics/interfaces/vrep/DQ_VrepRobot.h
+    DESTINATION "include/dqrobotics/interfaces/vrep")
+
+# Robots
+INSTALL(FILES
+    include/dqrobotics/interfaces/vrep/robots/LBR4pVrepRobot.h
+    include/dqrobotics/interfaces/vrep/robots/YouBotVrepRobot.h
+    DESTINATION "include/dqrobotics/interfaces/vrep/robots")
 
 ################################################################
 # INSTALL SOURCE FILES (So that the debugger can find them)
@@ -47,8 +59,13 @@ INSTALL(TARGETS ${PROJECT_NAME}
 
 # base folder
 INSTALL(FILES 
-    src/vrep_interface.cpp
+    src/DQ_VrepInterface.cpp
     src/DQ_VrepRobot.cpp
+    src/DQ_VrepInterfaceMapElement.cpp
+    DESTINATION "src/dqrobotics/interfaces/vrep")
+
+# robots folder
+INSTALL(FILES
     src/LBR4pVrepRobot.cpp
     src/YouBotVrepRobot.cpp
-    DESTINATION "src/dqrobotics/interfaces")
+    DESTINATION "src/dqrobotics/interfaces/vrep/robots")
