@@ -42,7 +42,7 @@ protected:
 
     DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
 public:
-    virtual ~DQ_VrepRobot(){};
+    virtual ~DQ_VrepRobot() = default;
     virtual void send_q_to_vrep(const VectorXd& q) = 0;
     virtual VectorXd get_q_from_vrep() = 0;
 };
