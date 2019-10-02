@@ -45,6 +45,7 @@ INSTALL(TARGETS ${PROJECT_NAME}
 # Other Headers
 INSTALL(FILES
     include/dqrobotics/interfaces/vrep/DQ_VrepRobot.h
+    include/dqrobotics/interfaces/vrep/DQ_VrepInterfaceMapElement.h
     DESTINATION "include/dqrobotics/interfaces/vrep")
 
 # Robots
