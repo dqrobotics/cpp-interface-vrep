@@ -8,7 +8,7 @@ ifeq ($(TRAVIS),)
 	echo "Not travis, hopefully launchpad. Clonning submodules manually..."
 	rm -rf cpp/{*,.*}
 	rm -rf cpp
-	git clone https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp cpp
+	git clone --single-branch --branch release https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp cpp
 	rm -rf coppeliarobotics/{*,.*}
 	rm -rf coppeliarobotics
 	mkdir -p coppeliarobotics
