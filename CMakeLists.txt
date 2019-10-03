@@ -19,11 +19,11 @@ INCLUDE_DIRECTORIES(${PROJECT_NAME} cpp/include)
 ################################################################
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED 
-    src/DQ_VrepInterface.cpp
-    src/DQ_VrepInterfaceMapElement.cpp
-    src/DQ_VrepRobot.cpp
-    src/LBR4pVrepRobot.cpp
-    src/YouBotVrepRobot.cpp
+    src/dqrobotics/interfaces/vrep/DQ_VrepInterface.cpp
+    src/dqrobotics/interfaces/vrep/DQ_VrepInterfaceMapElement.cpp
+    src/dqrobotics/interfaces/vrep/DQ_VrepRobot.cpp
+    src/dqrobotics/interfaces/vrep/robots/LBR4pVrepRobot.cpp
+    src/dqrobotics/interfaces/vrep/robots/YouBotVrepRobot.cpp
     coppeliarobotics/remoteApi/extApi.c
     coppeliarobotics/remoteApi/extApiPlatform.c
     )
@@ -60,13 +60,13 @@ INSTALL(FILES
 
 # base folder
 INSTALL(FILES 
-    src/DQ_VrepInterface.cpp
-    src/DQ_VrepRobot.cpp
-    src/DQ_VrepInterfaceMapElement.cpp
+    src/dqrobotics/interfaces/vrep/DQ_VrepInterface.cpp
+    src/dqrobotics/interfaces/vrep/DQ_VrepInterfaceMapElement.cpp
+    src/dqrobotics/interfaces/vrep/DQ_VrepRobot.cpp
     DESTINATION "src/dqrobotics/interfaces/vrep")
 
 # robots folder
 INSTALL(FILES
-    src/LBR4pVrepRobot.cpp
-    src/YouBotVrepRobot.cpp
+    src/dqrobotics/interfaces/vrep/robots/LBR4pVrepRobot.cpp
+    src/dqrobotics/interfaces/vrep/robots/YouBotVrepRobot.cpp
     DESTINATION "src/dqrobotics/interfaces/vrep/robots")
