@@ -23,6 +23,7 @@ Contributors:
 #ifndef DQ_ROBOTICS_INTERFACE_MAP_ELEMENT_GUARD
 #define DQ_ROBOTICS_INTERFACE_MAP_ELEMENT_GUARD
 #include<map>
+#include<string>
 namespace DQ_robotics
 {
 class DQ_VrepInterfaceMapElement
