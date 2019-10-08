@@ -122,7 +122,7 @@ simxInt __remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
     case DQ_VrepInterface::OP_ONESHOT:
         return simx_opmode_oneshot;
     case DQ_VrepInterface::OP_STREAMING:
-        return simx_opmode_streaming+5;
+        return simx_opmode_streaming;
     }
     throw std::range_error("Unknown opmode in __remap_op_mode");
 }
