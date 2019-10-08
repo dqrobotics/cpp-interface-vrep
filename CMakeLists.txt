@@ -22,8 +22,8 @@ ADD_LIBRARY(${PROJECT_NAME} SHARED
     src/DQ_VrepInterface.cpp
     src/DQ_VrepInterfaceMapElement.cpp
     src/DQ_VrepRobot.cpp
-    src/LBR4pVrepRobot.cpp
-    src/YouBotVrepRobot.cpp
+    src/robots/LBR4pVrepRobot.cpp
+    src/robots/YouBotVrepRobot.cpp
     coppeliarobotics/remoteApi/extApi.c
     coppeliarobotics/remoteApi/extApiPlatform.c
     )
@@ -67,6 +67,6 @@ INSTALL(FILES
 
 # robots folder
 INSTALL(FILES
-    src/LBR4pVrepRobot.cpp
-    src/YouBotVrepRobot.cpp
+    src/robots/LBR4pVrepRobot.cpp
+    src/robots/YouBotVrepRobot.cpp
     DESTINATION "src/dqrobotics/interfaces/vrep/robots")
