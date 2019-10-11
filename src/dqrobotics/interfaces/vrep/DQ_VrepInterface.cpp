@@ -466,12 +466,12 @@ VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<std::string> &j
 {
     std::vector<double>::size_type n = jointnames.size();
     VectorXd joint_positions(n);
-    simxPauseSimulation(clientid_,1);
+    //simxPauseSimulation(clientid_,1);
     for(std::vector<double>::size_type i=0;i<n;i++)
     {
         joint_positions(i)=get_joint_position(jointnames[i],opmode);
     }
-    simxPauseSimulation(clientid_,0);
+    //simxPauseSimulation(clientid_,0);
     return joint_positions;
 }
 
@@ -492,12 +492,12 @@ void DQ_VrepInterface::set_joint_positions(const std::vector<std::string> &joint
         throw std::runtime_error("Incompatible sizes in set_joint_positions");
     }
     std::vector<double>::size_type n = jointnames.size();
-    simxPauseSimulation(clientid_,1);
+    //simxPauseSimulation(clientid_,1);
     for(std::vector<double>::size_type i=0;i<n;i++)
     {
         set_joint_position(jointnames[i],angles_rad(i),opmode);
     }
-    simxPauseSimulation(clientid_,0);
+    //simxPauseSimulation(clientid_,0);
 }
 
 void DQ_VrepInterface::set_joint_target_positions(const std::vector<int> &handles, const VectorXd &angles_rad, const OP_MODES &opmode) const
@@ -516,12 +516,12 @@ void DQ_VrepInterface::set_joint_target_positions(const std::vector<std::string>
         throw std::runtime_error("Incompatible sizes in set_joint_positions");
     }
     std::vector<double>::size_type n = jointnames.size();
-    simxPauseSimulation(clientid_,1);
+    //simxPauseSimulation(clientid_,1);
     for(std::vector<double>::size_type i=0;i<n;i++)
     {
         set_joint_target_position(jointnames[i],angles_rad(i),opmode);
     }
-    simxPauseSimulation(clientid_,0);
+    //simxPauseSimulation(clientid_,0);
 }
 
 
