@@ -4,6 +4,8 @@ set (CMAKE_CXX_STANDARD 11)
 
 FIND_PACKAGE(Eigen3 REQUIRED)
 
+add_compile_options(-Werror=return-type)
+
 add_definitions(-DNON_MATLAB_PARSING)
 add_definitions(-DMAX_EXT_API_CONNECTIONS=255)
 add_definitions(-DDO_NOT_USE_SHARED_MEMORY)
