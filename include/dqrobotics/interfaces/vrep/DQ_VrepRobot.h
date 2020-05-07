@@ -25,8 +25,6 @@ Contributors:
 
 #include<string>
 
-#include<eigen3/Eigen/Dense>
-
 #include<dqrobotics/robot_modeling/DQ_Kinematics.h>
 #include<dqrobotics/interfaces/vrep/DQ_VrepInterface.h>
 namespace DQ_robotics
