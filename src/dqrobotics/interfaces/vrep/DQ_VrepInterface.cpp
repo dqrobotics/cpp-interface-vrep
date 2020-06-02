@@ -215,6 +215,23 @@ bool DQ_VrepInterface::is_simulation_running() const
     }
 }
 
+void DQ_VrepInterface::set_synchronous(const bool &flag)
+{
+    simxSynchronous(clientid_, flag);
+}
+
+void DQ_VrepInterface::trigger_next_simulation_step()
+{
+    simxSynchronousTrigger(clientid_);
+}
+
+int DQ_VrepInterface::wait_for_simulation_step_to_end()
+{
+    int ping_time;
+    simxGetPingTime(clientid_, &ping_time);
+    return ping_time;
+}
+
 int DQ_VrepInterface::get_object_handle(const std::string &objectname)
 {
     int hp;

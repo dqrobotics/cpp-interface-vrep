@@ -91,6 +91,10 @@ public:
 
     bool is_simulation_running() const;
 
+    void set_synchronous(const bool& flag);
+    void trigger_next_simulation_step();
+    int wait_for_simulation_step_to_end();
+
     /**
      * @brief getObjectHandle
      * Gets an object handle, using VREP_OP_BLOCKING
