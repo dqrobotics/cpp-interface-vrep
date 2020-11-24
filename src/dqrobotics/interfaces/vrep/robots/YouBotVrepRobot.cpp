@@ -66,7 +66,7 @@ DQ_robotics::DQ_WholeBody YouBotVrepRobot::kinematics()
             pi2,      0,       0,      pi2,    0;
 
 
-    auto arm = std::make_shared<DQ_SerialManipulator>(DQ_SerialManipulator(dh,"standard"));
+    auto arm = std::make_shared<DQ_SerialManipulatorDH>(DQ_SerialManipulatorDH(dh));
     auto base = std::make_shared<DQ_HolonomicBase>(DQ_HolonomicBase());
 
     DQ x_bm = 1 + E_*0.5*(0.165*i_ + 0.11*k_);

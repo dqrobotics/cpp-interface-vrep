@@ -25,7 +25,7 @@ Contributors:
 
 #include <vector>
 #include <dqrobotics/interfaces/vrep/DQ_VrepRobot.h>
-#include <dqrobotics/robot_modeling/DQ_SerialManipulator.h>
+#include <dqrobotics/robot_modeling/DQ_SerialManipulatorDH.h>
 
 namespace DQ_robotics
 {
@@ -40,7 +40,7 @@ public:
     void send_q_to_vrep(const VectorXd &q) override;
     VectorXd get_q_from_vrep() override;
 
-    DQ_SerialManipulator kinematics();
+    DQ_SerialManipulatorDH kinematics();
 };
 }
 
