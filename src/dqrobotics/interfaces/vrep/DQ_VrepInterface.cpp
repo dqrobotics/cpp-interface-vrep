@@ -23,7 +23,7 @@ Contributors:
 #include <dqrobotics/interfaces/vrep/DQ_VrepInterface.h>
 
 #include"extApi.h"
-#include"v_repConst.h"
+#include"simConst.h"
 
 #include<thread>
 #include<chrono>
