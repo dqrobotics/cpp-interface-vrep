@@ -139,6 +139,11 @@ DQ_VrepInterface::DQ_VrepInterface(std::atomic_bool* no_blocking_loops)
     __insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,DQ_VrepInterfaceMapElement(-1));
 }
 
+DQ_VrepInterface::~DQ_VrepInterface()
+{
+    disconnect();
+}
+
 bool DQ_VrepInterface::connect(const int &port, const int& TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
 {
     TIMEOUT_IN_MILISECONDS_ = TIMEOUT_IN_MILISECONDS;
@@ -539,6 +544,25 @@ void DQ_VrepInterface::set_joint_target_positions(const std::vector<std::string>
         set_joint_target_position(jointnames[i],angles_rad(i),opmode);
     }
     //simxPauseSimulation(clientid_,0);
+}
+
+void DQ_VrepInterface::start_video_recording()
+{
+    const unsigned char video_recording_state = 1;
+    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,__remap_op_mode(OP_ONESHOT));
+}
+
+void DQ_VrepInterface::stop_video_recording()
+{
+    const unsigned char video_recording_state = 0;
+    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,__remap_op_mode(OP_ONESHOT));
+}
+
+bool DQ_VrepInterface::is_video_recording()
+{
+    unsigned char video_recording_state;
+    simxGetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,&video_recording_state,__remap_op_mode(OP_BLOCKING));
+    return static_cast<bool>(video_recording_state);
 }
 
 

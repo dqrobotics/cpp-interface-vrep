@@ -50,10 +50,16 @@ public:
     };
 
     /**
-     * @brief vrepInterface
+     * @brief DQ_VrepInterface
      * Default constructor
      */
     DQ_VrepInterface(std::atomic_bool *no_blocking_loops=nullptr);
+
+    /**
+     * @brief ~DQ_VrepInterface
+     * Default desconstructor. Calls disconnect.
+     */
+    ~DQ_VrepInterface();
 
     /**
      * @brief connect
@@ -265,6 +271,10 @@ public:
      */
     void     set_joint_target_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const OP_MODES& opmode) const;
     void     set_joint_target_positions(const std::vector<std::string>& jointnames, const VectorXd& angles_rad, const OP_MODES& opmode=OP_ONESHOT);
+
+    void start_video_recording();
+    void stop_video_recording();
+    void is_video_recording();
 
 private:
     std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
