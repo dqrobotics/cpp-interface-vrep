@@ -274,7 +274,7 @@ public:
 
     void start_video_recording();
     void stop_video_recording();
-    void is_video_recording();
+    bool is_video_recording();
 
 private:
     std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
