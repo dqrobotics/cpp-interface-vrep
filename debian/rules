@@ -12,8 +12,8 @@ ifeq ($(TRAVIS),)
 	rm -rf coppeliarobotics/{*,.*}
 	rm -rf coppeliarobotics
 	mkdir -p coppeliarobotics
-	git clone --single-branch --branch vrep-v3.6.2 https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include coppeliarobotics/include
-	git clone --single-branch --branch vrep-v3.6.2 https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi coppeliarobotics/remoteApi
+	git clone --single-branch --branch coppeliasim-v4.2.0-rev5 https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include coppeliarobotics/include
+	git clone --single-branch --branch coppeliasim-v4.2.0-rev5 https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi coppeliarobotics/remoteApi
 else
 	echo "Travis detected, skipping manual submodule load"
 endif
