@@ -49,7 +49,7 @@ LBR4pVrepRobot::LBR4pVrepRobot(const std::string& robot_name, DQ_VrepInterface* 
 
 }
 
-DQ_robotics::DQ_SerialManipulator LBR4pVrepRobot::kinematics()
+DQ_SerialManipulatorDH LBR4pVrepRobot::kinematics()
 {
     const double pi2 = pi/2.0;
 
@@ -57,8 +57,9 @@ DQ_robotics::DQ_SerialManipulator LBR4pVrepRobot::kinematics()
     dh <<  0,     0,     0,   0,   0,    0,   0,
                  0.200, 0,     0.4, 0,   0.39, 0,   0,
                  0,     0,     0,   0,   0,    0,   0,
-                 pi2,   -pi2,  pi2,-pi2, pi2, -pi2, 0;
-    DQ_SerialManipulator kin(dh,"standard");
+                 pi2,   -pi2,  pi2,-pi2, pi2, -pi2, 0,
+            0, 0, 0, 0, 0, 0, 0;
+    DQ_SerialManipulatorDH kin(dh);
 
     kin.set_reference_frame(vrep_interface_->get_object_pose(base_frame_name_));
     kin.set_base_frame(vrep_interface_->get_object_pose(base_frame_name_));
