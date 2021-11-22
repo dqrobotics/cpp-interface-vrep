@@ -2,6 +2,13 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 PROJECT(dqrobotics-interface-vrep)
 set (CMAKE_CXX_STANDARD 11)
 
+if(APPLE)
+        include_directories(
+        /usr/local/include/
+        /usr/local/include/eigen3
+        )
+endif()
+
 FIND_PACKAGE(Eigen3 REQUIRED)
 
 add_definitions(-DNON_MATLAB_PARSING)

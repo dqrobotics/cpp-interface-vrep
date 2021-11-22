@@ -22,7 +22,7 @@ Contributors:
 
 #include<memory>
 
-#include<dqrobotics/robot_modeling/DQ_SerialManipulator.h>
+#include<dqrobotics/robot_modeling/DQ_SerialManipulatorDH.h>
 #include<dqrobotics/robot_modeling/DQ_HolonomicBase.h>
 #include<dqrobotics/interfaces/vrep/robots/YouBotVrepRobot.h>
 #include<dqrobotics/utils/DQ_Constants.h>
