@@ -590,3 +590,89 @@ bool DQ_VrepInterface::is_video_recording()
 }
 
 
+/**
+ * @brief This method calls remotely a CoppeliaSim script function.
+ * @param obj_name The name of the object where the script is attached to.
+ * @param scripttype The type of the script.
+ * @param function_name The name of the script function to call in the specified script.
+ * @param input_ints The input integer values.
+ * @param input_floats The input float values.
+ * @param input_strings The input string values.
+ * @param opmode The operation mode.
+ * @returns a call_script_data structure.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //  function test_inputs(inInts,inFloats,inStrings,inBuffer)
+ *              //    print('----------------')
+ *              //    print('test_inputs')
+ *              //    print(inInts)
+ *              //    print(inFloats)
+ *              //    print(inStrings)
+ *              //    print('----------------')
+ *              //    return inInts,inFloats,inStrings,''
+ *              //  end
+ *
+ *              DQ_VrepInterface vi;
+ *              const std::vector<int> input_ints = {1,2,3};
+ *              const std::vector<float> input_floats = {3.14, 8.56, 10.22};
+ *              const std::vector<std::string> input_strings = {"DQ_Robotics"};
+ *              call_script_data data = vi.call_script_function("DQRoboticsApiCommandServer", DQ_VrepInterface::ST_CHILD, "test_inputs",
+ *                                                           input_ints, input_floats, input_strings, DQ_VrepInterface::OP_BLOCKING);
+ *
+ *              int return_code = data.return_code;
+ *              VectorXi output_ints = data.output_ints;
+ *              VectorXd output_floats = data.output_floats;
+ *              std::vector<std::string> output_strings = data.output_strings;
+ *
+ */
+call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
+                                                        const std::vector<int>& input_ints, const std::vector<float>& input_floats,
+                                                        const std::vector<std::string> &input_strings, const OP_MODES& opmode)
+{
+    struct call_script_data data;
+    data = _call_script_function(obj_name, scripttype, function_name, input_ints, input_floats, input_strings, opmode);
+    return data;
+}
+
+
+/**
+ * @brief This method calls remotely a CoppeliaSim script function.
+ * @param obj_name The name of the object where the script is attached to.
+ * @param function_name The name of the script function to call in the specified script.
+ * @param input_ints The input integer values.
+ * @param input_floats The input float values.
+ * @param input_strings The input string values.
+ * @returns a call_script_data structure.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //  function test_inputs(inInts,inFloats,inStrings,inBuffer)
+ *              //    print('----------------')
+ *              //    print('test_inputs')
+ *              //    print(inInts)
+ *              //    print(inFloats)
+ *              //    print(inStrings)
+ *              //    print('----------------')
+ *              //    return inInts,inFloats,inStrings,''
+ *              //  end
+ *
+ *              DQ_VrepInterface vi;
+ *              const std::vector<int> input_ints = {1,2,3};
+ *              const std::vector<float> input_floats = {3.14, 8.56, 10.22};
+ *              const std::vector<std::string> input_strings = {"DQ_Robotics"};
+ *              call_script_data data = vi.call_script_function("DQRoboticsApiCommandServer", "test_inputs",
+ *                                                          input_ints, input_floats, input_strings);
+ *
+ */
+call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_name, const std::string&  function_name, const std::vector<int>& input_ints,
+                                      const std::vector<float>& input_floats, const std::vector<std::string> &input_strings)
+{
+    struct call_script_data data;
+    data = _call_script_function(obj_name, ST_CHILD, function_name, input_ints, input_floats, input_strings, OP_BLOCKING);
+    return data;
+}
