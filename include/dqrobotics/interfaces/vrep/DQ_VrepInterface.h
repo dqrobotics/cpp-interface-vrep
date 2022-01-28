@@ -1,5 +1,5 @@
 ﻿/**
-(C) Copyright 2019 DQ Robotics Developers
+(C) Copyright 2022 DQ Robotics Developers
 
 This file is part of DQ Robotics.
 
@@ -18,6 +18,7 @@ This file is part of DQ Robotics.
 
 Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
+- Juan Jose Quiroz Omana   (juanjqo@g.ecc.u-tokyo.ac.jp)
 */
 
 #ifndef DQ_ROBOTICS_INTERFACE_VREP_HEADER_GUARD
