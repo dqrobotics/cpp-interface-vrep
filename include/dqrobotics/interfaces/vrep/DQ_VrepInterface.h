@@ -37,6 +37,26 @@ const std::string VREP_OBJECTNAME_ABSOLUTE("VREP_OBJECTNAME_ABSOLUTE");
 using namespace DQ_robotics;
 using namespace Eigen;
 
+/**
+ * @brief This custom structure containts the data of the DQ_VrepInterface::call_script_function method.
+ * @param return_code The remote API function flag returned. Example: simx_return_ok.
+ * @param output_ints The returned integer values.
+ * @param output_floats The returned float values.
+ * @param output_strings The returned string values.
+ *
+ *              Example: call_script_data data = call_script_function(obj_name, function_name, {my_handle}, {}, {});
+ *
+ */
+struct call_script_data
+{
+    int return_code;
+    VectorXi output_ints;
+    VectorXd output_floats;
+    std::vector<std::string> output_strings;
+    //unsigned char retBuffer;
+
+};
+
 class DQ_VrepInterface
 {
 public:
