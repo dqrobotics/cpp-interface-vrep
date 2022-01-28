@@ -68,6 +68,12 @@ public:
         OP_BUFFER,
         OP_AUTOMATIC
     };
+    enum SCRIPT_TYPES
+    {
+        ST_CHILD,
+        ST_MAIN,
+        ST_CUSTOMIZATION
+    };
 
     /**
      * @brief DQ_VrepInterface
