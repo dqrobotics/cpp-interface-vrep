@@ -397,6 +397,28 @@ private:
     int __get_handle_from_map(const std::string& objectname);
 
     DQ_VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
+
+    /**
+     * @brief This protected method extracts a string vector from a const char* element.
+     * @param string The output_string pointer that is required by simxCallScriptFunction.
+     * @param size The number of output strings returned by simxCallScriptFunction.
+     * @returns a string vector.
+     */
+    std::vector<std::string> __extract_vector_string_from_char_pointer(const char* string, const int& size);
+
+    /**
+     * @brief This protected method calls remotely a CoppeliaSim script function.
+     * @param obj_name The name of the object where the script is attached to.
+     * @param scripttype The type of the script.
+     * @param function_name The name of the script function to call in the specified script.
+     * @param input_ints The input integer values.
+     * @param input_floats The input float values.
+     * @param input_strings The input string values.
+     * @param opmode The operation mode.
+     * @returns a call_script_data structure.
+     */
+    call_script_data _call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
+                                  const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings, const OP_MODES& opmode);
 };
 
 #endif
