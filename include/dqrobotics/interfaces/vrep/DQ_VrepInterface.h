@@ -302,6 +302,33 @@ public:
     void stop_video_recording();
     bool is_video_recording();
 
+
+    /**
+     * @brief This method calls remotely a CoppeliaSim script function.
+     * @param obj_name The name of the object where the script is attached to.
+     * @param scripttype The type of the script.
+     * @param function_name The name of the script function to call in the specified script.
+     * @param input_ints The input integer values.
+     * @param input_floats The input float values.
+     * @param input_strings The input string values.
+     * @param opmode The operation mode.
+     * @returns a call_script_data structure.
+     */
+    call_script_data call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
+                                          const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings, const OP_MODES& opmode);
+
+    /**
+     * @brief This method calls remotely a CoppeliaSim script function.
+     * @param obj_name The name of the object where the script is attached to.
+     * @param function_name The name of the script function to call in the specified script.
+     * @param input_ints The input integer values.
+     * @param input_floats The input float values.
+     * @param input_strings The input string values.
+     * @returns a call_script_data structure.
+     */
+    call_script_data call_script_function(const std::string&  obj_name, const std::string&  function_name, const std::vector<int>& input_ints,
+                                          const std::vector<float>& input_floats, const std::vector<std::string> &input_strings); //overload call_script_function
+
 private:
     std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
 
