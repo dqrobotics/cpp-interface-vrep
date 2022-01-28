@@ -937,3 +937,130 @@ double DQ_VrepInterface::extract_mass(const std::string& obj_name, const std::st
     return data.output_floats[0];
 }
 
+
+/**
+ * @brief This protected method calls remotely a CoppeliaSim script function.
+ * @param obj_name The name of the object where the script is attached to.
+ * @param scripttype The type of the script.
+ * @param function_name The name of the script function to call in the specified script.
+ * @param input_ints The input integer values.
+ * @param input_floats The input float values.
+ * @param input_strings The input string values.
+ * @param opmode The operation mode.
+ * @returns a call_script_data structure.
+ *
+ */
+call_script_data DQ_VrepInterface::_call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
+                                                          const std::vector<int>& input_ints, const std::vector<float>& input_floats,
+                                                          const std::vector<std::string> &input_strings, const OP_MODES& opmode)
+{
+    struct call_script_data data;
+    int return_code = 1;
+    VectorXi  vec_output_ints = VectorXi::Zero(1);
+    VectorXd  vec_output_floats = VectorXd::Zero(1);
+    std::vector<std::string> vec_output_strings;
+
+
+    int outFloatCnt;
+    float* output_floats;
+
+    int outIntCnt;
+    int* output_ints;
+
+    int outStringCnt;
+    char* output_strings;
+
+    int* input_ints_ptr = nullptr;
+    const int intsize = input_ints.size();
+    int input_ints_[intsize];
+
+    if(intsize > 0)
+    {
+        // If there are integer inputs, we need to convert them from const std::vector<int> to int array.
+        // the input integer values that are handed over to the script function.
+        // Can be nullptr if inIntCnt is zero.
+        for (int i=0; i<intsize;i++)
+        {
+            input_ints_[i] =input_ints[i];
+        }
+
+        input_ints_ptr = input_ints_;
+    }
+
+    float* input_floats_ptr= nullptr;
+    const int floatsize = input_floats.size();
+    float input_floats_[floatsize];
+    if(floatsize > 0)
+    {
+        // If there are float inputs, we need to convert them from const std::vector<float> to float array.
+        // the input floating-point values that are handed over to the script function.
+        // Can be nullptr if inFloatCnt is zero.
+        for (int i=0; i<floatsize;i++)
+        {
+            input_floats_[i] =input_floats[i];
+        }
+        input_floats_ptr = input_floats_;
+    }
+
+    const int stringsize = input_strings.size();
+    const char* input_strings_ptr = nullptr;
+    //char input_strings_[stringsize];
+    if (stringsize >0)
+    {
+        // If there are string inputs, we need to convert them from const std::vector<std::string> to std::string.
+        // the input strings that are handed over to the script function.
+        // Each string should be terminated with one zero char, e.g. "Hello\0World\0".
+        // Can be nullptr if inStringCnt is zero.
+        std::string one_string;
+        for(int i = 0; i < stringsize; ++i)
+            {
+            one_string += input_strings[i]+'\0';
+            }
+        input_strings_ptr = one_string.c_str();
+    }
+
+    return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
+                                         intsize, input_ints_ptr, floatsize, input_floats_ptr, stringsize, input_strings_ptr,
+                                         0, nullptr, &outIntCnt, &output_ints, &outFloatCnt, &output_floats,  &outStringCnt,
+                                         &output_strings, nullptr, nullptr, __remap_op_mode(opmode));
+
+    data.return_code = return_code;
+     if (return_code == simx_return_ok)
+     {
+
+         int sizefloat = outFloatCnt;
+         int sizeint = outIntCnt;
+         int sizestr = outStringCnt;
+
+         if (sizeint >0)
+         {
+             vec_output_ints = VectorXi::Zero(sizeint);
+             for (int j=0;j<sizeint;j++){
+                 vec_output_ints[j] = *(output_ints+j);
+                }
+             data.output_ints = vec_output_ints;
+         }
+
+         if (sizefloat >0)
+         {
+             vec_output_floats = VectorXd::Zero(sizefloat);
+             for (int j=0;j<sizefloat;j++){
+                 vec_output_floats[j] = *(output_floats+j);
+                }
+             data.output_floats = vec_output_floats;
+         }
+
+         if (sizestr >0)
+         {
+             vec_output_strings = __extract_vector_string_from_char_pointer(output_strings, sizestr);
+             data.output_strings = vec_output_strings;
+         }
+     }else
+     {
+         std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;
+     }
+
+    return data;
+
+}
+
