@@ -1064,3 +1064,57 @@ call_script_data DQ_VrepInterface::_call_script_function(const std::string&  obj
 
 }
 
+/**
+ * @brief This protected method extracts a string vector from a const char* element.
+ * @param string The output_string pointer that is required by simxCallScriptFunction.
+ * @param size The number of output strings returned by simxCallScriptFunction.
+ * @returns a string vector.
+ *
+ *          Example:
+ *          // When _call_script_function is called, the method runs the following:
+ *          // char* output_strings;
+ *          // simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
+ *          //                              intsize, input_ints_ptr, floatsize, input_floats_ptr, stringsize, input_strings_ptr,
+ *          //                              0, nullptr, &outIntCnt, &output_ints, &outFloatCnt, &output_floats,  &outStringCnt,
+ *          //                              &output_strings, nullptr, nullptr, __remap_op_mode(opmode));
+ *          // Then, we have that
+ *
+ *          std::vector<std::string>  vec_output_strings = __extract_vector_string_from_char_pointer(output_strings, sizestr);
+ */
+std::vector<std::string> DQ_VrepInterface::__extract_vector_string_from_char_pointer(const char *string, const int& size)
+{
+    std::vector<std::string> output_string;
+    if (size<0){
+        throw std::range_error("Incorrect size. The size must be higher than zero");
+    };
+    char c;
+    char c_0;
+    c = string[0];
+    c_0 = c;
+    int j=0;
+    std::string str;
+    //int count=0;
+    int words = 0;
+    while (words != size)
+     {
+        c = string[j];
+        if (c =='\0')
+        {
+            //count++;
+            if (c_0 != '\0')
+            {
+               if (words<size)
+                {
+                 words++;
+                 output_string.push_back(str);
+                 str = {};
+                }
+            }
+        }
+        c_0 = c;
+        j++;
+        str.push_back(c);
+     }
+
+    return output_string;
+}
