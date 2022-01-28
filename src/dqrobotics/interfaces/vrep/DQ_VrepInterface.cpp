@@ -898,3 +898,42 @@ VectorXd DQ_VrepInterface::extract_center_of_mass(const std::string&  obj_name, 
     return center_of_mass;
 }
 
+
+/**
+ * @brief This method returns the mass of an object on the CoppeliaSim scene.
+ * @param obj_name The name of the object where the script is attached to.
+ * @param function_name The name of the script function to call in the specified script.
+ * @param link name. The name of the object from which we want to extract the mass.
+ * @returns The mass of the object.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //  function get_mass(inInts,inFloats,inStrings,inBuffer)
+ *              //     local mass = {}
+ *              //     if #inInts>=1 then
+ *              //         mass =sim.getShapeMass(inInts[1])
+ *              //         return {},{mass},{},''
+ *              //     end
+ *              //  end
+ *              // In addition, it is assumed that there is a FrankaEmikaPanda robot manipulator
+ *              // in the Coppelia scene.
+ *
+ *              DQ_VrepInterface vi;
+ *              double mass = vi.extract_mass("DQRoboticsApiCommandServer","get_mass","Franka_link2_resp");
+ *
+ */
+double DQ_VrepInterface::extract_mass(const std::string& obj_name, const std::string& function_name, const std::string&link_name)
+
+{
+    struct call_script_data data;
+    int my_handle = get_object_handle(link_name);
+    data = call_script_function(obj_name, function_name, {my_handle}, {}, {});
+    int size = data.output_floats.size();
+    if (size != 1){
+        throw std::range_error("Error in extract_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
+    }
+    return data.output_floats[0];
+}
+
