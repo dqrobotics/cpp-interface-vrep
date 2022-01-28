@@ -317,6 +317,7 @@ public:
     call_script_data call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
                                           const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings, const OP_MODES& opmode);
 
+
     /**
      * @brief This method calls remotely a CoppeliaSim script function.
      * @param obj_name The name of the object where the script is attached to.
@@ -328,6 +329,59 @@ public:
      */
     call_script_data call_script_function(const std::string&  obj_name, const std::string&  function_name, const std::vector<int>& input_ints,
                                           const std::vector<float>& input_floats, const std::vector<std::string> &input_strings); //overload call_script_function
+
+
+    /**
+     * @brief This method returns the inertia matrix of an object on the CoppeliaSim scene.
+     * @param obj_name The name of the object where the script is attached to.
+     * @param function_name The name of the script function to call in the specified script.
+     * @param link name The name of the object from which we want to extract the inertia matrix.
+     * @param reference_frame The referece frame where the inertia matrix is expressed. Example: "absolute_frame"
+     *        to express the inertia matrix with respect to the absolute frame.
+     * @returns The inertia matrix.
+     */
+    MatrixXd extract_inertia_matrix(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame);
+
+
+    /**
+     * @brief This method returns the inertia matrix (expressed in the shape frame) of an object on the CoppeliaSim scene.
+     * @param obj_name The name of the object where the script is attached to.
+     * @param function_name The name of the script function to call in the specified script.
+     * @param link name The name of the object from which we want to extract the inertia matrix.
+     * @returns The inertia matrix.
+     */
+    MatrixXd extract_inertia_matrix(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name); //overload extract_inertia_matrix
+
+
+    /**
+     * @brief This method returns the center of mass of an object on the CoppeliaSim scene.
+     * @param obj_name The name of the object where the script is attached to.
+     * @param function_name The name of the script function to call in the specified script.
+     * @param link name The name of the object from which we want to extract the center of mass.
+     * @param reference_frame The referece frame where the inertia matrix is expressed. Example: "absolute_frame"
+     *        to express the center of mass with respect to the absolute frame.
+     * @returns The inertia matrix.
+     */
+    VectorXd extract_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame);
+
+
+    /**
+     * @brief This method returns the center of mass (expressed in the shape frame) of an object on the CoppeliaSim scene.
+     * @param obj_name The name of the object where the script is attached to.
+     * @param function_name The name of the script function to call in the specified script.
+     * @param link name The name of the object from which we want to extract the center of mass.
+     * @returns The inertia matrix.
+     */
+    VectorXd extract_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name); //overload extract_center_of_mass
+
+    /**
+     * @brief This method returns the mass of an object on the CoppeliaSim scene.
+     * @param obj_name The name of the object where the script is attached to.
+     * @param function_name The name of the script function to call in the specified script.
+     * @param link name. The name of the object from which we want to extract the mass.
+     * @returns The mass of the object.
+     */
+    double extract_mass(const std::string& obj_name, const std::string& function_name, const std::string& link_name);
 
 private:
     std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
