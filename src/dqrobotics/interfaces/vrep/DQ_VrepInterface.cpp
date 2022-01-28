@@ -128,6 +128,29 @@ simxInt __remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
     throw std::range_error("Unknown opmode in __remap_op_mode");
 }
 
+/**
+ * @brief This protected method remaps the constant properties DQ_VrepInterface::SCRIPT_TYPES to their equivalent
+ *        simxInt script type.
+ * @param script_type The constant script type of DQ_VrepInterface::SCRIPT_TYPES.
+ * @returns The simxInt script type.
+ *
+ *              Example: st = __remap_script_type(ST_CHILD);
+ *
+ */
+simxInt __remap_script_type(const DQ_VrepInterface::SCRIPT_TYPES& script_type)
+{
+    switch (script_type)
+    {
+    case DQ_VrepInterface::ST_CHILD:
+        return sim_scripttype_childscript;
+    case DQ_VrepInterface::ST_MAIN:
+        return sim_scripttype_mainscript;
+    case DQ_VrepInterface::ST_CUSTOMIZATION:
+        return sim_scripttype_customizationscript;
+    }
+    throw std::range_error("Unknown script_type in __remap_script_type");
+}
+
 ///****************************************************************************************
 ///                        PUBLIC FUNCTIONS
 /// ***************************************************************************************
