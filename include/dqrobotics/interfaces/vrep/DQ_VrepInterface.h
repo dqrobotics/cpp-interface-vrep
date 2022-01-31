@@ -367,15 +367,6 @@ public:
 
 
     /**
-     * @brief This method returns the center of mass (expressed in the shape frame) of an object on the CoppeliaSim scene.
-     * @param obj_name The name of the object where the script is attached to.
-     * @param function_name The name of the script function to call in the specified script.
-     * @param link name The name of the object from which we want to extract the center of mass.
-     * @returns The inertia matrix.
-     */
-    VectorXd get_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name); //overload extract_center_of_mass
-
-    /**
      * @brief This method returns the mass of an object on the CoppeliaSim scene.
      * @param link name. The name of the object from which we want to extract the mass.
      * @param obj_name The name of the object where the script is attached to.
