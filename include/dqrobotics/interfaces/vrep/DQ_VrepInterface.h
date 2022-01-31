@@ -345,16 +345,6 @@ public:
 
 
     /**
-     * @brief This method returns the inertia matrix (expressed in the shape frame) of an object on the CoppeliaSim scene.
-     * @param obj_name The name of the object where the script is attached to.
-     * @param function_name The name of the script function to call in the specified script.
-     * @param link name The name of the object from which we want to extract the inertia matrix.
-     * @returns The inertia matrix.
-     */
-    MatrixXd get_inertia_matrix(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name); //overload extract_inertia_matrix
-
-
-    /**
      * @brief This method returns the center of mass of an object on the CoppeliaSim scene.
      * @param obj_name The name of the object where the script is attached to.
      * @param function_name The name of the script function to call in the specified script.
