@@ -346,21 +346,20 @@ public:
 
     /**
      * @brief This method returns the center of mass of an object on the CoppeliaSim scene.
-     * @param obj_name The name of the object where the script is attached to.
-     * @param function_name The name of the script function to call in the specified script.
      * @param link name The name of the object from which we want to extract the center of mass.
-     * @param reference_frame The referece frame where the inertia matrix is expressed. Example: "absolute_frame"
-     *        to express the center of mass with respect to the absolute frame.
+     * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the inertia matrix is expressed. (Default: "shape_frame")
+     * @param function_name The name of the script function to call in the specified script. (Default: "get_center_of_mass")
+     * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
      * @returns The inertia matrix.
      */
-    VectorXd get_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame);
+    VectorXd get_center_of_mass(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
 
     /**
      * @brief This method returns the mass of an object on the CoppeliaSim scene.
      * @param link name. The name of the object from which we want to extract the mass.
-     * @param obj_name The name of the object where the script is attached to.
-     * @param function_name The name of the script function to call in the specified script.     
+     * @param function_name The name of the script function to call in the specified script. (Default: "get_mass")
+     * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
      * @returns The mass of the object.
      */
     double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
