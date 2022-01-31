@@ -721,10 +721,10 @@ call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              MatrixXd inertia_matrix = vi.extract_inertia_matrix("DQRoboticsApiCommandServer","get_inertia", "Franka_link3_resp", "absolute_frame");
+ *              MatrixXd inertia_matrix = vi.get_inertia_matrix("DQRoboticsApiCommandServer","get_inertia", "Franka_link3_resp", "absolute_frame");
  *
  */
-MatrixXd DQ_VrepInterface::extract_inertia_matrix(const std::string&  obj_name, const std::string&  function_name,const std::string& link_name, const std::string& reference_frame)
+MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string&  obj_name, const std::string&  function_name,const std::string& link_name, const std::string& reference_frame)
 
 {
     struct call_script_data data;
@@ -732,7 +732,7 @@ MatrixXd DQ_VrepInterface::extract_inertia_matrix(const std::string&  obj_name, 
     data = call_script_function(obj_name, function_name, {my_handle}, {}, {reference_frame});
     int size = data.output_floats.size();
     if (size != 9){
-        throw std::range_error("Error in extract_inertia_matrix. Incorrect number of returned values from CoppeliaSim. (Expected: 9)");
+        throw std::range_error("Error in get_inertia_matrix. Incorrect number of returned values from CoppeliaSim. (Expected: 9)");
     }
     MatrixXd inertia_matrix = MatrixXd::Zero(3,3);
     inertia_matrix << data.output_floats[0],data.output_floats[1],data.output_floats[2],
@@ -785,10 +785,10 @@ MatrixXd DQ_VrepInterface::extract_inertia_matrix(const std::string&  obj_name, 
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              MatrixXd inertia_matrix = vi.extract_inertia_matrix("DQRoboticsApiCommandServer","get_inertia", "Franka_link3_resp");
+ *              MatrixXd inertia_matrix = vi.get_inertia_matrix("DQRoboticsApiCommandServer","get_inertia", "Franka_link3_resp");
  *
  */
-MatrixXd DQ_VrepInterface::extract_inertia_matrix(const std::string&  obj_name, const std::string&  function_name,const std::string& link_name)
+MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string&  obj_name, const std::string&  function_name,const std::string& link_name)
 
 {
     struct call_script_data data;
@@ -796,7 +796,7 @@ MatrixXd DQ_VrepInterface::extract_inertia_matrix(const std::string&  obj_name, 
     data = call_script_function(obj_name, function_name, {my_handle}, {}, {});
     int size = data.output_floats.size();
     if (size != 9){
-        throw std::range_error("Error in extract_inertia_matrix. Incorrect number of returned values from CoppeliaSim. (Expected: 9)");
+        throw std::range_error("Error in get_inertia_matrix. Incorrect number of returned values from CoppeliaSim. (Expected: 9)");
     }
     MatrixXd inertia_matrix = MatrixXd::Zero(3,3);
     inertia_matrix << data.output_floats[0],data.output_floats[1],data.output_floats[2],
@@ -836,17 +836,17 @@ MatrixXd DQ_VrepInterface::extract_inertia_matrix(const std::string&  obj_name, 
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              VectorXd center_of_mass = vi.extract_center_of_mass("DQRoboticsApiCommandServer","get_center_of_mass","Franka_link2_resp", "absolute_frame");
+ *              VectorXd center_of_mass = vi.get_center_of_mass("DQRoboticsApiCommandServer","get_center_of_mass","Franka_link2_resp", "absolute_frame");
  *
  */
-VectorXd DQ_VrepInterface::extract_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame)
+VectorXd DQ_VrepInterface::get_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame)
 {
     struct call_script_data data;
     int my_handle = get_object_handle(link_name);
     data = call_script_function(obj_name, function_name, {my_handle}, {}, {reference_frame});
     int size = data.output_floats.size();
     if (size != 3){
-        throw std::range_error("Error in extract_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
+        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
     }
     VectorXd center_of_mass = VectorXd::Zero(3);
     center_of_mass << data.output_floats[0],data.output_floats[1],data.output_floats[2];
@@ -881,17 +881,17 @@ VectorXd DQ_VrepInterface::extract_center_of_mass(const std::string&  obj_name, 
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              VectorXd center_of_mass = vi.extract_center_of_mass("DQRoboticsApiCommandServer","get_center_of_mass","Franka_link2_resp");
+ *              VectorXd center_of_mass = vi.get_center_of_mass("DQRoboticsApiCommandServer","get_center_of_mass","Franka_link2_resp");
  *
  */
-VectorXd DQ_VrepInterface::extract_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name)
+VectorXd DQ_VrepInterface::get_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name)
 {
     struct call_script_data data;
     int my_handle = get_object_handle(link_name);
     data = call_script_function(obj_name, function_name, {my_handle}, {}, {});
     int size = data.output_floats.size();
     if (size != 3){
-        throw std::range_error("Error in extract_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
+        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
     }
     VectorXd center_of_mass = VectorXd::Zero(3);
     center_of_mass << data.output_floats[0],data.output_floats[1],data.output_floats[2];
@@ -921,10 +921,10 @@ VectorXd DQ_VrepInterface::extract_center_of_mass(const std::string&  obj_name, 
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              double mass = vi.extract_mass("DQRoboticsApiCommandServer","get_mass","Franka_link2_resp");
+ *              double mass = vi.get_mass("DQRoboticsApiCommandServer","get_mass","Franka_link2_resp");
  *
  */
-double DQ_VrepInterface::extract_mass(const std::string& obj_name, const std::string& function_name, const std::string&link_name)
+double DQ_VrepInterface::get_mass(const std::string& obj_name, const std::string& function_name, const std::string&link_name)
 
 {
     struct call_script_data data;
@@ -932,7 +932,7 @@ double DQ_VrepInterface::extract_mass(const std::string& obj_name, const std::st
     data = call_script_function(obj_name, function_name, {my_handle}, {}, {});
     int size = data.output_floats.size();
     if (size != 1){
-        throw std::range_error("Error in extract_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
+        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
     }
     return data.output_floats[0];
 }

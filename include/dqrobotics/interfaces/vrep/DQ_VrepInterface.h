@@ -341,7 +341,7 @@ public:
      *        to express the inertia matrix with respect to the absolute frame.
      * @returns The inertia matrix.
      */
-    MatrixXd extract_inertia_matrix(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame);
+    MatrixXd get_inertia_matrix(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame);
 
 
     /**
@@ -351,7 +351,7 @@ public:
      * @param link name The name of the object from which we want to extract the inertia matrix.
      * @returns The inertia matrix.
      */
-    MatrixXd extract_inertia_matrix(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name); //overload extract_inertia_matrix
+    MatrixXd get_inertia_matrix(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name); //overload extract_inertia_matrix
 
 
     /**
@@ -363,7 +363,7 @@ public:
      *        to express the center of mass with respect to the absolute frame.
      * @returns The inertia matrix.
      */
-    VectorXd extract_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame);
+    VectorXd get_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame);
 
 
     /**
@@ -373,7 +373,7 @@ public:
      * @param link name The name of the object from which we want to extract the center of mass.
      * @returns The inertia matrix.
      */
-    VectorXd extract_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name); //overload extract_center_of_mass
+    VectorXd get_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name); //overload extract_center_of_mass
 
     /**
      * @brief This method returns the mass of an object on the CoppeliaSim scene.
@@ -382,7 +382,7 @@ public:
      * @param link name. The name of the object from which we want to extract the mass.
      * @returns The mass of the object.
      */
-    double extract_mass(const std::string& obj_name, const std::string& function_name, const std::string& link_name);
+    double get_mass(const std::string& obj_name, const std::string& function_name, const std::string& link_name);
 
 private:
     std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
