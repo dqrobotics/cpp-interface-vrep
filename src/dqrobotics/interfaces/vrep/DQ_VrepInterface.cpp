@@ -836,7 +836,7 @@ MatrixXd DQ_VrepInterface::extract_inertia_matrix(const std::string&  obj_name, 
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              MatrixXd inertia_matrix = vi.extract_center_of_mass("DQRoboticsApiCommandServer","get_inertia","Franka_link2_resp", "absolute_frame");
+ *              VectorXd center_of_mass = vi.extract_center_of_mass("DQRoboticsApiCommandServer","get_center_of_mass","Franka_link2_resp", "absolute_frame");
  *
  */
 VectorXd DQ_VrepInterface::extract_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame)
@@ -881,7 +881,7 @@ VectorXd DQ_VrepInterface::extract_center_of_mass(const std::string&  obj_name, 
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              MatrixXd inertia_matrix = vi.extract_center_of_mass("DQRoboticsApiCommandServer","get_inertia","Franka_link2_resp");
+ *              VectorXd center_of_mass = vi.extract_center_of_mass("DQRoboticsApiCommandServer","get_center_of_mass","Franka_link2_resp");
  *
  */
 VectorXd DQ_VrepInterface::extract_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name)
