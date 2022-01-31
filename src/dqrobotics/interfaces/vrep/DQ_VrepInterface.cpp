@@ -872,57 +872,23 @@ call_script_data DQ_VrepInterface::_call_script_function(const std::string&  obj
     int outStringCnt;
     char* output_strings;
 
-    int* input_ints_ptr = nullptr;
-    const int intsize = input_ints.size();
-    int input_ints_[intsize];
-
-    if(intsize > 0)
-    {
-        // If there are integer inputs, we need to convert them from const std::vector<int> to int array.
-        // the input integer values that are handed over to the script function.
-        // Can be nullptr if inIntCnt is zero.
-        for (int i=0; i<intsize;i++)
-        {
-            input_ints_[i] =input_ints[i];
-        }
-
-        input_ints_ptr = input_ints_;
-    }
-
-    float* input_floats_ptr= nullptr;
-    const int floatsize = input_floats.size();
-    float input_floats_[floatsize];
-    if(floatsize > 0)
-    {
-        // If there are float inputs, we need to convert them from const std::vector<float> to float array.
-        // the input floating-point values that are handed over to the script function.
-        // Can be nullptr if inFloatCnt is zero.
-        for (int i=0; i<floatsize;i++)
-        {
-            input_floats_[i] =input_floats[i];
-        }
-        input_floats_ptr = input_floats_;
-    }
-
     const int stringsize = input_strings.size();
-    const char* input_strings_ptr = nullptr;
-    //char input_strings_[stringsize];
+    std::string one_string;
     if (stringsize >0)
     {
         // If there are string inputs, we need to convert them from const std::vector<std::string> to std::string.
         // the input strings that are handed over to the script function.
         // Each string should be terminated with one zero char, e.g. "Hello\0World\0".
         // Can be nullptr if inStringCnt is zero.
-        std::string one_string;
+
         for(int i = 0; i < stringsize; ++i)
             {
             one_string += input_strings[i]+'\0';
-            }
-        input_strings_ptr = one_string.c_str();
+            }        
     }
 
     return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
-                                         intsize, input_ints_ptr, floatsize, input_floats_ptr, stringsize, input_strings_ptr,
+                                         input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
                                          0, nullptr, &outIntCnt, &output_ints, &outFloatCnt, &output_floats,  &outStringCnt,
                                          &output_strings, nullptr, nullptr, __remap_op_mode(opmode));
 
