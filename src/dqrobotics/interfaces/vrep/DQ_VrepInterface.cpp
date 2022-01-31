@@ -924,7 +924,7 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const std::string&  obj_name, cons
  *              double mass = vi.get_mass("DQRoboticsApiCommandServer","get_mass","Franka_link2_resp");
  *
  */
-double DQ_VrepInterface::get_mass(const std::string& obj_name, const std::string& function_name, const std::string&link_name)
+double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
 
 {
     struct call_script_data data;

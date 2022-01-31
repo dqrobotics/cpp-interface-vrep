@@ -377,12 +377,12 @@ public:
 
     /**
      * @brief This method returns the mass of an object on the CoppeliaSim scene.
-     * @param obj_name The name of the object where the script is attached to.
-     * @param function_name The name of the script function to call in the specified script.
      * @param link name. The name of the object from which we want to extract the mass.
+     * @param obj_name The name of the object where the script is attached to.
+     * @param function_name The name of the script function to call in the specified script.     
      * @returns The mass of the object.
      */
-    double get_mass(const std::string& obj_name, const std::string& function_name, const std::string& link_name);
+    double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
 private:
     std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
