@@ -633,8 +633,8 @@ call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_
                                                         const std::vector<std::string> &input_strings, const OP_MODES& opmode)
 {
     struct call_script_data data;
-    data = _call_script_function(obj_name, scripttype, function_name, input_ints, input_floats, input_strings, opmode);
-    return data;
+    return _call_script_function(obj_name, scripttype, function_name, input_ints, input_floats, input_strings, opmode);
+
 }
 
 
@@ -673,8 +673,8 @@ call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_
                                       const std::vector<float>& input_floats, const std::vector<std::string> &input_strings)
 {
     struct call_script_data data;
-    data = _call_script_function(obj_name, ST_CHILD, function_name, input_ints, input_floats, input_strings, OP_BLOCKING);
-    return data;
+    return _call_script_function(obj_name, ST_CHILD, function_name, input_ints, input_floats, input_strings, OP_BLOCKING);
+
 }
 
 
