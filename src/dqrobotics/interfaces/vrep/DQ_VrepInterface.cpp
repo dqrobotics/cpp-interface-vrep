@@ -680,11 +680,10 @@ call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_
 
 /**
  * @brief This method returns the inertia matrix of an object on the CoppeliaSim scene.
- * @param obj_name The name of the object where the script is attached to.
- * @param function_name The name of the script function to call in the specified script.
  * @param link name The name of the object from which we want to extract the inertia matrix.
- * @param reference_frame The referece frame where the inertia matrix is expressed. Example: "absolute_frame"
- *        to express the inertia matrix with respect to the absolute frame.
+ * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the inertia matrix is expressed. (Default: "shape_frame")
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_inertia")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
  * @returns The inertia matrix.
  *
  *              Example:
@@ -721,10 +720,15 @@ call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              MatrixXd inertia_matrix = vi.get_inertia_matrix("DQRoboticsApiCommandServer","get_inertia", "Franka_link3_resp", "absolute_frame");
+ *              std::string link = "Franka_link5_resp";
+ *              MatrixXd inertia_matrix = vi.get_inertia_matrix(link);
+ *              std::cout<<"Inertia_matrix expressed in shape frame:    \n"<<inertia_matrix<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame")<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame","get_inertia")<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame","get_inertia","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string&  obj_name, const std::string&  function_name,const std::string& link_name, const std::string& reference_frame)
+MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
 
 {
     struct call_script_data data;
@@ -771,12 +775,10 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string&  obj_name, cons
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              VectorXd center_of_mass = vi.get_center_of_mass("Franka_link2_resp");
- *
- *              //Other options:
  *
  *              std::string link = "Franka_link2_resp";
- *              std::cout<<"Center of mass expressed in shape frame:\n"<<vi.get_center_of_mass(link)<<std::endl;
+ *              VectorXd center_of_mass = vi.get_center_of_mass(link);
+ *              std::cout<<"Center of mass expressed in shape frame:\n"<<center_of_mass<<std::endl;
  *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame")<<std::endl;
  *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass")<<std::endl;
  *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
