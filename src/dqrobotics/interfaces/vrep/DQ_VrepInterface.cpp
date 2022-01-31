@@ -789,7 +789,7 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, cons
     data = call_script_function(obj_name, function_name, {my_handle}, {}, {reference_frame});
     int size = data.output_floats.size();
     if (size != 3){
-        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
+        throw std::range_error("Error in get_center_of_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
     }
     VectorXd center_of_mass = VectorXd::Zero(3);
     center_of_mass << data.output_floats[0],data.output_floats[1],data.output_floats[2];
