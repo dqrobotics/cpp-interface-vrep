@@ -745,12 +745,11 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string&  obj_name, cons
 
 /**
  * @brief This method returns the center of mass of an object on the CoppeliaSim scene.
- * @param obj_name The name of the object where the script is attached to.
- * @param function_name The name of the script function to call in the specified script.
  * @param link name The name of the object from which we want to extract the center of mass.
- * @param reference_frame The referece frame where the inertia matrix is expressed. Example: "absolute_frame"
- *        to express the center of mass with respect to the absolute frame.
- * @returns The inertia matrix.
+ * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the center of mass is expressed. (Default: "shape_frame")
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_center_of_mass")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
+ * @returns The center of mass.
  *
  *              Example:
  *              // This example assumes that in your CoppeliaSim there is a child script called
@@ -772,10 +771,18 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string&  obj_name, cons
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              VectorXd center_of_mass = vi.get_center_of_mass("DQRoboticsApiCommandServer","get_center_of_mass","Franka_link2_resp", "absolute_frame");
+ *              VectorXd center_of_mass = vi.get_center_of_mass("Franka_link2_resp");
+ *
+ *              //Other options:
+ *
+ *              std::string link = "Franka_link2_resp";
+ *              std::cout<<"Center of mass expressed in shape frame:\n"<<vi.get_center_of_mass(link)<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame")<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass")<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-VectorXd DQ_VrepInterface::get_center_of_mass(const std::string&  obj_name, const std::string&  function_name, const std::string& link_name, const std::string& reference_frame)
+VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
 {
     struct call_script_data data;
     int my_handle = get_object_handle(link_name);
