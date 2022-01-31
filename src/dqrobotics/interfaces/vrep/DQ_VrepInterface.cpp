@@ -792,9 +792,9 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const std::string&  obj_name, cons
 
 /**
  * @brief This method returns the mass of an object on the CoppeliaSim scene.
- * @param obj_name The name of the object where the script is attached to.
- * @param function_name The name of the script function to call in the specified script.
  * @param link name. The name of the object from which we want to extract the mass.
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_mass")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
  * @returns The mass of the object.
  *
  *              Example:
@@ -812,7 +812,9 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const std::string&  obj_name, cons
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              double mass = vi.get_mass("DQRoboticsApiCommandServer","get_mass","Franka_link2_resp");
+ *              double mass = vi.get_mass("Franka_link2_resp");
+ *                 // or    = vi.get_mass("Franka_link2_resp", "get_mass")
+ *                 // or    = vi.get_mass("Franka_link2_resp", "get_mass","DQRoboticsApiCommandServer")
  *
  */
 double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
