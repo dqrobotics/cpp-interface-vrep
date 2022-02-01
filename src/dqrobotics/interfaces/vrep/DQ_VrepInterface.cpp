@@ -686,10 +686,8 @@ bool DQ_VrepInterface::is_video_recording()
 call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
                                                         const std::vector<int>& input_ints, const std::vector<float>& input_floats,
                                                         const std::vector<std::string> &input_strings, const OP_MODES& opmode)
-{
-    struct call_script_data data;
+{    
     return _call_script_function(obj_name, scripttype, function_name, input_ints, input_floats, input_strings, opmode);
-
 }
 
 
@@ -726,10 +724,8 @@ call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_
  */
 call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_name, const std::string&  function_name, const std::vector<int>& input_ints,
                                       const std::vector<float>& input_floats, const std::vector<std::string> &input_strings)
-{
-    struct call_script_data data;
+{    
     return _call_script_function(obj_name, ST_CHILD, function_name, input_ints, input_floats, input_strings, OP_BLOCKING);
-
 }
 
 
@@ -785,20 +781,16 @@ call_script_data DQ_VrepInterface::call_script_function(const std::string&  obj_
  */
 MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
 
-{
-    struct call_script_data data;
-    int my_handle = get_object_handle(link_name);
-    data = call_script_function(obj_name, function_name, {my_handle}, {}, {reference_frame});
-    int size = data.output_floats.size();
-    if (size != 9){
+{           
+    struct call_script_data data = call_script_function(obj_name, function_name, {get_object_handle(link_name)}, {}, {reference_frame});
+    if (data.output_floats.size()!= 9){
         throw std::range_error("Error in get_inertia_matrix. Incorrect number of returned values from CoppeliaSim. (Expected: 9)");
     }
-    MatrixXd inertia_matrix = MatrixXd::Zero(3,3);
+    MatrixXd inertia_matrix = MatrixXd(3,3);
     inertia_matrix << data.output_floats[0],data.output_floats[1],data.output_floats[2],
                       data.output_floats[3],data.output_floats[4],data.output_floats[5],
                       data.output_floats[6],data.output_floats[7],data.output_floats[8];
     return inertia_matrix;
-
 }
 
 
