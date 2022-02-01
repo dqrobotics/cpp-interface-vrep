@@ -58,7 +58,6 @@ struct call_script_data
 
 };
 
-
 class DQ_VrepInterface
 {
 public:
