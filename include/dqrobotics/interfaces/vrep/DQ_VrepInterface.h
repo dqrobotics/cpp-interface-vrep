@@ -304,63 +304,17 @@ public:
     bool is_video_recording();
 
 
-    /**
-     * @brief This method calls remotely a CoppeliaSim script function.
-     * @param obj_name The name of the object where the script is attached to.
-     * @param scripttype The type of the script.
-     * @param function_name The name of the script function to call in the specified script.
-     * @param input_ints The input integer values.
-     * @param input_floats The input float values.
-     * @param input_strings The input string values.
-     * @param opmode The operation mode.
-     * @returns a call_script_data structure.
-     */
+
     call_script_data call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
                                           const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings, const OP_MODES& opmode);
 
-
-    /**
-     * @brief This method calls remotely a CoppeliaSim script function.
-     * @param obj_name The name of the object where the script is attached to.
-     * @param function_name The name of the script function to call in the specified script.
-     * @param input_ints The input integer values.
-     * @param input_floats The input float values.
-     * @param input_strings The input string values.
-     * @returns a call_script_data structure.
-     */
     call_script_data call_script_function(const std::string&  obj_name, const std::string&  function_name, const std::vector<int>& input_ints,
                                           const std::vector<float>& input_floats, const std::vector<std::string> &input_strings); //overload call_script_function
 
-
-    /**
-     * @brief This method returns the inertia matrix of an object on the CoppeliaSim scene.
-     * @param link name The name of the object from which we want to extract the inertia matrix.
-     * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the inertia matrix is expressed. (Default: "shape_frame")
-     * @param function_name The name of the script function to call in the specified script. (Default: "get_inertia")
-     * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
-     * @returns The inertia matrix.
-     */
     MatrixXd get_inertia_matrix(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
-
-    /**
-     * @brief This method returns the center of mass of an object on the CoppeliaSim scene.
-     * @param link name The name of the object from which we want to extract the center of mass.
-     * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the center of mass is expressed. (Default: "shape_frame")
-     * @param function_name The name of the script function to call in the specified script. (Default: "get_center_of_mass")
-     * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
-     * @returns The center of mass.
-     */
     VectorXd get_center_of_mass(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
-
-    /**
-     * @brief This method returns the mass of an object on the CoppeliaSim scene.
-     * @param link name. The name of the object from which we want to extract the mass.
-     * @param function_name The name of the script function to call in the specified script. (Default: "get_mass")
-     * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
-     * @returns The mass of the object.
-     */
     double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
 private:
@@ -378,18 +332,6 @@ private:
 
     DQ_VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
 
-
-    /**
-     * @brief This protected method calls remotely a CoppeliaSim script function.
-     * @param obj_name The name of the object where the script is attached to.
-     * @param scripttype The type of the script.
-     * @param function_name The name of the script function to call in the specified script.
-     * @param input_ints The input integer values.
-     * @param input_floats The input float values.
-     * @param input_strings The input string values.
-     * @param opmode The operation mode.
-     * @returns a call_script_data structure.
-     */
     call_script_data _call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
                                   const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings, const OP_MODES& opmode);
 };
