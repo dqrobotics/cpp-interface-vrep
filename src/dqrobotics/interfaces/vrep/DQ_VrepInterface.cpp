@@ -824,11 +824,6 @@ call_script_data DQ_VrepInterface::_remote_call_script_function(const std::strin
                                            const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
 {
     struct call_script_data data;
-    int return_code = 1;
-    VectorXi  vec_output_ints;
-    VectorXf  vec_output_floats;
-    std::vector<std::string> vec_output_strings;
-
     const int stringsize = input_strings.size();
     std::string one_string;
     if (stringsize >0)
@@ -852,7 +847,7 @@ call_script_data DQ_VrepInterface::_remote_call_script_function(const std::strin
     int outStringCnt;
     char* output_strings;
 
-    return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
+    int return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
                                          input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
                                          0, nullptr, &outIntCnt, &output_ints, &outFloatCnt, &output_floats,  &outStringCnt,
                                          &output_strings, nullptr, nullptr, __remap_op_mode(opmode));
@@ -877,8 +872,7 @@ call_script_data DQ_VrepInterface::_remote_call_script_function(const std::strin
 
          if (sizestr >0)
          {
-             vec_output_strings = _extract_vector_string_from_char_pointer(output_strings, sizestr);
-             data.output_strings = vec_output_strings;
+             data.output_strings = _extract_vector_string_from_char_pointer(output_strings, sizestr);
          }
      }else
      {
