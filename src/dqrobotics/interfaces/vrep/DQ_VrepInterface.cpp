@@ -33,6 +33,8 @@ Contributors:
 ///                        PRIVATE FUNCTIONS
 /// ***************************************************************************************
 
+
+
 void DQ_VrepInterface::__insert_or_update_map(const std::string &objectname, const DQ_VrepInterfaceMapElement &element)
 {
     auto ret = name_to_element_map_.insert ( std::pair<std::string,DQ_VrepInterfaceMapElement>(objectname,element));
@@ -798,6 +800,13 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
 }
 
 
+call_script_data DQ_VrepInterface::remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+                                       const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
+{
+    struct call_script_data data = _remote_call_script_function(function_name, obj_name, input_ints, input_floats, input_strings,
+                                                                scripttype, opmode);
+    return data;
+}
 
 /**
  * @brief This protected method calls remotely a CoppeliaSim script function.
@@ -817,7 +826,7 @@ call_script_data DQ_VrepInterface::_remote_call_script_function(const std::strin
     struct call_script_data data;
     int return_code = 1;
     VectorXi  vec_output_ints;
-    VectorXd  vec_output_floats;
+    VectorXf  vec_output_floats;
     std::vector<std::string> vec_output_strings;
 
     const int stringsize = input_strings.size();
@@ -828,7 +837,6 @@ call_script_data DQ_VrepInterface::_remote_call_script_function(const std::strin
         // the input strings that are handed over to the script function.
         // Each string should be terminated with one zero char, e.g. "Hello\0World\0".
         // Can be nullptr if inStringCnt is zero.
-
         for(int i = 0; i < stringsize; ++i)
             {
             one_string += input_strings[i]+'\0';
@@ -859,20 +867,12 @@ call_script_data DQ_VrepInterface::_remote_call_script_function(const std::strin
 
          if (sizeint >0)
          {
-             vec_output_ints = VectorXi::Zero(sizeint);
-             for (int j=0;j<sizeint;j++){
-                 vec_output_ints[j] = *(output_ints+j);
-                }
-             data.output_ints = vec_output_ints;
+             data.output_ints = Map<VectorXi >(output_ints,sizeint);
          }
 
          if (sizefloat >0)
          {
-             vec_output_floats = VectorXd::Zero(sizefloat);
-             for (int j=0;j<sizefloat;j++){
-                 vec_output_floats[j] = *(output_floats+j);
-                }
-             data.output_floats = vec_output_floats;
+             data.output_floats = Map<VectorXf>(output_floats, sizefloat);
          }
 
          if (sizestr >0)
