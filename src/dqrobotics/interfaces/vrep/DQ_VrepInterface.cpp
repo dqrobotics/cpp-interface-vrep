@@ -129,6 +129,61 @@ simxInt __remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
 }
 
 /**
+ * @brief This protected method extracts a string vector from a const char* element.
+ * @param string The output_string pointer that is required by simxCallScriptFunction.
+ * @param size The number of output strings returned by simxCallScriptFunction.
+ * @returns a string vector.
+ *
+ *          Example:
+ *          // When _call_script_function is called, the method runs the following:
+ *          // char* output_strings;
+ *          // simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
+ *          //                              intsize, input_ints_ptr, floatsize, input_floats_ptr, stringsize, input_strings_ptr,
+ *          //                              0, nullptr, &outIntCnt, &output_ints, &outFloatCnt, &output_floats,  &outStringCnt,
+ *          //                              &output_strings, nullptr, nullptr, __remap_op_mode(opmode));
+ *          // Then, we have that
+ *
+ *          std::vector<std::string>  vec_output_strings = __extract_vector_string_from_char_pointer(output_strings, sizestr);
+ */
+std::vector<std::string> _extract_vector_string_from_char_pointer(const char *string, const int& size)
+{
+    std::vector<std::string> output_string;
+    if (size<0){
+        throw std::range_error("Incorrect size. The size must be higher than zero");
+    };
+    char c;
+    char c_0;
+    c = string[0];
+    c_0 = c;
+    int j=0;
+    std::string str;
+    //int count=0;
+    int words = 0;
+    while (words != size)
+     {
+        c = string[j];
+        if (c =='\0')
+        {
+            //count++;
+            if (c_0 != '\0')
+            {
+               if (words<size)
+                {
+                 words++;
+                 output_string.push_back(str);
+                 str = {};
+                }
+            }
+        }
+        c_0 = c;
+        j++;
+        str.push_back(c);
+     }
+
+    return output_string;
+}
+
+/**
  * @brief This protected method remaps the constant properties DQ_VrepInterface::SCRIPT_TYPES to their equivalent
  *        simxInt script type.
  * @param script_type The constant script type of DQ_VrepInterface::SCRIPT_TYPES.
@@ -863,14 +918,7 @@ call_script_data DQ_VrepInterface::_call_script_function(const std::string&  obj
     std::vector<std::string> vec_output_strings;
 
 
-    int outFloatCnt;
-    float* output_floats;
 
-    int outIntCnt;
-    int* output_ints;
-
-    int outStringCnt;
-    char* output_strings;
 
     const int stringsize = input_strings.size();
     std::string one_string;
@@ -886,6 +934,15 @@ call_script_data DQ_VrepInterface::_call_script_function(const std::string&  obj
             one_string += input_strings[i]+'\0';
             }        
     }
+
+    int outFloatCnt;
+    float* output_floats;
+
+    int outIntCnt;
+    int* output_ints;
+
+    int outStringCnt;
+    char* output_strings;
 
     return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
                                          input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
@@ -932,57 +989,4 @@ call_script_data DQ_VrepInterface::_call_script_function(const std::string&  obj
 
 }
 
-/**
- * @brief This protected method extracts a string vector from a const char* element.
- * @param string The output_string pointer that is required by simxCallScriptFunction.
- * @param size The number of output strings returned by simxCallScriptFunction.
- * @returns a string vector.
- *
- *          Example:
- *          // When _call_script_function is called, the method runs the following:
- *          // char* output_strings;
- *          // simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
- *          //                              intsize, input_ints_ptr, floatsize, input_floats_ptr, stringsize, input_strings_ptr,
- *          //                              0, nullptr, &outIntCnt, &output_ints, &outFloatCnt, &output_floats,  &outStringCnt,
- *          //                              &output_strings, nullptr, nullptr, __remap_op_mode(opmode));
- *          // Then, we have that
- *
- *          std::vector<std::string>  vec_output_strings = __extract_vector_string_from_char_pointer(output_strings, sizestr);
- */
-std::vector<std::string> _extract_vector_string_from_char_pointer(const char *string, const int& size)
-{
-    std::vector<std::string> output_string;
-    if (size<0){
-        throw std::range_error("Incorrect size. The size must be higher than zero");
-    };
-    char c;
-    char c_0;
-    c = string[0];
-    c_0 = c;
-    int j=0;
-    std::string str;
-    //int count=0;
-    int words = 0;
-    while (words != size)
-     {
-        c = string[j];
-        if (c =='\0')
-        {
-            //count++;
-            if (c_0 != '\0')
-            {
-               if (words<size)
-                {
-                 words++;
-                 output_string.push_back(str);
-                 str = {};
-                }
-            }
-        }
-        c_0 = c;
-        j++;
-        str.push_back(c);
-     }
 
-    return output_string;
-}
