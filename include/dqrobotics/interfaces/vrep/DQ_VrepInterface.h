@@ -304,13 +304,6 @@ public:
     bool is_video_recording();
 
 
-
-    call_script_data call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
-                                          const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings, const OP_MODES& opmode);
-
-    call_script_data call_script_function(const std::string&  obj_name, const std::string&  function_name, const std::vector<int>& input_ints,
-                                          const std::vector<float>& input_floats, const std::vector<std::string> &input_strings); //overload call_script_function
-
     MatrixXd get_inertia_matrix(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
     VectorXd get_center_of_mass(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
@@ -334,6 +327,8 @@ private:
 
     call_script_data _call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
                                   const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings, const OP_MODES& opmode);
+    call_script_data _remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+                                           const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING);
 };
 
 #endif
