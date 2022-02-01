@@ -832,15 +832,13 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, cons
  *
  */
 VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
-{
-    struct call_script_data data;
-    int my_handle = get_object_handle(link_name);
-    data = call_script_function(obj_name, function_name, {my_handle}, {}, {reference_frame});
-    int size = data.output_floats.size();
-    if (size != 3){
+{        
+    struct call_script_data data = call_script_function(obj_name, function_name, {get_object_handle(link_name)}, {}, {reference_frame});
+
+    if (data.output_floats.size() != 3){
         throw std::range_error("Error in get_center_of_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
     }
-    VectorXd center_of_mass = VectorXd::Zero(3);
+    VectorXd center_of_mass = VectorXd(3);
     center_of_mass << data.output_floats[0],data.output_floats[1],data.output_floats[2];
     return center_of_mass;
 }
@@ -875,12 +873,9 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, cons
  */
 double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
 
-{
-    struct call_script_data data;
-    int my_handle = get_object_handle(link_name);
-    data = call_script_function(obj_name, function_name, {my_handle}, {}, {});
-    int size = data.output_floats.size();
-    if (size != 1){
+{       
+    struct call_script_data data = call_script_function(obj_name, function_name, {get_object_handle(link_name)}, {}, {});
+    if (data.output_floats.size() != 1){
         throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
     }
     return data.output_floats[0];
@@ -905,8 +900,8 @@ call_script_data DQ_VrepInterface::_call_script_function(const std::string&  obj
 {
     struct call_script_data data;
     int return_code = 1;
-    VectorXi  vec_output_ints = VectorXi::Zero(1);
-    VectorXd  vec_output_floats = VectorXd::Zero(1);
+    VectorXi  vec_output_ints;
+    VectorXd  vec_output_floats;
     std::vector<std::string> vec_output_strings;
 
 
