@@ -52,7 +52,7 @@ struct call_script_data
 {
     int return_code;
     VectorXi output_ints;
-    VectorXd output_floats;
+    VectorXf output_floats;
     std::vector<std::string> output_strings;
     //unsigned char retBuffer;
 
@@ -309,6 +309,9 @@ public:
     VectorXd get_center_of_mass(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
     double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
+
+    call_script_data remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+                                           const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING); //Just for test
 
 private:
     std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
