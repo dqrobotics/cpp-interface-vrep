@@ -58,6 +58,7 @@ struct call_script_data
 
 };
 
+
 class DQ_VrepInterface
 {
 public:
@@ -328,8 +329,6 @@ private:
 
     DQ_VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
 
-    call_script_data _call_script_function(const std::string&  obj_name, const SCRIPT_TYPES& scripttype, const std::string&  function_name,
-                                  const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings, const OP_MODES& opmode);
     call_script_data _remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
                                            const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING);
 };
