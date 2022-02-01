@@ -378,13 +378,6 @@ private:
 
     DQ_VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
 
-    /**
-     * @brief This protected method extracts a string vector from a const char* element.
-     * @param string The output_string pointer that is required by simxCallScriptFunction.
-     * @param size The number of output strings returned by simxCallScriptFunction.
-     * @returns a string vector.
-     */
-    std::vector<std::string> __extract_vector_string_from_char_pointer(const char* string, const int& size);
 
     /**
      * @brief This protected method calls remotely a CoppeliaSim script function.

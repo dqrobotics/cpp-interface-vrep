@@ -920,7 +920,7 @@ call_script_data DQ_VrepInterface::_call_script_function(const std::string&  obj
 
          if (sizestr >0)
          {
-             vec_output_strings = __extract_vector_string_from_char_pointer(output_strings, sizestr);
+             vec_output_strings = _extract_vector_string_from_char_pointer(output_strings, sizestr);
              data.output_strings = vec_output_strings;
          }
      }else
@@ -949,7 +949,7 @@ call_script_data DQ_VrepInterface::_call_script_function(const std::string&  obj
  *
  *          std::vector<std::string>  vec_output_strings = __extract_vector_string_from_char_pointer(output_strings, sizestr);
  */
-std::vector<std::string> DQ_VrepInterface::__extract_vector_string_from_char_pointer(const char *string, const int& size)
+std::vector<std::string> _extract_vector_string_from_char_pointer(const char *string, const int& size)
 {
     std::vector<std::string> output_string;
     if (size<0){
