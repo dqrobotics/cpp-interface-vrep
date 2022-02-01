@@ -33,7 +33,25 @@ Contributors:
 ///                        PRIVATE FUNCTIONS
 /// ***************************************************************************************
 
+/**
+ * @brief This custom structure containts the data of the DQ_VrepInterface::call_script_function method.
+ * @param return_code The remote API function flag returned. Example: simx_return_ok.
+ * @param output_ints The returned integer values.
+ * @param output_floats The returned float values.
+ * @param output_strings The returned string values.
+ *
+ *              Example: call_script_data data = call_script_function(obj_name, function_name, {my_handle}, {}, {});
+ *
+ */
+struct call_script_data
+{
+    int return_code;
+    VectorXi output_ints;
+    VectorXf output_floats;
+    std::vector<std::string> output_strings;
+    //unsigned char retBuffer;
 
+};
 
 void DQ_VrepInterface::__insert_or_update_map(const std::string &objectname, const DQ_VrepInterfaceMapElement &element)
 {
@@ -800,13 +818,13 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
 }
 
 
-call_script_data DQ_VrepInterface::remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+/*call_script_data DQ_VrepInterface::remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
                                        const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
 {
     struct call_script_data data = _remote_call_script_function(function_name, obj_name, input_ints, input_floats, input_strings,
                                                                 scripttype, opmode);
     return data;
-}
+}*/
 
 /**
  * @brief This protected method calls remotely a CoppeliaSim script function.
@@ -820,10 +838,10 @@ call_script_data DQ_VrepInterface::remote_call_script_function(const std::string
  * @returns a call_script_data structure.
  *
  */
-call_script_data DQ_VrepInterface::_remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+auto DQ_VrepInterface::_remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
                                            const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
 {
-    struct call_script_data data;
+    struct call_script_data data;    
     const int stringsize = input_strings.size();
     std::string one_string;
     if (stringsize >0)
