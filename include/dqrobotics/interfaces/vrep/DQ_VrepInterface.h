@@ -46,8 +46,6 @@ using namespace Eigen;
  * @param output_floats The returned float values.
  * @param output_strings The returned string values.
  *
- *              Example: call_script_data data = call_script_function(obj_name, function_name, {my_handle}, {}, {});
- *
  */
 struct call_script_data
 {
