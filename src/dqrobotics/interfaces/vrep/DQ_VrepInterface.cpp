@@ -766,15 +766,14 @@ bool DQ_VrepInterface::is_video_recording()
  */
 MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
 
-{
-    //struct call_script_data data = _remote_call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame});
+{    
     int outIntCnt;
     int* output_ints;
     int outFloatCnt;
     float* output_floats;
     int outStringCnt;
     char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame},
+    int return_code = _call_script_function(function_name, obj_name, {__get_handle_from_map(link_name)}, {}, {reference_frame},
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
@@ -829,15 +828,14 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, cons
  *
  */
 VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
-{
-    //struct call_script_data data = _remote_call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame});
+{    
     int outIntCnt;
     int* output_ints;
     int outFloatCnt;
     float* output_floats;
     int outStringCnt;
     char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame},
+    int return_code = _call_script_function(function_name, obj_name, {__get_handle_from_map(link_name)}, {}, {reference_frame},
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
@@ -888,7 +886,7 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
     float* output_floats;
     int outStringCnt;
     char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {},
+    int return_code = _call_script_function(function_name, obj_name, {__get_handle_from_map(link_name)}, {}, {}, // get_object_handle(link_name)
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
@@ -898,6 +896,11 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
     }
     return data.output_floats[0];
 }
+
+//double DQ_VrepInterface::get_mass(const int& handle, const std::string& function_name, const std::string& obj_name)
+//{
+
+//}
 
 
 /**
