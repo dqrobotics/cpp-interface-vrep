@@ -296,6 +296,11 @@ public:
     VectorXd get_joint_velocities(const std::vector<int>& handles, const OP_MODES& opmode) const;
     VectorXd get_joint_velocities(const std::vector<std::string>& jointnames, const OP_MODES& opmode=OP_AUTOMATIC);
 
+    void     set_joint_torque(const int& handle, const double& torque, const OP_MODES& opmode) const;
+    void     set_joint_torque(const std::string& jointname, const double& torque, const OP_MODES& opmode=OP_ONESHOT);
+    void     set_joint_torques(const std::vector<int>& handles, const VectorXd& torques, const OP_MODES& opmode) const;
+    void     set_joint_torques(const std::vector<std::string>& jointnames, const VectorXd& torques, const OP_MODES& opmode=OP_ONESHOT);
+
     MatrixXd get_inertia_matrix(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
     MatrixXd get_inertia_matrix(const int& handle, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
