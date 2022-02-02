@@ -713,80 +713,17 @@ bool DQ_VrepInterface::is_video_recording()
     return static_cast<bool>(video_recording_state);
 }
 
+// New ones
 
-/**
- * @brief This method returns the inertia matrix of an object on the CoppeliaSim scene.
- * @param link name The name of the object from which we want to extract the inertia matrix.
- * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the inertia matrix is expressed. (Default: "shape_frame")
- * @param function_name The name of the script function to call in the specified script. (Default: "get_inertia")
- * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
- * @returns The inertia matrix.
- *
- *              Example:
- *              // This example assumes that in your CoppeliaSim there is a child script called
- *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
- *              //
- *              //     function get_inertia(inInts,inFloats,inStrings,inBuffer)
- *              //
- *              //         if #inInts>=1 then
- *              //            IM, matrixSFCOM=sim.getShapeInertia(inInts[1])
- *              //
- *              //             if inStrings[1] == 'absolute_frame' then
- *              //                 matrix0_SF=sim.getObjectMatrix(inInts[1],-1)
- *              //                 M = sim.multiplyMatrices(matrix0_SF,matrixSFCOM)
- *              //                I= {{IM[1],IM[2],IM[3]},
- *              //                     {IM[4],IM[5],IM[6]},
- *              //                     {IM[7],IM[8],IM[9]}}
- *              //                 R_0_COM = {{M[1],M[2],M[3]},
- *              //                           {M[5],M[6],M[7]},
- *              //                            {M[9],M[10],M[11]}}
- *              //                 R_0_COM_T = transpose(R_0_COM)
- *              //                 RIR_T = mat_mult(mat_mult(R_0_COM,I), R_0_COM_T)
- *              //                 RIR_T_v = {RIR_T[1][1], RIR_T[1][2], RIR_T[1][3],
- *              //                            RIR_T[2][1], RIR_T[2][2], RIR_T[2][3],
- *              //                            RIR_T[3][1], RIR_T[3][2], RIR_T[3][3]}
- *              //                 resultInertiaMatrix=RIR_T_v
- *              //             else
- *              //                 resultInertiaMatrix=IM
- *              //             end
- *              //             return {},resultInertiaMatrix,{},''
- *              //         end
- *              //     end
- *              // In addition, it is assumed a FrankaEmikaPanda robot manipulator
- *              // in the Coppelia scene.
- *
- *              DQ_VrepInterface vi;
- *              std::string link = "Franka_link5_resp";
- *              MatrixXd inertia_matrix = vi.get_inertia_matrix(link);
- *              std::cout<<"Inertia_matrix expressed in shape frame:    \n"<<inertia_matrix<<std::endl;
- *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame")<<std::endl;
- *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame","get_inertia")<<std::endl;
- *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame","get_inertia","DQRoboticsApiCommandServer")<<std::endl;
- *
- */
-MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
 
-{    
-    int outIntCnt;
-    int* output_ints;
-    int outFloatCnt;
-    float* output_floats;
-    int outStringCnt;
-    char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {_get_handle_from_map(link_name)}, {}, {reference_frame},
-                           &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
-    if (return_code != 0)
-    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
-    call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
-
-    if (data.output_floats.size()!= 9){
-        throw std::range_error("Error in get_inertia_matrix. Incorrect number of returned values from CoppeliaSim. (Expected: 9)");
-    }
-    MatrixXd inertia_matrix = MatrixXd(3,3);
-    inertia_matrix << data.output_floats[0],data.output_floats[1],data.output_floats[2],
-                      data.output_floats[3],data.output_floats[4],data.output_floats[5],
-                      data.output_floats[6],data.output_floats[7],data.output_floats[8];
-    return inertia_matrix;
+void DQ_VrepInterface::set_joint_target_velocity(const int &handle, const double &angle_dot_rad, const OP_MODES &opmode) const
+{
+    simxFloat angle_rad_f = simxFloat(angle_dot_rad);
+    simxSetJointTargetPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
+}
+void DQ_VrepInterface::set_joint_target_velocity(const std::string& jointname, const double& angle_dot_rad, const OP_MODES& opmode)
+{
+    return set_joint_target_velocity(_get_handle_from_map(jointname), angle_dot_rad,opmode);
 }
 
 
@@ -865,63 +802,61 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const std::stri
     return inertia_matrix;
 }
 
+
 /**
- * @brief This method returns the center of mass of an object on the CoppeliaSim scene.
- * @param link name The name of the object from which we want to extract the center of mass.
- * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the center of mass is expressed. (Default: "shape_frame")
- * @param function_name The name of the script function to call in the specified script. (Default: "get_center_of_mass")
+ * @brief This method returns the inertia matrix of an object on the CoppeliaSim scene.
+ * @param link name The name of the object from which we want to extract the inertia matrix.
+ * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the inertia matrix is expressed. (Default: "shape_frame")
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_inertia")
  * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
- * @returns The center of mass.
+ * @returns The inertia matrix.
  *
  *              Example:
  *              // This example assumes that in your CoppeliaSim there is a child script called
  *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
  *              //
- *              //  function get_center_of_mass(inInts,inFloats,inStrings,inBuffer)
- *              //     if #inInts>=1 then
- *              //         IM,matrix_SF_COM=sim.getShapeInertia(inInts[1])
- *              //         matrix0_SF=sim.getObjectMatrix(inInts[1],-1)
- *              //         if inStrings[1] == 'absolute_frame' then
- *              //             resultMatrix = sim.multiplyMatrices(matrix0_SF,matrix_SF_COM)
- *              //         else
- *              //             resultMatrix = matrix_SF_COM
+ *              //     function get_inertia(inInts,inFloats,inStrings,inBuffer)
+ *              //
+ *              //         if #inInts>=1 then
+ *              //            IM, matrixSFCOM=sim.getShapeInertia(inInts[1])
+ *              //
+ *              //             if inStrings[1] == 'absolute_frame' then
+ *              //                 matrix0_SF=sim.getObjectMatrix(inInts[1],-1)
+ *              //                 M = sim.multiplyMatrices(matrix0_SF,matrixSFCOM)
+ *              //                I= {{IM[1],IM[2],IM[3]},
+ *              //                     {IM[4],IM[5],IM[6]},
+ *              //                     {IM[7],IM[8],IM[9]}}
+ *              //                 R_0_COM = {{M[1],M[2],M[3]},
+ *              //                           {M[5],M[6],M[7]},
+ *              //                            {M[9],M[10],M[11]}}
+ *              //                 R_0_COM_T = transpose(R_0_COM)
+ *              //                 RIR_T = mat_mult(mat_mult(R_0_COM,I), R_0_COM_T)
+ *              //                 RIR_T_v = {RIR_T[1][1], RIR_T[1][2], RIR_T[1][3],
+ *              //                            RIR_T[2][1], RIR_T[2][2], RIR_T[2][3],
+ *              //                            RIR_T[3][1], RIR_T[3][2], RIR_T[3][3]}
+ *              //                 resultInertiaMatrix=RIR_T_v
+ *              //             else
+ *              //                 resultInertiaMatrix=IM
+ *              //             end
+ *              //             return {},resultInertiaMatrix,{},''
  *              //         end
- *              //         return {},{resultMatrix[4], resultMatrix[8],resultMatrix[12]},{},''
  *              //     end
- *              // end
  *              // In addition, it is assumed a FrankaEmikaPanda robot manipulator
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *
- *              std::string link = "Franka_link2_resp";
- *              VectorXd center_of_mass = vi.get_center_of_mass(link);
- *              std::cout<<"Center of mass expressed in shape frame:\n"<<center_of_mass<<std::endl;
- *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame")<<std::endl;
- *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass")<<std::endl;
- *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
+ *              std::string link = "Franka_link5_resp";
+ *              MatrixXd inertia_matrix = vi.get_inertia_matrix(link);
+ *              std::cout<<"Inertia_matrix expressed in shape frame:    \n"<<inertia_matrix<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame")<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame","get_inertia")<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame","get_inertia","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
-{    
-    int outIntCnt;
-    int* output_ints;
-    int outFloatCnt;
-    float* output_floats;
-    int outStringCnt;
-    char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {_get_handle_from_map(link_name)}, {}, {reference_frame},
-                           &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
-    if (return_code != 0)
-    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
-    call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
 
-    if (data.output_floats.size() != 3){
-        throw std::range_error("Error in get_center_of_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
-    }
-    VectorXd center_of_mass = VectorXd(3);
-    center_of_mass << data.output_floats[0],data.output_floats[1],data.output_floats[2];
-    return center_of_mass;
+{    
+    return get_inertia_matrix(_get_handle_from_map(link_name), reference_frame, function_name, obj_name);
 }
 
 
@@ -985,50 +920,45 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const int& handle, const std::stri
 }
 
 /**
- * @brief This method returns the mass of an object on the CoppeliaSim scene.
- * @param link name. The name of the object from which we want to extract the mass.
- * @param function_name The name of the script function to call in the specified script. (Default: "get_mass")
+ * @brief This method returns the center of mass of an object on the CoppeliaSim scene.
+ * @param link name The name of the object from which we want to extract the center of mass.
+ * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the center of mass is expressed. (Default: "shape_frame")
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_center_of_mass")
  * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
- * @returns The mass of the object.
+ * @returns The center of mass.
  *
  *              Example:
  *              // This example assumes that in your CoppeliaSim there is a child script called
  *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
  *              //
- *              //  function get_mass(inInts,inFloats,inStrings,inBuffer)
- *              //     local mass = {}
+ *              //  function get_center_of_mass(inInts,inFloats,inStrings,inBuffer)
  *              //     if #inInts>=1 then
- *              //         mass =sim.getShapeMass(inInts[1])
- *              //         return {},{mass},{},''
+ *              //         IM,matrix_SF_COM=sim.getShapeInertia(inInts[1])
+ *              //         matrix0_SF=sim.getObjectMatrix(inInts[1],-1)
+ *              //         if inStrings[1] == 'absolute_frame' then
+ *              //             resultMatrix = sim.multiplyMatrices(matrix0_SF,matrix_SF_COM)
+ *              //         else
+ *              //             resultMatrix = matrix_SF_COM
+ *              //         end
+ *              //         return {},{resultMatrix[4], resultMatrix[8],resultMatrix[12]},{},''
  *              //     end
- *              //  end
- *              // In addition, it is assumed that there is a FrankaEmikaPanda robot manipulator
+ *              // end
+ *              // In addition, it is assumed a FrankaEmikaPanda robot manipulator
  *              // in the Coppelia scene.
  *
  *              DQ_VrepInterface vi;
- *              double mass = vi.get_mass("Franka_link2_resp");
- *                 // or    = vi.get_mass("Franka_link2_resp", "get_mass")
- *                 // or    = vi.get_mass("Franka_link2_resp", "get_mass","DQRoboticsApiCommandServer")
+ *
+ *              std::string link = "Franka_link2_resp";
+ *              VectorXd center_of_mass = vi.get_center_of_mass(link);
+ *              std::cout<<"Center of mass expressed in shape frame:\n"<<center_of_mass<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame")<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass")<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
-
-{
-    int outIntCnt;
-    int* output_ints;
-    int outFloatCnt;
-    float* output_floats;
-    int outStringCnt;
-    char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {_get_handle_from_map(link_name)}, {}, {},
-                           &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
-    if (return_code != 0)
-    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
-    call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
-    if (data.output_floats.size() != 1){
-        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
-    }
-    return data.output_floats[0];
+VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
+{    
+    return get_center_of_mass(_get_handle_from_map(link_name), reference_frame,function_name, obj_name);
 }
 
 
@@ -1079,6 +1009,38 @@ double DQ_VrepInterface::get_mass(const int& handle, const std::string& function
     return data.output_floats[0];
 }
 
+/**
+ * @brief This method returns the mass of an object on the CoppeliaSim scene.
+ * @param link name. The name of the object from which we want to extract the mass.
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_mass")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
+ * @returns The mass of the object.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //  function get_mass(inInts,inFloats,inStrings,inBuffer)
+ *              //     local mass = {}
+ *              //     if #inInts>=1 then
+ *              //         mass =sim.getShapeMass(inInts[1])
+ *              //         return {},{mass},{},''
+ *              //     end
+ *              //  end
+ *              // In addition, it is assumed that there is a FrankaEmikaPanda robot manipulator
+ *              // in the Coppelia scene.
+ *
+ *              DQ_VrepInterface vi;
+ *              double mass = vi.get_mass("Franka_link2_resp");
+ *                 // or    = vi.get_mass("Franka_link2_resp", "get_mass")
+ *                 // or    = vi.get_mass("Franka_link2_resp", "get_mass","DQRoboticsApiCommandServer")
+ *
+ */
+double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
+
+{
+    return get_mass(_get_handle_from_map(link_name), function_name,obj_name);
+}
 
 /**
 * @brief This protected method calls remotely a CoppeliaSim script function.
