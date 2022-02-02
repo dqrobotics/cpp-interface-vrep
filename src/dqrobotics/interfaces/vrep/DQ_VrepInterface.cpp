@@ -715,12 +715,24 @@ bool DQ_VrepInterface::is_video_recording()
 
 // New ones
 
-
+/**
+ * @brief This method sets the joint velocity.
+ * @param handle The handle of the joint.
+ * @param angle_dot_rad The target angular velocity.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_target_velocity(const int &handle, const double &angle_dot_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_dot_rad);
     simxSetJointTargetPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
 }
+
+/**
+ * @brief This method sets the joint velocity.
+ * @param jointname The name of the joint.
+ * @param angle_dot_rad The target angular velocity.
+ * @param opmode The operation mode. (Default: OP_ONESHOT)
+ */
 void DQ_VrepInterface::set_joint_target_velocity(const std::string& jointname, const double& angle_dot_rad, const OP_MODES& opmode)
 {
     return set_joint_target_velocity(_get_handle_from_map(jointname), angle_dot_rad,opmode);
@@ -729,7 +741,7 @@ void DQ_VrepInterface::set_joint_target_velocity(const std::string& jointname, c
 
 /**
  * @brief This method returns the inertia matrix of an object on the CoppeliaSim scene.
- * @param link name The name of the object from which we want to extract the inertia matrix.
+ * @param handle The handle of the object from which we want to extract the inertia matrix.
  * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the inertia matrix is expressed. (Default: "shape_frame")
  * @param function_name The name of the script function to call in the specified script. (Default: "get_inertia")
  * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
