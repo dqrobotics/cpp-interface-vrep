@@ -69,7 +69,7 @@ int DQ_VrepInterface::_get_handle_from_map(const std::string &objectname)
         return get_object_handle(objectname);
 }
 
-DQ_VrepInterfaceMapElement& DQ_VrepInterface::__get_element_from_map(const std::string &objectname)
+DQ_VrepInterfaceMapElement& DQ_VrepInterface::_get_element_from_map(const std::string &objectname)
 {
     //Update map if needed
     _get_handle_from_map(objectname);
@@ -79,7 +79,7 @@ DQ_VrepInterfaceMapElement& DQ_VrepInterface::__get_element_from_map(const std::
         return name_to_element_map_.at(objectname);
     }
     else
-        throw std::runtime_error("Unexpected error @ __get_element_from_map");
+        throw std::runtime_error("Unexpected error @ _get_element_from_map");
 }
 
 std::string __simx_int_to_string(const simxInt& ret)
@@ -427,7 +427,7 @@ DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const
 {
     if(opmode == OP_AUTOMATIC)
     {
-        DQ_VrepInterfaceMapElement& element = __get_element_from_map(objectname);
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(objectname);
         if(!element.state_from_function_signature(std::string("get_object_translation")))
         {
             get_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_STREAMING);
@@ -459,7 +459,7 @@ DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const st
 {
     if(opmode == OP_AUTOMATIC)
     {
-        DQ_VrepInterfaceMapElement& element = __get_element_from_map(objectname);
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(objectname);
         if(!element.state_from_function_signature(std::string("get_object_rotation")))
         {
             get_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_STREAMING);
@@ -590,7 +590,7 @@ double DQ_VrepInterface::get_joint_position(const std::string& jointname, const 
 {
     if(opmode == OP_AUTOMATIC)
     {
-        DQ_VrepInterfaceMapElement& element = __get_element_from_map(jointname);
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(jointname);
         if(!element.state_from_function_signature(std::string("get_joint_position")))
         {
             get_joint_position(element.get_handle(),OP_STREAMING);

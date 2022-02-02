@@ -310,7 +310,7 @@ private:
 
     int _get_handle_from_map(const std::string& objectname);
 
-    DQ_VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
+    DQ_VrepInterfaceMapElement &_get_element_from_map(const std::string& objectname);
 
     int _call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
                                 int* outIntCnt, int** output_ints, int* outFloatCnt, float** output_floats, int* outStringCnt, char** output_strings,
