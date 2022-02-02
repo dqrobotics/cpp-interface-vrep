@@ -201,28 +201,32 @@ std::vector<std::string> _extract_vector_string_from_char_pointer(const char *st
     return output_string;
 }
 
-call_script_data _extract_pointers_to_call_script_data(int return_code, int outIntCnt, int* output_ints, int outFloatCnt, float* output_floats, int outStringCnt, char* output_strings)
-{
-    int sizefloat = outFloatCnt;
-    int sizeint = outIntCnt;
-    int sizestr = outStringCnt;
+
+/**
+ * @brief This method returns a call_script_data structure from elements returned by........... .
+ * @param string The output_string pointer that is required by simxCallScriptFunction.
+ * @param size The number of output strings returned by simxCallScriptFunction.
+ * @returns a call_script_data structure.
+ */
+call_script_data _extract_call_script_data_from_pointers(int return_code, int outIntCnt, int* output_ints, int outFloatCnt, float* output_floats, int outStringCnt, char* output_strings)
+{    
     struct call_script_data data;
     data.return_code = return_code;
 
     if (return_code == simx_return_ok)
      {
-        if (sizeint >0)
+        if (outIntCnt >0)
         {
-            data.output_ints = Map<VectorXi >(output_ints,sizeint);
+            data.output_ints = Map<VectorXi >(output_ints, outIntCnt);
         }
 
-        if (sizefloat >0)
+        if (outFloatCnt >0)
         {
-            data.output_floats = Map<VectorXf>(output_floats, sizefloat);
+            data.output_floats = Map<VectorXf>(output_floats, outFloatCnt);
         }
-        if (sizestr >0)
+        if (outStringCnt >0)
         {
-            data.output_strings = _extract_vector_string_from_char_pointer(output_strings, sizestr);
+            data.output_strings = _extract_vector_string_from_char_pointer(output_strings, outStringCnt);
         }
     }
 
@@ -755,7 +759,7 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, cons
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
-    call_script_data data = _extract_pointers_to_call_script_data(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+    call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
 
     if (data.output_floats.size()!= 9){
         throw std::range_error("Error in get_inertia_matrix. Incorrect number of returned values from CoppeliaSim. (Expected: 9)");
@@ -818,7 +822,7 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, cons
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
-    call_script_data data = _extract_pointers_to_call_script_data(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+    call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
 
     if (data.output_floats.size() != 3){
         throw std::range_error("Error in get_center_of_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
@@ -869,7 +873,7 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
-    call_script_data data = _extract_pointers_to_call_script_data(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+    call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
     if (data.output_floats.size() != 1){
         throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
     }
@@ -890,15 +894,12 @@ double DQ_VrepInterface::get_mass_exp(const std::string &link_name, const std::s
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
-    call_script_data data = _extract_pointers_to_call_script_data(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+    call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
     if (data.output_floats.size() != 1){
         throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
     }
     return data.output_floats[0];
 }
-
-
-
 /*
 
  * @brief This protected method calls remotely a CoppeliaSim script function.
