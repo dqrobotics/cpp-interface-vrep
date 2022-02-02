@@ -778,6 +778,81 @@ void DQ_VrepInterface::set_joint_target_velocities(const std::vector<std::string
 
 
 /**
+ * @brief This method gets the joint velocity.
+ * @param handle The handle of the joint.
+ * @param opmode The operation mode.
+ * @returns the joint velocity.
+ */
+double DQ_VrepInterface::get_joint_velocity(const int &handle, const OP_MODES &opmode) const
+{
+    simxFloat angle_dot_rad_f;
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectFloatParameter, clientid_, handle, 2012, &angle_dot_rad_f,__remap_op_mode(opmode));
+    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    return double(angle_dot_rad_f);
+}
+
+
+/**
+ * @brief This method gets the joint velocity.
+ * @param jointname The names of the joint.
+ * @param opmode The operation mode.
+ * @returns the joint velocity.
+ */
+double DQ_VrepInterface::get_joint_velocity(const std::string& jointname, const OP_MODES& opmode)
+{
+    if(opmode == OP_AUTOMATIC)
+    {
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(jointname);
+        if(!element.state_from_function_signature(std::string("get_joint_velocity")))
+        {
+            get_joint_velocity(element.get_handle(),OP_STREAMING);
+        }
+        return get_joint_velocity(element.get_handle(),OP_BUFFER);
+    }
+    else
+        return get_joint_velocity(_get_handle_from_map(jointname),opmode);
+}
+
+
+/**
+ * @brief This method gets the joint velocities.
+ * @param handle The handles of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint velocities.
+ */
+VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<int> &handles, const OP_MODES &opmode) const
+{
+    std::vector<double>::size_type n = handles.size();
+    VectorXd joint_velocities(n);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        joint_velocities(i)=get_joint_velocity(handles[i],opmode);
+    }
+    return joint_velocities;
+}
+
+
+/**
+ * @brief This method gets the joint velocities.
+ * @param jointnames The names of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint velocities.
+ */
+VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<std::string> &jointnames, const OP_MODES &opmode)
+{
+    std::vector<double>::size_type n = jointnames.size();
+    VectorXd joint_velocities(n);
+    //simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        joint_velocities(i)=get_joint_velocity(jointnames[i],opmode);
+    }
+    //simxPauseSimulation(clientid_,0);
+    return joint_velocities;
+}
+
+
+/**
  * @brief This method sets the joint torque.
  * @param handle The handle of the joint.
  * @param torque The torque.
