@@ -723,8 +723,8 @@ bool DQ_VrepInterface::is_video_recording()
  */
 void DQ_VrepInterface::set_joint_target_velocity(const int &handle, const double &angle_dot_rad, const OP_MODES &opmode) const
 {
-    simxFloat angle_rad_f = simxFloat(angle_dot_rad);
-    simxSetJointTargetVelocity(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
+    simxFloat angle_dot_rad_f = simxFloat(angle_dot_rad);
+    simxSetJointTargetVelocity(clientid_,handle,angle_dot_rad_f,__remap_op_mode(opmode));
 }
 
 /**
@@ -742,7 +742,7 @@ void DQ_VrepInterface::set_joint_target_velocity(const std::string& jointname, c
 /**
  * @brief This method sets the joint velocities.
  * @param handle The handles of the joints.
- * @param angle_dot_rad The target angular velocities.
+ * @param angles_dot_rad The target angular velocities.
  * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_joint_target_velocities(const std::vector<int> &handles, const VectorXd &angles_dot_rad, const OP_MODES &opmode) const
@@ -758,7 +758,7 @@ void DQ_VrepInterface::set_joint_target_velocities(const std::vector<int> &handl
 /**
  * @brief This method sets the joint velocities.
  * @param jointnames The names of the joints.
- * @param angle_dot_rad The target angular velocities.
+ * @param angles_dot_rad The target angular velocities.
  * @param opmode The operation mode. (Default: OP_ONESHOT)
  */
 void DQ_VrepInterface::set_joint_target_velocities(const std::vector<std::string> &jointnames, const VectorXd &angles_dot_rad, const OP_MODES &opmode)
@@ -768,14 +768,84 @@ void DQ_VrepInterface::set_joint_target_velocities(const std::vector<std::string
         throw std::runtime_error("Incompatible sizes in set_joint_target_velocities");
     }
     std::vector<double>::size_type n = jointnames.size();
-    simxPauseSimulation(clientid_,1);
+    //simxPauseSimulation(clientid_,1);
     for(std::vector<double>::size_type i=0;i<n;i++)
     {
         set_joint_target_velocity(jointnames[i],angles_dot_rad(i),opmode);
     }
-    simxPauseSimulation(clientid_,0);
+    //simxPauseSimulation(clientid_,0);
 }
 
+
+/**
+ * @brief This method sets the joint velocity.
+ * @param handle The handle of the joint.
+ * @param torque The torque.
+ * @param opmode The operation mode.
+ */
+void DQ_VrepInterface::set_joint_torque(const int &handle, const double &torque, const OP_MODES &opmode) const
+{
+    simxFloat torque_f = simxFloat(torque);
+    simxFloat angle_dot_rad_max = 10000.0;
+    if (torque_f==0)
+    {
+        angle_dot_rad_max = 0.0;
+    }else if (torque_f<0)
+    {
+        angle_dot_rad_max = -10000.0;
+    }
+    simxSetJointTargetVelocity(clientid_,handle,angle_dot_rad_max,__remap_op_mode(opmode));
+    simxSetJointForce(clientid_,handle,abs(torque_f),__remap_op_mode(opmode));
+}
+
+/**
+ * @brief This method sets the joint velocity.
+ * @param jointname The name of the joint.
+ * @param torque The torque.
+ * @param opmode The operation mode. (Default: OP_ONESHOT)
+ */
+void DQ_VrepInterface::set_joint_torque(const std::string& jointname, const double& torque, const OP_MODES& opmode)
+{
+    return set_joint_torque(_get_handle_from_map(jointname), torque,opmode);
+}
+
+
+/**
+ * @brief This method sets the joint torques.
+ * @param handle The handles of the joints.
+ * @param torques The torques.
+ * @param opmode The operation mode.
+ */
+void DQ_VrepInterface::set_joint_torques(const std::vector<int> &handles, const VectorXd &torques, const OP_MODES &opmode) const
+{
+    std::vector<double>::size_type n = handles.size();
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        set_joint_target_velocity(handles[i],torques(i),opmode);
+    }
+}
+
+
+/**
+ * @brief This method sets the joint velocities.
+ * @param jointnames The names of the joints.
+ * @param torques The target angular velocities.
+ * @param opmode The operation mode. (Default: OP_ONESHOT)
+ */
+void DQ_VrepInterface::set_joint_torques(const std::vector<std::string> &jointnames, const VectorXd &torques, const OP_MODES &opmode)
+{
+    if(int(jointnames.size()) != int(torques.size()))
+    {
+        throw std::runtime_error("Incompatible sizes in set_joint_torques");
+    }
+    std::vector<double>::size_type n = jointnames.size();
+    //simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        set_joint_torque(jointnames[i],torques(i),opmode);
+    }
+    //simxPauseSimulation(clientid_,0);
+}
 
 /**
  * @brief This method returns the inertia matrix of an object on the CoppeliaSim scene.
