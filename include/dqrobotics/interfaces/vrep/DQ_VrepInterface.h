@@ -308,7 +308,7 @@ private:
 
     void __insert_or_update_map(const std::string& objectname, const DQ_VrepInterfaceMapElement& element);
 
-    int __get_handle_from_map(const std::string& objectname);
+    int _get_handle_from_map(const std::string& objectname);
 
     DQ_VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
 

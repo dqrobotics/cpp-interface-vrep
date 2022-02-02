@@ -59,7 +59,7 @@ void DQ_VrepInterface::__insert_or_update_map(const std::string &objectname, con
     }
 }
 
-int DQ_VrepInterface::__get_handle_from_map(const std::string &objectname)
+int DQ_VrepInterface::_get_handle_from_map(const std::string &objectname)
 {
     if(name_to_element_map_.count(objectname)==1)
     {
@@ -72,7 +72,7 @@ int DQ_VrepInterface::__get_handle_from_map(const std::string &objectname)
 DQ_VrepInterfaceMapElement& DQ_VrepInterface::__get_element_from_map(const std::string &objectname)
 {
     //Update map if needed
-    __get_handle_from_map(objectname);
+    _get_handle_from_map(objectname);
 
     if(name_to_element_map_.count(objectname)==1)
     {
@@ -417,11 +417,11 @@ DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relati
 }
 DQ DQ_VrepInterface::get_object_translation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return get_object_translation(handle,__get_handle_from_map(relative_to_objectname),opmode);
+    return get_object_translation(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
-    return get_object_translation(__get_handle_from_map(objectname),relative_to_handle,opmode);
+    return get_object_translation(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -430,12 +430,12 @@ DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const
         DQ_VrepInterfaceMapElement& element = __get_element_from_map(objectname);
         if(!element.state_from_function_signature(std::string("get_object_translation")))
         {
-            get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_STREAMING);
+            get_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_STREAMING);
         }
-        return get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_BUFFER);
+        return get_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_BUFFER);
     }
     else
-        return get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
+        return get_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),opmode);
 }
 
 
@@ -449,11 +449,11 @@ DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_
 }
 DQ DQ_VrepInterface::get_object_rotation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return get_object_rotation(handle,__get_handle_from_map(relative_to_objectname),opmode);
+    return get_object_rotation(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
-    return get_object_rotation(__get_handle_from_map(objectname),relative_to_handle,opmode);
+    return get_object_rotation(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -462,12 +462,12 @@ DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const st
         DQ_VrepInterfaceMapElement& element = __get_element_from_map(objectname);
         if(!element.state_from_function_signature(std::string("get_object_rotation")))
         {
-            get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_STREAMING);
+            get_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_STREAMING);
         }
-        return get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_BUFFER);
+        return get_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_BUFFER);
     }
     else
-        return get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
+        return get_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),opmode);
 }
 
 DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
@@ -479,11 +479,11 @@ DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_h
 }
 DQ DQ_VrepInterface::get_object_pose(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return get_object_pose(handle,__get_handle_from_map(relative_to_objectname),opmode);
+    return get_object_pose(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
-    return get_object_pose(__get_handle_from_map(objectname),relative_to_handle,opmode);
+    return get_object_pose(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -515,15 +515,15 @@ void DQ_VrepInterface::set_object_translation(const int &handle, const int &rela
 }
 void DQ_VrepInterface::set_object_translation(const int& handle, const std::string& relative_to_objectname, const DQ& t, const OP_MODES& opmode)
 {
-    return set_object_translation(handle,__get_handle_from_map(relative_to_objectname),t,opmode);
+    return set_object_translation(handle,_get_handle_from_map(relative_to_objectname),t,opmode);
 }
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const int& relative_to_handle, const DQ& t, const OP_MODES& opmode)
 {
-    return set_object_translation(__get_handle_from_map(objectname),relative_to_handle,t,opmode);
+    return set_object_translation(_get_handle_from_map(objectname),relative_to_handle,t,opmode);
 }
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const DQ& t, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return set_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),t,opmode);
+    return set_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),t,opmode);
 }
 
 void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relative_to_handle, const DQ& r, const OP_MODES &opmode) const
@@ -538,15 +538,15 @@ void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relativ
 }
 void DQ_VrepInterface::set_object_rotation(const int& handle, const std::string& relative_to_objectname, const DQ& r, const OP_MODES& opmode)
 {
-    return set_object_rotation(handle,__get_handle_from_map(relative_to_objectname),r,opmode);
+    return set_object_rotation(handle,_get_handle_from_map(relative_to_objectname),r,opmode);
 }
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const int& relative_to_handle, const DQ& r, const OP_MODES& opmode)
 {
-    return set_object_rotation(__get_handle_from_map(objectname),relative_to_handle,r,opmode);
+    return set_object_rotation(_get_handle_from_map(objectname),relative_to_handle,r,opmode);
 }
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const DQ& r, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return set_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),r,opmode);
+    return set_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),r,opmode);
 }
 
 
@@ -557,15 +557,15 @@ void DQ_VrepInterface::set_object_pose(const int &handle, const int &relative_to
 }
 void DQ_VrepInterface::set_object_pose(const int& handle, const std::string& relative_to_objectname, const DQ& h, const OP_MODES& opmode)
 {
-    return set_object_pose(handle,__get_handle_from_map(relative_to_objectname),h,opmode);
+    return set_object_pose(handle,_get_handle_from_map(relative_to_objectname),h,opmode);
 }
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const int& relative_to_handle, const DQ& h, const OP_MODES& opmode)
 {
-    return set_object_pose(__get_handle_from_map(objectname),relative_to_handle,h,opmode);
+    return set_object_pose(_get_handle_from_map(objectname),relative_to_handle,h,opmode);
 }
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const DQ& h, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return set_object_pose(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),h,opmode);
+    return set_object_pose(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),h,opmode);
 }
 
 void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const std::vector<DQ> &hs, const OP_MODES &opmode) const
@@ -598,7 +598,7 @@ double DQ_VrepInterface::get_joint_position(const std::string& jointname, const 
         return get_joint_position(element.get_handle(),OP_BUFFER);
     }
     else
-        return get_joint_position(__get_handle_from_map(jointname),opmode);
+        return get_joint_position(_get_handle_from_map(jointname),opmode);
 }
 
 void DQ_VrepInterface::set_joint_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
@@ -608,7 +608,7 @@ void DQ_VrepInterface::set_joint_position(const int &handle, const double &angle
 }
 void DQ_VrepInterface::set_joint_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
-    return set_joint_position(__get_handle_from_map(jointname),angle_rad,opmode);
+    return set_joint_position(_get_handle_from_map(jointname),angle_rad,opmode);
 }
 
 void DQ_VrepInterface::set_joint_target_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
@@ -618,7 +618,7 @@ void DQ_VrepInterface::set_joint_target_position(const int &handle, const double
 }
 void DQ_VrepInterface::set_joint_target_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
-    return set_joint_target_position(__get_handle_from_map(jointname),angle_rad,opmode);
+    return set_joint_target_position(_get_handle_from_map(jointname),angle_rad,opmode);
 }
 
 VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<int> &handles, const OP_MODES &opmode) const
@@ -773,7 +773,7 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, cons
     float* output_floats;
     int outStringCnt;
     char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {__get_handle_from_map(link_name)}, {}, {reference_frame},
+    int return_code = _call_script_function(function_name, obj_name, {_get_handle_from_map(link_name)}, {}, {reference_frame},
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
@@ -910,7 +910,7 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, cons
     float* output_floats;
     int outStringCnt;
     char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {__get_handle_from_map(link_name)}, {}, {reference_frame},
+    int return_code = _call_script_function(function_name, obj_name, {_get_handle_from_map(link_name)}, {}, {reference_frame},
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
@@ -1020,7 +1020,7 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
     float* output_floats;
     int outStringCnt;
     char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {__get_handle_from_map(link_name)}, {}, {},
+    int return_code = _call_script_function(function_name, obj_name, {_get_handle_from_map(link_name)}, {}, {},
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
