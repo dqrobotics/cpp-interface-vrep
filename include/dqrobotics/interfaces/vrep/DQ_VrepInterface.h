@@ -291,7 +291,7 @@ public:
     VectorXd get_center_of_mass(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
     double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
-    double get_mass_exp(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");//Just for tests
+
 
 
 private:

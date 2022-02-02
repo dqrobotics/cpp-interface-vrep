@@ -899,26 +899,6 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
     return data.output_floats[0];
 }
 
-//experimental
-double DQ_VrepInterface::get_mass_exp(const std::string &link_name, const std::string &function_name, const std::string &obj_name)
-
-{
-    int outIntCnt;
-    int* output_ints;
-    int outFloatCnt;
-    float* output_floats;
-    int outStringCnt;
-    char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {},
-                           &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
-    if (return_code != 0)
-    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
-    call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
-    if (data.output_floats.size() != 1){
-        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
-    }
-    return data.output_floats[0];
-}
 
 /**
 * @brief This protected method calls remotely a CoppeliaSim script function.
