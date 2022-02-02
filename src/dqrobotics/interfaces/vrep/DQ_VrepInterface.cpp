@@ -886,7 +886,7 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
     float* output_floats;
     int outStringCnt;
     char* output_strings;
-    int return_code = _call_script_function(function_name, obj_name, {__get_handle_from_map(link_name)}, {}, {}, // get_object_handle(link_name)
+    int return_code = _call_script_function(function_name, obj_name, {__get_handle_from_map(link_name)}, {}, {},
                            &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
@@ -897,10 +897,53 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
     return data.output_floats[0];
 }
 
-//double DQ_VrepInterface::get_mass(const int& handle, const std::string& function_name, const std::string& obj_name)
-//{
 
-//}
+/**
+ * @brief This method returns the mass of an object on the CoppeliaSim scene.
+ * @param handle. The handle of the object from which we want to extract the mass.
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_mass")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
+ * @returns The mass of the object.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //  function get_mass(inInts,inFloats,inStrings,inBuffer)
+ *              //     local mass = {}
+ *              //     if #inInts>=1 then
+ *              //         mass =sim.getShapeMass(inInts[1])
+ *              //         return {},{mass},{},''
+ *              //     end
+ *              //  end
+ *              // In addition, it is assumed that there is a FrankaEmikaPanda robot manipulator
+ *              // in the Coppelia scene.
+ *
+ *              DQ_VrepInterface vi;
+ *              int handle = vi.get_object_handle(link);
+ *              double mass = vi.get_mass(handle);
+ *                 // or    = vi.get_mass(handle, "get_mass")
+ *                 // or    = vi.get_mass(handle, "get_mass","DQRoboticsApiCommandServer")
+ *
+ */
+double DQ_VrepInterface::get_mass(const int& handle, const std::string& function_name, const std::string& obj_name)
+{
+    int outIntCnt;
+    int* output_ints;
+    int outFloatCnt;
+    float* output_floats;
+    int outStringCnt;
+    char* output_strings;
+    int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {},
+                           &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
+    if (return_code != 0)
+    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
+    call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+    if (data.output_floats.size() != 1){
+        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
+    }
+    return data.output_floats[0];
+}
 
 
 /**
