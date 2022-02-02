@@ -291,7 +291,7 @@ public:
     VectorXd get_center_of_mass(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
     double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
-    double get_mass_exp(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
+    double get_mass_exp(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");//Just for tests
 
 
 private:
@@ -311,7 +311,7 @@ private:
 
     int _call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
                                 int* outIntCnt, int** output_ints, int* outFloatCnt, float** output_floats, int* outStringCnt, char** output_strings,
-                                const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING); //Just for tests
+                                const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING);
 
 };
 

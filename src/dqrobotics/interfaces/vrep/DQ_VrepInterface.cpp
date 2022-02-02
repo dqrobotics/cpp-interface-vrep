@@ -203,10 +203,29 @@ std::vector<std::string> _extract_vector_string_from_char_pointer(const char *st
 
 
 /**
- * @brief This method returns a call_script_data structure from elements returned by........... .
- * @param string The output_string pointer that is required by simxCallScriptFunction.
- * @param size The number of output strings returned by simxCallScriptFunction.
+ * @brief This method returns a call_script_data structure from elements returned by _call_script_function().
+ * @param return_code The return code of the simxCallScriptFunction method.
+ * @param outIntCnt (pointer) The number of returned integer values.
+ * @param output_ints (pointer) The returned integer values.
+ * @param outFloatCnt (pointer) The number of returned floating-point values.
+ * @param output_floats (pointer) The returned floating-point values.
+ * @param outStringCnt (pointer)  The number of returned strings.
+ * @param output_strings (pointer) The returned strings.
  * @returns a call_script_data structure.
+ *     Example:
+ *        int outIntCnt;
+ *        int* output_ints;
+ *        int outFloatCnt;
+ *        float* output_floats;
+ *        int outStringCnt;
+ *        char* output_strings;
+ *        int return_code = _call_script_function(function_name, obj_name, {}, {}, {},&outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
+ *
+ *        //To get the returned values, you can use _extract_call_script_data_from_pointers().
+ *        //Example:
+ *         call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+ *
+ *
  */
 call_script_data _extract_call_script_data_from_pointers(int return_code, int outIntCnt, int* output_ints, int outFloatCnt, float* output_floats, int outStringCnt, char* output_strings)
 {    
@@ -900,84 +919,39 @@ double DQ_VrepInterface::get_mass_exp(const std::string &link_name, const std::s
     }
     return data.output_floats[0];
 }
-/*
 
- * @brief This protected method calls remotely a CoppeliaSim script function.
- * @param function_name The name of the script function to call in the specified script.
- * @param obj_name The name of the object where the script is attached to.
- * @param input_ints The input integer values.
- * @param input_floats The input float values.
- * @param input_strings The input string values.
- * @param scripttype The type of the script. (Default: ST_CHILD)
- * @param opmode The operation mode. (Default: OP_BLOCKING)
- * @returns a call_script_data structure.
- *
-
-call_script_data DQ_VrepInterface::_remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
-                                                   const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
-{
-    struct call_script_data data;
-    const int stringsize = input_strings.size();
-    std::string one_string;
-    if (stringsize >0)
-    {
-        // If there are string inputs, we need to convert them from const std::vector<std::string> to std::string.
-        // the input strings that are handed over to the script function.
-        // Each string should be terminated with one zero char, e.g. "Hello\0World\0".
-        // Can be nullptr if inStringCnt is zero.
-        for(int i = 0; i < stringsize; ++i)
-            {
-            one_string += input_strings[i]+'\0';
-            }
-    }
-
-    int outIntCnt;
-    int* output_ints;
-
-    int outFloatCnt;
-    float* output_floats;
-
-    int outStringCnt;
-    char* output_strings;
-
-    int return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
-                                         input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
-                                         0, nullptr, &outIntCnt, &output_ints, &outFloatCnt, &output_floats,  &outStringCnt,
-                                         &output_strings, nullptr, nullptr, __remap_op_mode(opmode));
-    if (return_code != 0)
-    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
-
-    data.return_code = return_code;
-     if (return_code == simx_return_ok)
-     {
-
-         int sizefloat = outFloatCnt;
-         int sizeint = outIntCnt;
-         int sizestr = outStringCnt;
-
-         if (sizeint >0)
-         {
-             data.output_ints = Map<VectorXi >(output_ints,sizeint);
-         }
-
-         if (sizefloat >0)
-         {
-             data.output_floats = Map<VectorXf>(output_floats, sizefloat);
-         }
-
-         if (sizestr >0)
-         {
-             data.output_strings = _extract_vector_string_from_char_pointer(output_strings, sizestr);
-         }
-     }else
-     {
-         std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;
-     }
-
-    return data;
-}*/
-
-//Experimental
+/**
+* @brief This protected method calls remotely a CoppeliaSim script function.
+* @param function_name The name of the script function to call in the specified script.
+* @param obj_name The name of the object where the script is attached to.
+* @param input_ints The input integer values.
+* @param input_floats The input float values.
+* @param input_strings The input string values.
+* @param outIntCnt (pointer) The number of returned integer values.
+* @param output_ints (pointer) The returned integer values.
+* @param outFloatCnt (pointer) The number of returned floating-point values.
+* @param output_floats (pointer) The returned floating-point values.
+* @param outStringCnt (pointer)  The number of returned strings.
+* @param output_strings (pointer) The returned strings.
+* @param scripttype The type of the script. (Default: ST_CHILD)
+* @param opmode The operation mode. (Default: OP_BLOCKING)
+* @returns The return code of the simxCallScriptFunction method.
+*
+*    Example:
+*        int outIntCnt;
+*        int* output_ints;
+*        int outFloatCnt;
+*        float* output_floats;
+*        int outStringCnt;
+*        char* output_strings;
+*        int return_code = _call_script_function(function_name, obj_name, {}, {}, {},&outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
+*
+*        //To get the returned values, you can use _extract_call_script_data_from_pointers().
+*        //Example:
+*         call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+*
+*
+*/
 int DQ_VrepInterface::_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
                                 int* outIntCnt, int** output_ints, int* outFloatCnt, float** output_floats, int* outStringCnt, char** output_strings,
                                 const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
