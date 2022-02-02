@@ -306,7 +306,7 @@ private:
     long int global_retry_count_;
     std::atomic_bool* no_blocking_loops_;
 
-    void __insert_or_update_map(const std::string& objectname, const DQ_VrepInterfaceMapElement& element);
+    void _insert_or_update_map(const std::string& objectname, const DQ_VrepInterfaceMapElement& element);
 
     int _get_handle_from_map(const std::string& objectname);
 

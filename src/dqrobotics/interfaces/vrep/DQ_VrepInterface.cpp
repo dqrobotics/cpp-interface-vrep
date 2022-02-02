@@ -51,7 +51,7 @@ struct call_script_data
 
 };
 
-void DQ_VrepInterface::__insert_or_update_map(const std::string &objectname, const DQ_VrepInterfaceMapElement &element)
+void DQ_VrepInterface::_insert_or_update_map(const std::string &objectname, const DQ_VrepInterfaceMapElement &element)
 {
     auto ret = name_to_element_map_.insert ( std::pair<std::string,DQ_VrepInterfaceMapElement>(objectname,element));
     if (ret.second==false) {
@@ -284,7 +284,7 @@ DQ_VrepInterface::DQ_VrepInterface(std::atomic_bool* no_blocking_loops)
     no_blocking_loops_ = no_blocking_loops;
     global_retry_count_ = 0;
     clientid_ = -1;
-    __insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,DQ_VrepInterfaceMapElement(-1));
+    _insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,DQ_VrepInterfaceMapElement(-1));
 }
 
 DQ_VrepInterface::~DQ_VrepInterface()
@@ -391,7 +391,7 @@ int DQ_VrepInterface::get_object_handle(const std::string &objectname)
     const std::function<simxInt(void)> f = std::bind(simxGetObjectHandle,clientid_,objectname.c_str(),&hp,simx_opmode_blocking);
     __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,OP_BLOCKING);
     ///Updates handle map
-    __insert_or_update_map(objectname,DQ_VrepInterfaceMapElement(hp));
+    _insert_or_update_map(objectname,DQ_VrepInterfaceMapElement(hp));
     return hp;
 }
 
