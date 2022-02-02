@@ -291,10 +291,10 @@ public:
     void     set_joint_target_velocities(const std::vector<int>& handles, const VectorXd& angles_dot_rad, const OP_MODES& opmode) const;
     void     set_joint_target_velocities(const std::vector<std::string>& jointnames, const VectorXd& angles_dot_rad, const OP_MODES& opmode=OP_ONESHOT);
 
-    double   get_joint_velocity(const int& handle, const OP_MODES& opmode) const;
-    double   get_joint_velocity(const std::string& jointname, const OP_MODES& opmode=OP_AUTOMATIC);
-    VectorXd get_joint_velocities(const std::vector<int>& handles, const OP_MODES& opmode) const;
-    VectorXd get_joint_velocities(const std::vector<std::string>& jointnames, const OP_MODES& opmode=OP_AUTOMATIC);
+    double   get_joint_velocity(const int& handle, const OP_MODES& opmode) const;                                   //No source yet!
+    double   get_joint_velocity(const std::string& jointname, const OP_MODES& opmode=OP_AUTOMATIC);                 //No source yet!
+    VectorXd get_joint_velocities(const std::vector<int>& handles, const OP_MODES& opmode) const;                   //No source yet!
+    VectorXd get_joint_velocities(const std::vector<std::string>& jointnames, const OP_MODES& opmode=OP_AUTOMATIC); //No source yet!
 
     void     set_joint_torque(const int& handle, const double& torque, const OP_MODES& opmode) const;
     void     set_joint_torque(const std::string& jointname, const double& torque, const OP_MODES& opmode=OP_ONESHOT);
