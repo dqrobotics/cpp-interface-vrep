@@ -39,24 +39,6 @@ using namespace DQ_robotics;
 using namespace Eigen;
 
 
-/**
- * @brief This custom structure containts the data of the DQ_VrepInterface::call_script_function method.
- * @param return_code The remote API function flag returned. Example: simx_return_ok.
- * @param output_ints The returned integer values.
- * @param output_floats The returned float values.
- * @param output_strings The returned string values.
- *
- */
-struct call_script_data
-{
-    int return_code;
-    VectorXi output_ints;
-    VectorXf output_floats;
-    std::vector<std::string> output_strings;
-    //unsigned char retBuffer;
-
-};
-
 
 class DQ_VrepInterface
 {
@@ -309,9 +291,8 @@ public:
     VectorXd get_center_of_mass(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
     double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
+    double get_mass_exp(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
-    //call_script_data remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
-    //                                       const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING); //Just for test
 
 private:
     std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
@@ -328,8 +309,13 @@ private:
 
     DQ_VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
 
-    call_script_data _remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
-                                     const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING);
+    //call_script_data _remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+    //                                 const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING);
+
+    int _rcall_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+                                int* outIntCnt, int** output_ints, int* outFloatCnt, float** output_floats, int* outStringCnt, char** output_strings,
+                                const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING); //Just for tests
+
 };
 
 #endif

@@ -33,6 +33,24 @@ Contributors:
 ///                        PRIVATE FUNCTIONS
 /// ***************************************************************************************
 
+/**
+ * @brief This custom structure containts the data of the DQ_VrepInterface::call_script_function method.
+ * @param return_code The remote API function flag returned. Example: simx_return_ok.
+ * @param output_ints The returned integer values.
+ * @param output_floats The returned float values.
+ * @param output_strings The returned string values.
+ *
+ */
+struct call_script_data
+{
+    int return_code;
+    VectorXi output_ints;
+    VectorXf output_floats;
+    std::vector<std::string> output_strings;
+    //unsigned char retBuffer;
+
+};
+
 void DQ_VrepInterface::__insert_or_update_map(const std::string &objectname, const DQ_VrepInterfaceMapElement &element)
 {
     auto ret = name_to_element_map_.insert ( std::pair<std::string,DQ_VrepInterfaceMapElement>(objectname,element));
@@ -191,20 +209,21 @@ call_script_data _extract_pointers_to_call_script_data(int return_code, int outI
     struct call_script_data data;
     data.return_code = return_code;
 
+    if (return_code == simx_return_ok)
+     {
+        if (sizeint >0)
+        {
+            data.output_ints = Map<VectorXi >(output_ints,sizeint);
+        }
 
-    if (sizeint >0)
-    {
-        data.output_ints = Map<VectorXi >(output_ints,sizeint);
-    }
-
-    if (sizefloat >0)
-    {
-        data.output_floats = Map<VectorXf>(output_floats, sizefloat);
-    }
-    std::cout<<"Flag: "<<return_code<<std::endl;
-    if (sizestr >0)
-    {
-        data.output_strings = _extract_vector_string_from_char_pointer(output_strings, sizestr);
+        if (sizefloat >0)
+        {
+            data.output_floats = Map<VectorXf>(output_floats, sizefloat);
+        }
+        if (sizestr >0)
+        {
+            data.output_strings = _extract_vector_string_from_char_pointer(output_strings, sizestr);
+        }
     }
 
     return data;
@@ -725,7 +744,19 @@ bool DQ_VrepInterface::is_video_recording()
 MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
 
 {
-    struct call_script_data data = _remote_call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame});
+    //struct call_script_data data = _remote_call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame});
+    int outIntCnt;
+    int* output_ints;
+    int outFloatCnt;
+    float* output_floats;
+    int outStringCnt;
+    char* output_strings;
+    int return_code = _rcall_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame},
+                           &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
+    if (return_code != 0)
+    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
+    call_script_data data = _extract_pointers_to_call_script_data(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+
     if (data.output_floats.size()!= 9){
         throw std::range_error("Error in get_inertia_matrix. Incorrect number of returned values from CoppeliaSim. (Expected: 9)");
     }
@@ -776,7 +807,18 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, cons
  */
 VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
 {
-    struct call_script_data data = _remote_call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame});
+    //struct call_script_data data = _remote_call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame});
+    int outIntCnt;
+    int* output_ints;
+    int outFloatCnt;
+    float* output_floats;
+    int outStringCnt;
+    char* output_strings;
+    int return_code = _rcall_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {reference_frame},
+                           &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
+    if (return_code != 0)
+    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
+    call_script_data data = _extract_pointers_to_call_script_data(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
 
     if (data.output_floats.size() != 3){
         throw std::range_error("Error in get_center_of_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
@@ -817,7 +859,38 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, cons
 double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
 
 {
-    struct call_script_data data = _remote_call_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {});
+    int outIntCnt;
+    int* output_ints;
+    int outFloatCnt;
+    float* output_floats;
+    int outStringCnt;
+    char* output_strings;
+    int return_code = _rcall_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {},
+                           &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
+    if (return_code != 0)
+    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
+    call_script_data data = _extract_pointers_to_call_script_data(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+    if (data.output_floats.size() != 1){
+        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
+    }
+    return data.output_floats[0];
+}
+
+//experimental
+double DQ_VrepInterface::get_mass_exp(const std::string &link_name, const std::string &function_name, const std::string &obj_name)
+
+{
+    int outIntCnt;
+    int* output_ints;
+    int outFloatCnt;
+    float* output_floats;
+    int outStringCnt;
+    char* output_strings;
+    int return_code = _rcall_script_function(function_name, obj_name, {get_object_handle(link_name)}, {}, {},
+                           &outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
+    if (return_code != 0)
+    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
+    call_script_data data = _extract_pointers_to_call_script_data(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
     if (data.output_floats.size() != 1){
         throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
     }
@@ -825,15 +898,9 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
 }
 
 
-/*call_script_data DQ_VrepInterface::remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
-                                       const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
-{
-    struct call_script_data data = _remote_call_script_function(function_name, obj_name, input_ints, input_floats, input_strings,
-                                                                scripttype, opmode);
-    return data;
-}*/
 
-/**
+/*
+
  * @brief This protected method calls remotely a CoppeliaSim script function.
  * @param function_name The name of the script function to call in the specified script.
  * @param obj_name The name of the object where the script is attached to.
@@ -844,7 +911,7 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
  * @param opmode The operation mode. (Default: OP_BLOCKING)
  * @returns a call_script_data structure.
  *
- */
+
 call_script_data DQ_VrepInterface::_remote_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
                                                    const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
 {
@@ -907,6 +974,27 @@ call_script_data DQ_VrepInterface::_remote_call_script_function(const std::strin
      }
 
     return data;
-}
+}*/
 
+//Experimental
+int DQ_VrepInterface::_rcall_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+                                int* outIntCnt, int** output_ints, int* outFloatCnt, float** output_floats, int* outStringCnt, char** output_strings,
+                                const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
+{
+    const int stringsize = input_strings.size();
+    std::string one_string;
+    if (stringsize >0)
+    {
+        for(int i = 0; i < stringsize; ++i)
+            {
+            one_string += input_strings[i]+'\0';
+            }
+    }
+
+    int return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
+                                         input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
+                                         0, nullptr, outIntCnt, output_ints, outFloatCnt, output_floats,  outStringCnt,
+                                         output_strings, nullptr, nullptr, __remap_op_mode(opmode));
+    return return_code;
+}
 
