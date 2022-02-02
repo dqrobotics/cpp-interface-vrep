@@ -778,7 +778,7 @@ void DQ_VrepInterface::set_joint_target_velocities(const std::vector<std::string
 
 
 /**
- * @brief This method sets the joint velocity.
+ * @brief This method sets the joint torque.
  * @param handle The handle of the joint.
  * @param torque The torque.
  * @param opmode The operation mode.
@@ -799,7 +799,7 @@ void DQ_VrepInterface::set_joint_torque(const int &handle, const double &torque,
 }
 
 /**
- * @brief This method sets the joint velocity.
+ * @brief This method sets the joint torque.
  * @param jointname The name of the joint.
  * @param torque The torque.
  * @param opmode The operation mode. (Default: OP_ONESHOT)
@@ -827,9 +827,9 @@ void DQ_VrepInterface::set_joint_torques(const std::vector<int> &handles, const 
 
 
 /**
- * @brief This method sets the joint velocities.
+ * @brief This method sets the joint torques.
  * @param jointnames The names of the joints.
- * @param torques The target angular velocities.
+ * @param torques The torques.
  * @param opmode The operation mode. (Default: OP_ONESHOT)
  */
 void DQ_VrepInterface::set_joint_torques(const std::vector<std::string> &jointnames, const VectorXd &torques, const OP_MODES &opmode)
