@@ -82,7 +82,7 @@ DQ_VrepInterfaceMapElement& DQ_VrepInterface::_get_element_from_map(const std::s
         throw std::runtime_error("Unexpected error @ _get_element_from_map");
 }
 
-std::string __simx_int_to_string(const simxInt& ret)
+std::string _simx_int_to_string(const simxInt& ret)
 {
     std::string output("");
     //http://www.coppeliarobotics.com/helpFiles/en/remoteApiConstants.htm
@@ -104,7 +104,7 @@ std::string __simx_int_to_string(const simxInt& ret)
     return output;
 }
 
-void __retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_COUNT, const int& TIMEOUT_IN_MILISECONDS, std::atomic_bool* no_blocking_loops, const DQ_VrepInterface::OP_MODES& opmode)
+void _retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_COUNT, const int& TIMEOUT_IN_MILISECONDS, std::atomic_bool* no_blocking_loops, const DQ_VrepInterface::OP_MODES& opmode)
 {
     int retry_counter = 0;
     int function_result = 0;
@@ -127,10 +127,10 @@ void __retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_
         std::this_thread::sleep_for(std::chrono::milliseconds(TIMEOUT_IN_MILISECONDS));
         retry_counter++;
     }
-    throw std::runtime_error("Timeout in VREP communication. Error: " + __simx_int_to_string(function_result) +".");
+    throw std::runtime_error("Timeout in VREP communication. Error: " + _simx_int_to_string(function_result) +".");
 }
 
-simxInt __remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
+simxInt _remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
 {
     switch(opmode)
     {
@@ -389,7 +389,7 @@ int DQ_VrepInterface::get_object_handle(const std::string &objectname)
 {
     int hp;
     const std::function<simxInt(void)> f = std::bind(simxGetObjectHandle,clientid_,objectname.c_str(),&hp,simx_opmode_blocking);
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,OP_BLOCKING);
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,OP_BLOCKING);
     ///Updates handle map
     _insert_or_update_map(objectname,DQ_VrepInterfaceMapElement(hp));
     return hp;
@@ -410,8 +410,8 @@ std::vector<int> DQ_VrepInterface::get_object_handles(const std::vector<std::str
 DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     simxFloat tp[3];
-    const std::function<simxInt(void)> f = std::bind(simxGetObjectPosition,clientid_,handle,relative_to_handle,tp,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectPosition,clientid_,handle,relative_to_handle,tp,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
     const DQ t(0,tp[0],tp[1],tp[2]);
     return t;
 }
@@ -442,8 +442,8 @@ DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const
 DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     simxFloat rp[4];
-    const std::function<simxInt(void)> f = std::bind(simxGetObjectQuaternion,clientid_,handle,relative_to_handle,rp,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectQuaternion,clientid_,handle,relative_to_handle,rp,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
     const DQ r(rp[3],rp[0],rp[1],rp[2],0,0,0,0);
     return normalize(r); //We need to normalize here because vrep uses 32bit precision and our DQ are 64bit precision.
 }
@@ -511,7 +511,7 @@ void DQ_VrepInterface::set_object_translation(const int &handle, const int &rela
     tp[1]=float(t.q(2));
     tp[2]=float(t.q(3));
 
-    simxSetObjectPosition(clientid_,handle,relative_to_handle,tp,__remap_op_mode(opmode));
+    simxSetObjectPosition(clientid_,handle,relative_to_handle,tp,_remap_op_mode(opmode));
 }
 void DQ_VrepInterface::set_object_translation(const int& handle, const std::string& relative_to_objectname, const DQ& t, const OP_MODES& opmode)
 {
@@ -534,7 +534,7 @@ void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relativ
     rp[2]=float(r.q(3));
     rp[3]=float(r.q(0));
 
-    simxSetObjectQuaternion(clientid_,handle,relative_to_handle,rp,__remap_op_mode(opmode));
+    simxSetObjectQuaternion(clientid_,handle,relative_to_handle,rp,_remap_op_mode(opmode));
 }
 void DQ_VrepInterface::set_object_rotation(const int& handle, const std::string& relative_to_objectname, const DQ& r, const OP_MODES& opmode)
 {
@@ -581,8 +581,8 @@ void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const i
 double DQ_VrepInterface::get_joint_position(const int &handle, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f;
-    const std::function<simxInt(void)> f = std::bind(simxGetJointPosition,clientid_,handle,&angle_rad_f,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    const std::function<simxInt(void)> f = std::bind(simxGetJointPosition,clientid_,handle,&angle_rad_f,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
     return double(angle_rad_f);
 }
 
@@ -604,7 +604,7 @@ double DQ_VrepInterface::get_joint_position(const std::string& jointname, const 
 void DQ_VrepInterface::set_joint_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
-    simxSetJointPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
+    simxSetJointPosition(clientid_,handle,angle_rad_f,_remap_op_mode(opmode));
 }
 void DQ_VrepInterface::set_joint_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
@@ -614,7 +614,7 @@ void DQ_VrepInterface::set_joint_position(const std::string& jointname, const do
 void DQ_VrepInterface::set_joint_target_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
-    simxSetJointTargetPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
+    simxSetJointTargetPosition(clientid_,handle,angle_rad_f,_remap_op_mode(opmode));
 }
 void DQ_VrepInterface::set_joint_target_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
@@ -697,19 +697,19 @@ void DQ_VrepInterface::set_joint_target_positions(const std::vector<std::string>
 void DQ_VrepInterface::start_video_recording()
 {
     const unsigned char video_recording_state = 1;
-    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,__remap_op_mode(OP_ONESHOT));
+    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,_remap_op_mode(OP_ONESHOT));
 }
 
 void DQ_VrepInterface::stop_video_recording()
 {
     const unsigned char video_recording_state = 0;
-    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,__remap_op_mode(OP_ONESHOT));
+    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,_remap_op_mode(OP_ONESHOT));
 }
 
 bool DQ_VrepInterface::is_video_recording()
 {
     unsigned char video_recording_state;
-    simxGetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,&video_recording_state,__remap_op_mode(OP_BLOCKING));
+    simxGetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,&video_recording_state,_remap_op_mode(OP_BLOCKING));
     return static_cast<bool>(video_recording_state);
 }
 
@@ -724,7 +724,7 @@ bool DQ_VrepInterface::is_video_recording()
 void DQ_VrepInterface::set_joint_target_velocity(const int &handle, const double &angle_dot_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_dot_rad_f = simxFloat(angle_dot_rad);
-    simxSetJointTargetVelocity(clientid_,handle,angle_dot_rad_f,__remap_op_mode(opmode));
+    simxSetJointTargetVelocity(clientid_,handle,angle_dot_rad_f,_remap_op_mode(opmode));
 }
 
 /**
@@ -786,8 +786,8 @@ void DQ_VrepInterface::set_joint_target_velocities(const std::vector<std::string
 double DQ_VrepInterface::get_joint_velocity(const int &handle, const OP_MODES &opmode) const
 {
     simxFloat angle_dot_rad_f;
-    const std::function<simxInt(void)> f = std::bind(simxGetObjectFloatParameter, clientid_, handle, 2012, &angle_dot_rad_f,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectFloatParameter, clientid_, handle, 2012, &angle_dot_rad_f,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
     return double(angle_dot_rad_f);
 }
 
@@ -869,8 +869,8 @@ void DQ_VrepInterface::set_joint_torque(const int &handle, const double &torque,
     {
         angle_dot_rad_max = -10000.0;
     }
-    simxSetJointTargetVelocity(clientid_,handle,angle_dot_rad_max,__remap_op_mode(opmode));
-    simxSetJointForce(clientid_,handle,abs(torque_f),__remap_op_mode(opmode));
+    simxSetJointTargetVelocity(clientid_,handle,angle_dot_rad_max,_remap_op_mode(opmode));
+    simxSetJointForce(clientid_,handle,abs(torque_f),_remap_op_mode(opmode));
 }
 
 /**
@@ -1286,7 +1286,7 @@ int DQ_VrepInterface::_call_script_function(const std::string&  function_name, c
     int return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
                                          input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
                                          0, nullptr, outIntCnt, output_ints, outFloatCnt, output_floats,  outStringCnt,
-                                         output_strings, nullptr, nullptr, __remap_op_mode(opmode));
+                                         output_strings, nullptr, nullptr, _remap_op_mode(opmode));
     return return_code;
 }
 
