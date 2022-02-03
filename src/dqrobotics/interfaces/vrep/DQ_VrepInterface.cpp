@@ -911,7 +911,7 @@ void DQ_VrepInterface::set_joint_torques(const std::vector<int> &handles, const 
     std::vector<double>::size_type n = handles.size();
     for(std::vector<double>::size_type i=0;i<n;i++)
     {
-        set_joint_target_velocity(handles[i],torques(i),opmode);
+        set_joint_torque(handles[i],torques(i),opmode);
     }
 }
 
