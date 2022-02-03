@@ -845,6 +845,13 @@ VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<int> &handles,
  * @param jointnames The names of the joints.
  * @param opmode The operation mode.
  * @returns the joint velocities.
+ *
+ *      Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           std::cout<< "q_dot: "<<vi.get_joint_velocities(jointnames)<<std::endl;
+ *
  */
 VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<std::string> &jointnames, const OP_MODES &opmode)
 {
@@ -914,6 +921,13 @@ void DQ_VrepInterface::set_joint_torques(const std::vector<int> &handles, const 
  * @param jointnames The names of the joints.
  * @param torques The torques.
  * @param opmode The operation mode. (Default: OP_ONESHOT)
+ *
+ *      Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           VectorXd u = VectorXd::Zero(7);
+ *           vi.set_joint_torques(jointnames, u);
  */
 void DQ_VrepInterface::set_joint_torques(const std::vector<std::string> &jointnames, const VectorXd &torques, const OP_MODES &opmode)
 {
