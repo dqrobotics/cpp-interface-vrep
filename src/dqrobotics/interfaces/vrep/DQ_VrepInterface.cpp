@@ -760,6 +760,14 @@ void DQ_VrepInterface::set_joint_target_velocities(const std::vector<int> &handl
  * @param jointnames The names of the joints.
  * @param angles_dot_rad The target angular velocities.
  * @param opmode The operation mode. (Default: OP_ONESHOT)
+ *
+ *       Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           VectorXd u = VectorXd::Zero(7);
+ *           vi.set_joint_target_velocities(jointnames, u);
+ *
  */
 void DQ_VrepInterface::set_joint_target_velocities(const std::vector<std::string> &jointnames, const VectorXd &angles_dot_rad, const OP_MODES &opmode)
 {
