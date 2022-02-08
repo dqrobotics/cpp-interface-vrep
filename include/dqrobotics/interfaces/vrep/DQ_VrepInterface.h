@@ -57,6 +57,11 @@ public:
         ST_MAIN,
         ST_CUSTOMIZATION
     };
+    enum REFERENCE_FRAMES
+    {
+        BODY_FRAME,
+        ABSOLUTE_FRAME
+    };
 
     /**
      * @brief DQ_VrepInterface
