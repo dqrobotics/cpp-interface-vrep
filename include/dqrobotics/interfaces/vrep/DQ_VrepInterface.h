@@ -306,11 +306,11 @@ public:
     void     set_joint_torques(const std::vector<int>& handles, const VectorXd& torques, const OP_MODES& opmode) const;
     void     set_joint_torques(const std::vector<std::string>& jointnames, const VectorXd& torques, const OP_MODES& opmode=OP_ONESHOT);
 
-    MatrixXd get_inertia_matrix(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
-    MatrixXd get_inertia_matrix(const int& handle, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
+    MatrixXd get_inertia_matrix(const std::string& link_name, const REFERENCE_FRAMES& reference_frame=BODY_FRAME, const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
+    MatrixXd get_inertia_matrix(const int& handle, const REFERENCE_FRAMES& reference_frame=BODY_FRAME, const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
-    VectorXd get_center_of_mass(const std::string& link_name, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
-    VectorXd get_center_of_mass(const int& handle, const std::string& reference_frame="shape_frame", const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
+    VectorXd get_center_of_mass(const std::string& link_name, const REFERENCE_FRAMES& reference_frame=BODY_FRAME, const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
+    VectorXd get_center_of_mass(const int& handle, const REFERENCE_FRAMES& reference_frame=BODY_FRAME, const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
     double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
     double get_mass(const int& handle, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
