@@ -978,7 +978,8 @@ double DQ_VrepInterface::get_joint_torque(const int &handle, const OP_MODES &opm
     simxFloat torque;
     const std::function<simxInt(void)> f = std::bind(simxGetJointForce, clientid_, handle, &torque,_remap_op_mode(opmode));
     _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
-    return double(torque);
+    //We change the signal to get a consistent result.
+    return double(-1*torque);
 }
 
 
