@@ -256,7 +256,7 @@ call_script_data _extract_call_script_data_from_pointers(int return_code, int ou
 /**
  * @brief This protected method remaps the constant properties DQ_VrepInterface::REFERENCE_FRAMES to their equivalent
  *        string.
- * @param reference_frame The constant script type of DQ_VrepInterface::REFERENCE_FRAMES.
+ * @param reference_frame The constant reference frame of DQ_VrepInterface::REFERENCE_FRAMES.
  * @returns The string related to the reference frame.
  *
  *              Example: rf = _remap_reference_frame(ABSOLUTE_FRAME);
@@ -280,10 +280,10 @@ std::string _remap_reference_frame(const DQ_VrepInterface::REFERENCE_FRAMES& ref
  * @param script_type The constant script type of DQ_VrepInterface::SCRIPT_TYPES.
  * @returns The simxInt script type.
  *
- *              Example: st = __remap_script_type(ST_CHILD);
+ *              Example: st = _remap_script_type(ST_CHILD);
  *
  */
-simxInt __remap_script_type(const DQ_VrepInterface::SCRIPT_TYPES& script_type)
+simxInt _remap_script_type(const DQ_VrepInterface::SCRIPT_TYPES& script_type)
 {
     switch (script_type)
     {
@@ -824,7 +824,7 @@ double DQ_VrepInterface::get_joint_velocity(const int &handle, const OP_MODES &o
 
 /**
  * @brief This method gets the joint velocity.
- * @param jointname The names of the joint.
+ * @param jointname The name of the joint.
  * @param opmode The operation mode.
  * @returns the joint velocity.
  */
@@ -964,6 +964,88 @@ void DQ_VrepInterface::set_joint_torques(const std::vector<std::string> &jointna
         set_joint_torque(jointnames[i],torques(i),opmode);
     }
     //simxPauseSimulation(clientid_,0);
+}
+
+
+/**
+ * @brief This method gets the joint torque.
+ * @param handle The handle of the joint.
+ * @param opmode The operation mode.
+ * @returns the joint torque.
+ */
+double DQ_VrepInterface::get_joint_torque(const int &handle, const OP_MODES &opmode) const
+{
+    simxFloat torque;
+    const std::function<simxInt(void)> f = std::bind(simxGetJointForce, clientid_, handle, &torque,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    return double(torque);
+}
+
+
+/**
+ * @brief This method gets the joint torque.
+ * @param jointname The name of the joint.
+ * @param opmode The operation mode.
+ * @returns the joint torque.
+ */
+double DQ_VrepInterface::get_joint_torque(const std::string& jointname, const OP_MODES& opmode)
+{
+    if(opmode == OP_AUTOMATIC)
+    {
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(jointname);
+        if(!element.state_from_function_signature(std::string("get_joint_torque")))
+        {
+            get_joint_torque(element.get_handle(),OP_STREAMING);
+        }
+        return get_joint_torque(element.get_handle(),OP_BUFFER);
+    }
+    else
+        return get_joint_torque(_get_handle_from_map(jointname),opmode);
+}
+
+
+/**
+ * @brief This method gets the joint torques.
+ * @param handle The handles of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint torques.
+ */
+VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<int> &handles, const OP_MODES &opmode) const
+{
+    std::vector<double>::size_type n = handles.size();
+    VectorXd joint_torques(n);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        joint_torques(i)=get_joint_velocity(handles[i],opmode);
+    }
+    return joint_torques;
+}
+
+
+/**
+ * @brief This method gets the joint torques.
+ * @param jointnames The names of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint torques.
+ *
+ *      Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           std::cout<< "torques: "<<vi.get_joint_torques(jointnames)<<std::endl;
+ *
+ */
+VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<std::string> &jointnames, const OP_MODES &opmode)
+{
+    std::vector<double>::size_type n = jointnames.size();
+    VectorXd joint_torques(n);
+    //simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        joint_torques(i)=get_joint_torque(jointnames[i],opmode);
+    }
+    //simxPauseSimulation(clientid_,0);
+    return joint_torques;
 }
 
 /**
@@ -1315,7 +1397,7 @@ int DQ_VrepInterface::_call_script_function(const std::string&  function_name, c
             }
     }
 
-    int return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
+    int return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), _remap_script_type(scripttype), function_name.c_str(),
                                          input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
                                          0, nullptr, outIntCnt, output_ints, outFloatCnt, output_floats,  outStringCnt,
                                          output_strings, nullptr, nullptr, _remap_op_mode(opmode));
