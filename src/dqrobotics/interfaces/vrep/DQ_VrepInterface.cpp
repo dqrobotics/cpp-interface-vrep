@@ -252,6 +252,28 @@ call_script_data _extract_call_script_data_from_pointers(int return_code, int ou
     return data;
 }
 
+
+/**
+ * @brief This protected method remaps the constant properties DQ_VrepInterface::REFERENCE_FRAMES to their equivalent
+ *        string.
+ * @param reference_frame The constant script type of DQ_VrepInterface::REFERENCE_FRAMES.
+ * @returns The string related to the reference frame.
+ *
+ *              Example: rf = _remap_reference_frame(ABSOLUTE_FRAME);
+ *
+ */
+std::string _remap_reference_frame(const DQ_VrepInterface::REFERENCE_FRAMES& reference_frame)
+{
+    switch(reference_frame)
+    {
+      case DQ_VrepInterface::BODY_FRAME:
+        return "body_frame";
+      case DQ_VrepInterface::ABSOLUTE_FRAME:
+        return "absolute_frame";
+    }
+    throw std::range_error("Unknown reference_frame in _remap_reference_frame");
+}
+
 /**
  * @brief This protected method remaps the constant properties DQ_VrepInterface::SCRIPT_TYPES to their equivalent
  *        simxInt script type.
@@ -994,12 +1016,12 @@ void DQ_VrepInterface::set_joint_torques(const std::vector<std::string> &jointna
  *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(handle, "absolute_frame","get_inertia","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
+MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
 
 {
     int outFloatCnt;
     float* output_floats;
-    int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {reference_frame},
+    int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {_remap_reference_frame(reference_frame)},
                            0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
@@ -1066,7 +1088,7 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const std::stri
  *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame","get_inertia","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
+MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
 
 {    
     return get_inertia_matrix(_get_handle_from_map(link_name), reference_frame, function_name, obj_name);
@@ -1110,11 +1132,11 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, cons
  *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(handle, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-VectorXd DQ_VrepInterface::get_center_of_mass(const int& handle, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
+VectorXd DQ_VrepInterface::get_center_of_mass(const int& handle,  const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
 {
     int outFloatCnt;
     float* output_floats;
-    int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {reference_frame},
+    int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {_remap_reference_frame(reference_frame)},
                            0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
@@ -1165,7 +1187,7 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const int& handle, const std::stri
  *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const std::string& reference_frame, const std::string& function_name, const std::string& obj_name)
+VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
 {    
     return get_center_of_mass(_get_handle_from_map(link_name), reference_frame,function_name, obj_name);
 }
