@@ -16,14 +16,21 @@ jobs:
         run: |
           sudo apt install cmake g++ libeigen3-dev fakeroot
           
-      - name: Make debian package
+      - name: Build & install DQRobotics
+        run: |
+          cd cpp
+          chmod +x debian/rules
+          fakeroot debian/rules clean
+          fakeroot debian/rules build
+          fakeroot debian/rules binary
+          cd ..
+          sudo apt install ./*.deb
+          
+      - name: Build & install cpp-interface-vrep
         run: |
           chmod +x debian/rules
           fakeroot debian/rules clean
           fakeroot debian/rules build
           fakeroot debian/rules binary
-          
-      - name: Install debian package
-        run: |
           cd ..
           sudo apt install ./*.deb
