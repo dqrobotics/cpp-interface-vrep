@@ -12,6 +12,10 @@ jobs:
       - name: Apt update
         run: sudo apt update
         
+      - name: Customize git
+        run: |
+          git submodule update --init -- cpp
+        
       - name: Install prerequisites
         run: |
           sudo apt install cmake g++ libeigen3-dev fakeroot
