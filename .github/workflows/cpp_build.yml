@@ -38,3 +38,12 @@ jobs:
           fakeroot debian/rules binary
           cd ..
           sudo apt install ./*.deb
+          
+      - name: Clone cpp-examples
+        run: git clone https://github.com/dqrobotics/cpp-examples.git
+          
+      - name: Build examples
+        run: |
+          cd cpp-examples
+          chmod +x .build_vrep.sh
+          ./.build_vrep.sh
