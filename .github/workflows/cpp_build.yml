@@ -46,3 +46,4 @@ jobs:
         run: |
           cd cpp-examples
           chmod +x .build_vrep.sh
+          ./.build_vrep.sh
