@@ -1,5 +1,5 @@
 /**
-(C) Copyright 2019 DQ Robotics Developers
+(C) Copyright 2019-2022 DQ Robotics Developers
 
 This file is part of DQ Robotics.
 
@@ -18,6 +18,7 @@ This file is part of DQ Robotics.
 
 Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
+- Juan Jose Quiroz Omana   (juanjqo@g.ecc.u-tokyo.ac.jp)
 */
 
 #include <dqrobotics/interfaces/vrep/DQ_VrepInterface.h>
@@ -32,7 +33,25 @@ Contributors:
 ///                        PRIVATE FUNCTIONS
 /// ***************************************************************************************
 
-void DQ_VrepInterface::__insert_or_update_map(const std::string &objectname, const DQ_VrepInterfaceMapElement &element)
+/**
+ * @brief This custom structure containts the data of the DQ_VrepInterface::call_script_function method.
+ * @param return_code The remote API function flag returned. Example: simx_return_ok.
+ * @param output_ints The returned integer values.
+ * @param output_floats The returned float values.
+ * @param output_strings The returned string values.
+ *
+ */
+struct call_script_data
+{
+    int return_code;
+    VectorXi output_ints;
+    VectorXf output_floats;
+    std::vector<std::string> output_strings;
+    //unsigned char retBuffer;
+
+};
+
+void DQ_VrepInterface::_insert_or_update_map(const std::string &objectname, const DQ_VrepInterfaceMapElement &element)
 {
     auto ret = name_to_element_map_.insert ( std::pair<std::string,DQ_VrepInterfaceMapElement>(objectname,element));
     if (ret.second==false) {
@@ -40,7 +59,7 @@ void DQ_VrepInterface::__insert_or_update_map(const std::string &objectname, con
     }
 }
 
-int DQ_VrepInterface::__get_handle_from_map(const std::string &objectname)
+int DQ_VrepInterface::_get_handle_from_map(const std::string &objectname)
 {
     if(name_to_element_map_.count(objectname)==1)
     {
@@ -50,20 +69,20 @@ int DQ_VrepInterface::__get_handle_from_map(const std::string &objectname)
         return get_object_handle(objectname);
 }
 
-DQ_VrepInterfaceMapElement& DQ_VrepInterface::__get_element_from_map(const std::string &objectname)
+DQ_VrepInterfaceMapElement& DQ_VrepInterface::_get_element_from_map(const std::string &objectname)
 {
     //Update map if needed
-    __get_handle_from_map(objectname);
+    _get_handle_from_map(objectname);
 
     if(name_to_element_map_.count(objectname)==1)
     {
         return name_to_element_map_.at(objectname);
     }
     else
-        throw std::runtime_error("Unexpected error @ __get_element_from_map");
+        throw std::runtime_error("Unexpected error @ _get_element_from_map");
 }
 
-std::string __simx_int_to_string(const simxInt& ret)
+std::string _simx_int_to_string(const simxInt& ret)
 {
     std::string output("");
     //http://www.coppeliarobotics.com/helpFiles/en/remoteApiConstants.htm
@@ -85,7 +104,7 @@ std::string __simx_int_to_string(const simxInt& ret)
     return output;
 }
 
-void __retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_COUNT, const int& TIMEOUT_IN_MILISECONDS, std::atomic_bool* no_blocking_loops, const DQ_VrepInterface::OP_MODES& opmode)
+void _retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_COUNT, const int& TIMEOUT_IN_MILISECONDS, std::atomic_bool* no_blocking_loops, const DQ_VrepInterface::OP_MODES& opmode)
 {
     int retry_counter = 0;
     int function_result = 0;
@@ -108,10 +127,10 @@ void __retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_
         std::this_thread::sleep_for(std::chrono::milliseconds(TIMEOUT_IN_MILISECONDS));
         retry_counter++;
     }
-    throw std::runtime_error("Timeout in VREP communication. Error: " + __simx_int_to_string(function_result) +".");
+    throw std::runtime_error("Timeout in VREP communication. Error: " + _simx_int_to_string(function_result) +".");
 }
 
-simxInt __remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
+simxInt _remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
 {
     switch(opmode)
     {
@@ -127,6 +146,157 @@ simxInt __remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
     throw std::range_error("Unknown opmode in __remap_op_mode");
 }
 
+/**
+ * @brief This protected method extracts a string vector from a const char* element.
+ * @param string The output_string pointer that is required by simxCallScriptFunction.
+ * @param size The number of output strings returned by simxCallScriptFunction.
+ * @returns a string vector.
+ *
+ *          Example:
+ *          // When _call_script_function is called, the method runs the following:
+ *          // char* output_strings;
+ *          // simxCallScriptFunction(clientid_, obj_name.c_str(), __remap_script_type(scripttype), function_name.c_str(),
+ *          //                              intsize, input_ints_ptr, floatsize, input_floats_ptr, stringsize, input_strings_ptr,
+ *          //                              0, nullptr, &outIntCnt, &output_ints, &outFloatCnt, &output_floats,  &outStringCnt,
+ *          //                              &output_strings, nullptr, nullptr, __remap_op_mode(opmode));
+ *          // Then, we have that
+ *
+ *          std::vector<std::string>  vec_output_strings = __extract_vector_string_from_char_pointer(output_strings, sizestr);
+ */
+std::vector<std::string> _extract_vector_string_from_char_pointer(const char *string, const int& size)
+{
+    std::vector<std::string> output_string;
+    if (size<0){
+        throw std::range_error("Incorrect size. The size must be higher than zero");
+    };
+    char c;
+    char c_0;
+    c = string[0];
+    c_0 = c;
+    int j=0;
+    std::string str;
+    //int count=0;
+    int words = 0;
+    while (words != size)
+     {
+        c = string[j];
+        if (c =='\0')
+        {
+            //count++;
+            if (c_0 != '\0')
+            {
+               if (words<size)
+                {
+                 words++;
+                 output_string.push_back(str);
+                 str = {};
+                }
+            }
+        }
+        c_0 = c;
+        j++;
+        str.push_back(c);
+     }
+
+    return output_string;
+}
+
+
+/**
+ * @brief This method returns a call_script_data structure from elements returned by _call_script_function().
+ * @param return_code The return code of the simxCallScriptFunction method.
+ * @param outIntCnt (pointer) The number of returned integer values.
+ * @param output_ints (pointer) The returned integer values.
+ * @param outFloatCnt (pointer) The number of returned floating-point values.
+ * @param output_floats (pointer) The returned floating-point values.
+ * @param outStringCnt (pointer)  The number of returned strings.
+ * @param output_strings (pointer) The returned strings.
+ * @returns a call_script_data structure.
+ *     Example:
+ *        int outIntCnt;
+ *        int* output_ints;
+ *        int outFloatCnt;
+ *        float* output_floats;
+ *        int outStringCnt;
+ *        char* output_strings;
+ *        int return_code = _call_script_function(function_name, obj_name, {}, {}, {},&outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
+ *
+ *        //To get the returned values, you can use _extract_call_script_data_from_pointers().
+ *        //Example:
+ *         call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+ *
+ *
+ */
+call_script_data _extract_call_script_data_from_pointers(int return_code, int outIntCnt, int* output_ints, int outFloatCnt, float* output_floats, int outStringCnt, char* output_strings)
+{    
+    struct call_script_data data;
+    data.return_code = return_code;
+
+    if (return_code == simx_return_ok)
+     {
+        if (outIntCnt >0)
+        {
+            data.output_ints = Map<VectorXi >(output_ints, outIntCnt);
+        }
+
+        if (outFloatCnt >0)
+        {
+            data.output_floats = Map<VectorXf>(output_floats, outFloatCnt);
+        }
+        if (outStringCnt >0)
+        {
+            data.output_strings = _extract_vector_string_from_char_pointer(output_strings, outStringCnt);
+        }
+    }
+
+    return data;
+}
+
+
+/**
+ * @brief This protected method remaps the constant properties DQ_VrepInterface::REFERENCE_FRAMES to their equivalent
+ *        string.
+ * @param reference_frame The constant reference frame of DQ_VrepInterface::REFERENCE_FRAMES.
+ * @returns The string related to the reference frame.
+ *
+ *              Example: rf = _remap_reference_frame(ABSOLUTE_FRAME);
+ *
+ */
+std::string _remap_reference_frame(const DQ_VrepInterface::REFERENCE_FRAMES& reference_frame)
+{
+    switch(reference_frame)
+    {
+      case DQ_VrepInterface::BODY_FRAME:
+        return "body_frame";
+      case DQ_VrepInterface::ABSOLUTE_FRAME:
+        return "absolute_frame";
+    }
+    throw std::range_error("Unknown reference_frame in _remap_reference_frame");
+}
+
+/**
+ * @brief This protected method remaps the constant properties DQ_VrepInterface::SCRIPT_TYPES to their equivalent
+ *        simxInt script type.
+ * @param script_type The constant script type of DQ_VrepInterface::SCRIPT_TYPES.
+ * @returns The simxInt script type.
+ *
+ *              Example: st = _remap_script_type(ST_CHILD);
+ *
+ */
+simxInt _remap_script_type(const DQ_VrepInterface::SCRIPT_TYPES& script_type)
+{
+    switch (script_type)
+    {
+    case DQ_VrepInterface::ST_CHILD:
+        return sim_scripttype_childscript;
+    case DQ_VrepInterface::ST_MAIN:
+        return sim_scripttype_mainscript;
+    case DQ_VrepInterface::ST_CUSTOMIZATION:
+        return sim_scripttype_customizationscript;
+    }
+    throw std::range_error("Unknown script_type in __remap_script_type");
+}
+
 ///****************************************************************************************
 ///                        PUBLIC FUNCTIONS
 /// ***************************************************************************************
@@ -136,7 +306,7 @@ DQ_VrepInterface::DQ_VrepInterface(std::atomic_bool* no_blocking_loops)
     no_blocking_loops_ = no_blocking_loops;
     global_retry_count_ = 0;
     clientid_ = -1;
-    __insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,DQ_VrepInterfaceMapElement(-1));
+    _insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,DQ_VrepInterfaceMapElement(-1));
 }
 
 DQ_VrepInterface::~DQ_VrepInterface()
@@ -241,9 +411,9 @@ int DQ_VrepInterface::get_object_handle(const std::string &objectname)
 {
     int hp;
     const std::function<simxInt(void)> f = std::bind(simxGetObjectHandle,clientid_,objectname.c_str(),&hp,simx_opmode_blocking);
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,OP_BLOCKING);
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,OP_BLOCKING);
     ///Updates handle map
-    __insert_or_update_map(objectname,DQ_VrepInterfaceMapElement(hp));
+    _insert_or_update_map(objectname,DQ_VrepInterfaceMapElement(hp));
     return hp;
 }
 
@@ -262,64 +432,64 @@ std::vector<int> DQ_VrepInterface::get_object_handles(const std::vector<std::str
 DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     simxFloat tp[3];
-    const std::function<simxInt(void)> f = std::bind(simxGetObjectPosition,clientid_,handle,relative_to_handle,tp,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectPosition,clientid_,handle,relative_to_handle,tp,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
     const DQ t(0,tp[0],tp[1],tp[2]);
     return t;
 }
 DQ DQ_VrepInterface::get_object_translation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return get_object_translation(handle,__get_handle_from_map(relative_to_objectname),opmode);
+    return get_object_translation(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
-    return get_object_translation(__get_handle_from_map(objectname),relative_to_handle,opmode);
+    return get_object_translation(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     if(opmode == OP_AUTOMATIC)
     {
-        DQ_VrepInterfaceMapElement& element = __get_element_from_map(objectname);
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(objectname);
         if(!element.state_from_function_signature(std::string("get_object_translation")))
         {
-            get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_STREAMING);
+            get_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_STREAMING);
         }
-        return get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_BUFFER);
+        return get_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_BUFFER);
     }
     else
-        return get_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
+        return get_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),opmode);
 }
 
 
 DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     simxFloat rp[4];
-    const std::function<simxInt(void)> f = std::bind(simxGetObjectQuaternion,clientid_,handle,relative_to_handle,rp,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectQuaternion,clientid_,handle,relative_to_handle,rp,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
     const DQ r(rp[3],rp[0],rp[1],rp[2],0,0,0,0);
     return normalize(r); //We need to normalize here because vrep uses 32bit precision and our DQ are 64bit precision.
 }
 DQ DQ_VrepInterface::get_object_rotation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return get_object_rotation(handle,__get_handle_from_map(relative_to_objectname),opmode);
+    return get_object_rotation(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
-    return get_object_rotation(__get_handle_from_map(objectname),relative_to_handle,opmode);
+    return get_object_rotation(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     if(opmode == OP_AUTOMATIC)
     {
-        DQ_VrepInterfaceMapElement& element = __get_element_from_map(objectname);
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(objectname);
         if(!element.state_from_function_signature(std::string("get_object_rotation")))
         {
-            get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_STREAMING);
+            get_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_STREAMING);
         }
-        return get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),OP_BUFFER);
+        return get_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),OP_BUFFER);
     }
     else
-        return get_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),opmode);
+        return get_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),opmode);
 }
 
 DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
@@ -331,11 +501,11 @@ DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_h
 }
 DQ DQ_VrepInterface::get_object_pose(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return get_object_pose(handle,__get_handle_from_map(relative_to_objectname),opmode);
+    return get_object_pose(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
-    return get_object_pose(__get_handle_from_map(objectname),relative_to_handle,opmode);
+    return get_object_pose(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -363,19 +533,19 @@ void DQ_VrepInterface::set_object_translation(const int &handle, const int &rela
     tp[1]=float(t.q(2));
     tp[2]=float(t.q(3));
 
-    simxSetObjectPosition(clientid_,handle,relative_to_handle,tp,__remap_op_mode(opmode));
+    simxSetObjectPosition(clientid_,handle,relative_to_handle,tp,_remap_op_mode(opmode));
 }
 void DQ_VrepInterface::set_object_translation(const int& handle, const std::string& relative_to_objectname, const DQ& t, const OP_MODES& opmode)
 {
-    return set_object_translation(handle,__get_handle_from_map(relative_to_objectname),t,opmode);
+    return set_object_translation(handle,_get_handle_from_map(relative_to_objectname),t,opmode);
 }
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const int& relative_to_handle, const DQ& t, const OP_MODES& opmode)
 {
-    return set_object_translation(__get_handle_from_map(objectname),relative_to_handle,t,opmode);
+    return set_object_translation(_get_handle_from_map(objectname),relative_to_handle,t,opmode);
 }
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const DQ& t, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return set_object_translation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),t,opmode);
+    return set_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),t,opmode);
 }
 
 void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relative_to_handle, const DQ& r, const OP_MODES &opmode) const
@@ -386,19 +556,19 @@ void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relativ
     rp[2]=float(r.q(3));
     rp[3]=float(r.q(0));
 
-    simxSetObjectQuaternion(clientid_,handle,relative_to_handle,rp,__remap_op_mode(opmode));
+    simxSetObjectQuaternion(clientid_,handle,relative_to_handle,rp,_remap_op_mode(opmode));
 }
 void DQ_VrepInterface::set_object_rotation(const int& handle, const std::string& relative_to_objectname, const DQ& r, const OP_MODES& opmode)
 {
-    return set_object_rotation(handle,__get_handle_from_map(relative_to_objectname),r,opmode);
+    return set_object_rotation(handle,_get_handle_from_map(relative_to_objectname),r,opmode);
 }
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const int& relative_to_handle, const DQ& r, const OP_MODES& opmode)
 {
-    return set_object_rotation(__get_handle_from_map(objectname),relative_to_handle,r,opmode);
+    return set_object_rotation(_get_handle_from_map(objectname),relative_to_handle,r,opmode);
 }
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const DQ& r, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return set_object_rotation(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),r,opmode);
+    return set_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),r,opmode);
 }
 
 
@@ -409,15 +579,15 @@ void DQ_VrepInterface::set_object_pose(const int &handle, const int &relative_to
 }
 void DQ_VrepInterface::set_object_pose(const int& handle, const std::string& relative_to_objectname, const DQ& h, const OP_MODES& opmode)
 {
-    return set_object_pose(handle,__get_handle_from_map(relative_to_objectname),h,opmode);
+    return set_object_pose(handle,_get_handle_from_map(relative_to_objectname),h,opmode);
 }
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const int& relative_to_handle, const DQ& h, const OP_MODES& opmode)
 {
-    return set_object_pose(__get_handle_from_map(objectname),relative_to_handle,h,opmode);
+    return set_object_pose(_get_handle_from_map(objectname),relative_to_handle,h,opmode);
 }
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const DQ& h, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
-    return set_object_pose(__get_handle_from_map(objectname),__get_handle_from_map(relative_to_objectname),h,opmode);
+    return set_object_pose(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),h,opmode);
 }
 
 void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const std::vector<DQ> &hs, const OP_MODES &opmode) const
@@ -433,8 +603,8 @@ void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const i
 double DQ_VrepInterface::get_joint_position(const int &handle, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f;
-    const std::function<simxInt(void)> f = std::bind(simxGetJointPosition,clientid_,handle,&angle_rad_f,__remap_op_mode(opmode));
-    __retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    const std::function<simxInt(void)> f = std::bind(simxGetJointPosition,clientid_,handle,&angle_rad_f,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
     return double(angle_rad_f);
 }
 
@@ -442,7 +612,7 @@ double DQ_VrepInterface::get_joint_position(const std::string& jointname, const 
 {
     if(opmode == OP_AUTOMATIC)
     {
-        DQ_VrepInterfaceMapElement& element = __get_element_from_map(jointname);
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(jointname);
         if(!element.state_from_function_signature(std::string("get_joint_position")))
         {
             get_joint_position(element.get_handle(),OP_STREAMING);
@@ -450,27 +620,27 @@ double DQ_VrepInterface::get_joint_position(const std::string& jointname, const 
         return get_joint_position(element.get_handle(),OP_BUFFER);
     }
     else
-        return get_joint_position(__get_handle_from_map(jointname),opmode);
+        return get_joint_position(_get_handle_from_map(jointname),opmode);
 }
 
 void DQ_VrepInterface::set_joint_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
-    simxSetJointPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
+    simxSetJointPosition(clientid_,handle,angle_rad_f,_remap_op_mode(opmode));
 }
 void DQ_VrepInterface::set_joint_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
-    return set_joint_position(__get_handle_from_map(jointname),angle_rad,opmode);
+    return set_joint_position(_get_handle_from_map(jointname),angle_rad,opmode);
 }
 
 void DQ_VrepInterface::set_joint_target_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
-    simxSetJointTargetPosition(clientid_,handle,angle_rad_f,__remap_op_mode(opmode));
+    simxSetJointTargetPosition(clientid_,handle,angle_rad_f,_remap_op_mode(opmode));
 }
 void DQ_VrepInterface::set_joint_target_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
-    return set_joint_target_position(__get_handle_from_map(jointname),angle_rad,opmode);
+    return set_joint_target_position(_get_handle_from_map(jointname),angle_rad,opmode);
 }
 
 VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<int> &handles, const OP_MODES &opmode) const
@@ -549,20 +719,689 @@ void DQ_VrepInterface::set_joint_target_positions(const std::vector<std::string>
 void DQ_VrepInterface::start_video_recording()
 {
     const unsigned char video_recording_state = 1;
-    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,__remap_op_mode(OP_ONESHOT));
+    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,_remap_op_mode(OP_ONESHOT));
 }
 
 void DQ_VrepInterface::stop_video_recording()
 {
     const unsigned char video_recording_state = 0;
-    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,__remap_op_mode(OP_ONESHOT));
+    simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,_remap_op_mode(OP_ONESHOT));
 }
 
 bool DQ_VrepInterface::is_video_recording()
 {
     unsigned char video_recording_state;
-    simxGetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,&video_recording_state,__remap_op_mode(OP_BLOCKING));
+    simxGetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,&video_recording_state,_remap_op_mode(OP_BLOCKING));
     return static_cast<bool>(video_recording_state);
 }
 
+// New ones
+
+/**
+ * @brief This method sets the joint velocity.
+ * @param handle The handle of the joint.
+ * @param angle_dot_rad The target angular velocity.
+ * @param opmode The operation mode.
+ */
+void DQ_VrepInterface::set_joint_target_velocity(const int &handle, const double &angle_dot_rad, const OP_MODES &opmode) const
+{
+    simxFloat angle_dot_rad_f = simxFloat(angle_dot_rad);
+    simxSetJointTargetVelocity(clientid_,handle,angle_dot_rad_f,_remap_op_mode(opmode));
+}
+
+/**
+ * @brief This method sets the joint velocity.
+ * @param jointname The name of the joint.
+ * @param angle_dot_rad The target angular velocity.
+ * @param opmode The operation mode. (Default: OP_ONESHOT)
+ */
+void DQ_VrepInterface::set_joint_target_velocity(const std::string& jointname, const double& angle_dot_rad, const OP_MODES& opmode)
+{
+    return set_joint_target_velocity(_get_handle_from_map(jointname), angle_dot_rad,opmode);
+}
+
+
+/**
+ * @brief This method sets the joint velocities.
+ * @param handle The handles of the joints.
+ * @param angles_dot_rad The target angular velocities.
+ * @param opmode The operation mode.
+ */
+void DQ_VrepInterface::set_joint_target_velocities(const std::vector<int> &handles, const VectorXd &angles_dot_rad, const OP_MODES &opmode) const
+{
+    std::vector<double>::size_type n = handles.size();
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        set_joint_target_velocity(handles[i],angles_dot_rad(i),opmode);
+    }
+}
+
+
+/**
+ * @brief This method sets the joint velocities.
+ * @param jointnames The names of the joints.
+ * @param angles_dot_rad The target angular velocities.
+ * @param opmode The operation mode. (Default: OP_ONESHOT)
+ *
+ *       Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           VectorXd u = VectorXd::Zero(7);
+ *           vi.set_joint_target_velocities(jointnames, u);
+ *
+ */
+void DQ_VrepInterface::set_joint_target_velocities(const std::vector<std::string> &jointnames, const VectorXd &angles_dot_rad, const OP_MODES &opmode)
+{
+    if(int(jointnames.size()) != int(angles_dot_rad.size()))
+    {
+        throw std::runtime_error("Incompatible sizes in set_joint_target_velocities");
+    }
+    std::vector<double>::size_type n = jointnames.size();
+    //simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        set_joint_target_velocity(jointnames[i],angles_dot_rad(i),opmode);
+    }
+    //simxPauseSimulation(clientid_,0);
+}
+
+
+/**
+ * @brief This method gets the joint velocity.
+ * @param handle The handle of the joint.
+ * @param opmode The operation mode.
+ * @returns the joint velocity.
+ */
+double DQ_VrepInterface::get_joint_velocity(const int &handle, const OP_MODES &opmode) const
+{
+    simxFloat angle_dot_rad_f;
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectFloatParameter, clientid_, handle, 2012, &angle_dot_rad_f,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    return double(angle_dot_rad_f);
+}
+
+
+/**
+ * @brief This method gets the joint velocity.
+ * @param jointname The name of the joint.
+ * @param opmode The operation mode.
+ * @returns the joint velocity.
+ */
+double DQ_VrepInterface::get_joint_velocity(const std::string& jointname, const OP_MODES& opmode)
+{
+    if(opmode == OP_AUTOMATIC)
+    {
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(jointname);
+        if(!element.state_from_function_signature(std::string("get_joint_velocity")))
+        {
+            get_joint_velocity(element.get_handle(),OP_STREAMING);
+        }
+        return get_joint_velocity(element.get_handle(),OP_BUFFER);
+    }
+    else
+        return get_joint_velocity(_get_handle_from_map(jointname),opmode);
+}
+
+
+/**
+ * @brief This method gets the joint velocities.
+ * @param handle The handles of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint velocities.
+ */
+VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<int> &handles, const OP_MODES &opmode) const
+{
+    std::vector<double>::size_type n = handles.size();
+    VectorXd joint_velocities(n);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        joint_velocities(i)=get_joint_velocity(handles[i],opmode);
+    }
+    return joint_velocities;
+}
+
+
+/**
+ * @brief This method gets the joint velocities.
+ * @param jointnames The names of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint velocities.
+ *
+ *      Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           std::cout<< "q_dot: "<<vi.get_joint_velocities(jointnames)<<std::endl;
+ *
+ */
+VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<std::string> &jointnames, const OP_MODES &opmode)
+{
+    std::vector<double>::size_type n = jointnames.size();
+    VectorXd joint_velocities(n);
+    //simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        joint_velocities(i)=get_joint_velocity(jointnames[i],opmode);
+    }
+    //simxPauseSimulation(clientid_,0);
+    return joint_velocities;
+}
+
+
+/**
+ * @brief This method sets the joint torque.
+ * @param handle The handle of the joint.
+ * @param torque The torque.
+ * @param opmode The operation mode.
+ */
+void DQ_VrepInterface::set_joint_torque(const int &handle, const double &torque, const OP_MODES &opmode) const
+{
+    simxFloat torque_f = simxFloat(torque);
+    simxFloat angle_dot_rad_max = 10000.0;
+    if (torque_f==0)
+    {
+        angle_dot_rad_max = 0.0;
+    }else if (torque_f<0)
+    {
+        angle_dot_rad_max = -10000.0;
+    }
+    simxSetJointTargetVelocity(clientid_,handle,angle_dot_rad_max,_remap_op_mode(opmode));
+    simxSetJointForce(clientid_,handle,abs(torque_f),_remap_op_mode(opmode));
+}
+
+/**
+ * @brief This method sets the joint torque.
+ * @param jointname The name of the joint.
+ * @param torque The torque.
+ * @param opmode The operation mode. (Default: OP_ONESHOT)
+ */
+void DQ_VrepInterface::set_joint_torque(const std::string& jointname, const double& torque, const OP_MODES& opmode)
+{
+    return set_joint_torque(_get_handle_from_map(jointname), torque,opmode);
+}
+
+
+/**
+ * @brief This method sets the joint torques.
+ * @param handle The handles of the joints.
+ * @param torques The torques.
+ * @param opmode The operation mode.
+ */
+void DQ_VrepInterface::set_joint_torques(const std::vector<int> &handles, const VectorXd &torques, const OP_MODES &opmode) const
+{
+    std::vector<double>::size_type n = handles.size();
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        set_joint_torque(handles[i],torques(i),opmode);
+    }
+}
+
+
+/**
+ * @brief This method sets the joint torques.
+ * @param jointnames The names of the joints.
+ * @param torques The torques.
+ * @param opmode The operation mode. (Default: OP_ONESHOT)
+ *
+ *      Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           VectorXd u = VectorXd::Zero(7);
+ *           vi.set_joint_torques(jointnames, u);
+ */
+void DQ_VrepInterface::set_joint_torques(const std::vector<std::string> &jointnames, const VectorXd &torques, const OP_MODES &opmode)
+{
+    if(int(jointnames.size()) != int(torques.size()))
+    {
+        throw std::runtime_error("Incompatible sizes in set_joint_torques");
+    }
+    std::vector<double>::size_type n = jointnames.size();
+    //simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        set_joint_torque(jointnames[i],torques(i),opmode);
+    }
+    //simxPauseSimulation(clientid_,0);
+}
+
+
+/**
+ * @brief This method gets the joint torque.
+ * @param handle The handle of the joint.
+ * @param opmode The operation mode.
+ * @returns the joint torque.
+ */
+double DQ_VrepInterface::get_joint_torque(const int &handle, const OP_MODES &opmode) const
+{
+    simxFloat torque;
+    const std::function<simxInt(void)> f = std::bind(simxGetJointForce, clientid_, handle, &torque,_remap_op_mode(opmode));
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opmode);
+    //We change the signal to get a consistent result.
+    return double(-1*torque);
+}
+
+
+/**
+ * @brief This method gets the joint torque.
+ * @param jointname The name of the joint.
+ * @param opmode The operation mode.
+ * @returns the joint torque.
+ */
+double DQ_VrepInterface::get_joint_torque(const std::string& jointname, const OP_MODES& opmode)
+{
+    if(opmode == OP_AUTOMATIC)
+    {
+        DQ_VrepInterfaceMapElement& element = _get_element_from_map(jointname);
+        if(!element.state_from_function_signature(std::string("get_joint_torque")))
+        {
+            get_joint_torque(element.get_handle(),OP_STREAMING);
+        }
+        return get_joint_torque(element.get_handle(),OP_BUFFER);
+    }
+    else
+        return get_joint_torque(_get_handle_from_map(jointname),opmode);
+}
+
+
+/**
+ * @brief This method gets the joint torques.
+ * @param handle The handles of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint torques.
+ */
+VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<int> &handles, const OP_MODES &opmode) const
+{
+    std::vector<double>::size_type n = handles.size();
+    VectorXd joint_torques(n);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        joint_torques(i)=get_joint_velocity(handles[i],opmode);
+    }
+    return joint_torques;
+}
+
+
+/**
+ * @brief This method gets the joint torques.
+ * @param jointnames The names of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint torques.
+ *
+ *      Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           std::cout<< "torques: "<<vi.get_joint_torques(jointnames)<<std::endl;
+ *
+ */
+VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<std::string> &jointnames, const OP_MODES &opmode)
+{
+    std::vector<double>::size_type n = jointnames.size();
+    VectorXd joint_torques(n);
+    //simxPauseSimulation(clientid_,1);
+    for(std::vector<double>::size_type i=0;i<n;i++)
+    {
+        joint_torques(i)=get_joint_torque(jointnames[i],opmode);
+    }
+    //simxPauseSimulation(clientid_,0);
+    return joint_torques;
+}
+
+/**
+ * @brief This method returns the inertia matrix of an object on the CoppeliaSim scene.
+ * @param handle The handle of the object from which we want to extract the inertia matrix.
+ * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the inertia matrix is expressed. (Default: "shape_frame")
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_inertia")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
+ * @returns The inertia matrix.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //     function get_inertia(inInts,inFloats,inStrings,inBuffer)
+ *              //
+ *              //         if #inInts>=1 then
+ *              //            IM, matrixSFCOM=sim.getShapeInertia(inInts[1])
+ *              //
+ *              //             if inStrings[1] == 'absolute_frame' then
+ *              //                 matrix0_SF=sim.getObjectMatrix(inInts[1],-1)
+ *              //                 M = sim.multiplyMatrices(matrix0_SF,matrixSFCOM)
+ *              //                I= {{IM[1],IM[2],IM[3]},
+ *              //                     {IM[4],IM[5],IM[6]},
+ *              //                     {IM[7],IM[8],IM[9]}}
+ *              //                 R_0_COM = {{M[1],M[2],M[3]},
+ *              //                           {M[5],M[6],M[7]},
+ *              //                            {M[9],M[10],M[11]}}
+ *              //                 R_0_COM_T = transpose(R_0_COM)
+ *              //                 RIR_T = mat_mult(mat_mult(R_0_COM,I), R_0_COM_T)
+ *              //                 RIR_T_v = {RIR_T[1][1], RIR_T[1][2], RIR_T[1][3],
+ *              //                            RIR_T[2][1], RIR_T[2][2], RIR_T[2][3],
+ *              //                            RIR_T[3][1], RIR_T[3][2], RIR_T[3][3]}
+ *              //                 resultInertiaMatrix=RIR_T_v
+ *              //             else
+ *              //                 resultInertiaMatrix=IM
+ *              //             end
+ *              //             return {},resultInertiaMatrix,{},''
+ *              //         end
+ *              //     end
+ *              // In addition, it is assumed a FrankaEmikaPanda robot manipulator
+ *              // in the Coppelia scene.
+ *
+ *              DQ_VrepInterface vi;
+ *              int handle = vi.get_object_handle("Franka_link5_resp")
+ *              MatrixXd inertia_matrix = vi.get_inertia_matrix(handle);
+ *              std::cout<<"Inertia_matrix expressed in shape frame:    \n"<<inertia_matrix<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(handle, "absolute_frame")<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(handle, "absolute_frame","get_inertia")<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(handle, "absolute_frame","get_inertia","DQRoboticsApiCommandServer")<<std::endl;
+ *
+ */
+MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
+
+{
+    int outFloatCnt;
+    float* output_floats;
+    int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {_remap_reference_frame(reference_frame)},
+                           0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
+    if (return_code != 0)
+    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
+    call_script_data data = _extract_call_script_data_from_pointers(return_code, 0, nullptr, outFloatCnt, output_floats, 0, nullptr);
+
+    if (data.output_floats.size()!= 9){
+        throw std::range_error("Error in get_inertia_matrix. Incorrect number of returned values from CoppeliaSim. (Expected: 9)");
+    }
+    MatrixXd inertia_matrix = MatrixXd(3,3);
+    inertia_matrix << data.output_floats[0],data.output_floats[1],data.output_floats[2],
+                      data.output_floats[3],data.output_floats[4],data.output_floats[5],
+                      data.output_floats[6],data.output_floats[7],data.output_floats[8];
+    return inertia_matrix;
+}
+
+
+/**
+ * @brief This method returns the inertia matrix of an object on the CoppeliaSim scene.
+ * @param link name The name of the object from which we want to extract the inertia matrix.
+ * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the inertia matrix is expressed. (Default: "shape_frame")
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_inertia")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
+ * @returns The inertia matrix.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //     function get_inertia(inInts,inFloats,inStrings,inBuffer)
+ *              //
+ *              //         if #inInts>=1 then
+ *              //            IM, matrixSFCOM=sim.getShapeInertia(inInts[1])
+ *              //
+ *              //             if inStrings[1] == 'absolute_frame' then
+ *              //                 matrix0_SF=sim.getObjectMatrix(inInts[1],-1)
+ *              //                 M = sim.multiplyMatrices(matrix0_SF,matrixSFCOM)
+ *              //                I= {{IM[1],IM[2],IM[3]},
+ *              //                     {IM[4],IM[5],IM[6]},
+ *              //                     {IM[7],IM[8],IM[9]}}
+ *              //                 R_0_COM = {{M[1],M[2],M[3]},
+ *              //                           {M[5],M[6],M[7]},
+ *              //                            {M[9],M[10],M[11]}}
+ *              //                 R_0_COM_T = transpose(R_0_COM)
+ *              //                 RIR_T = mat_mult(mat_mult(R_0_COM,I), R_0_COM_T)
+ *              //                 RIR_T_v = {RIR_T[1][1], RIR_T[1][2], RIR_T[1][3],
+ *              //                            RIR_T[2][1], RIR_T[2][2], RIR_T[2][3],
+ *              //                            RIR_T[3][1], RIR_T[3][2], RIR_T[3][3]}
+ *              //                 resultInertiaMatrix=RIR_T_v
+ *              //             else
+ *              //                 resultInertiaMatrix=IM
+ *              //             end
+ *              //             return {},resultInertiaMatrix,{},''
+ *              //         end
+ *              //     end
+ *              // In addition, it is assumed a FrankaEmikaPanda robot manipulator
+ *              // in the Coppelia scene.
+ *
+ *              DQ_VrepInterface vi;
+ *              std::string link = "Franka_link5_resp";
+ *              MatrixXd inertia_matrix = vi.get_inertia_matrix(link);
+ *              std::cout<<"Inertia_matrix expressed in shape frame:    \n"<<inertia_matrix<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame")<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame","get_inertia")<<std::endl;
+ *              std::cout<<"Inertia_matrix expressed in absolute frame: \n"<<vi.get_inertia_matrix(link, "absolute_frame","get_inertia","DQRoboticsApiCommandServer")<<std::endl;
+ *
+ */
+MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
+
+{    
+    return get_inertia_matrix(_get_handle_from_map(link_name), reference_frame, function_name, obj_name);
+}
+
+
+/**
+ * @brief This method returns the center of mass of an object on the CoppeliaSim scene.
+ * @param handle The handle of the object from which we want to extract the center of mass.
+ * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the center of mass is expressed. (Default: "shape_frame")
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_center_of_mass")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
+ * @returns The center of mass.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //  function get_center_of_mass(inInts,inFloats,inStrings,inBuffer)
+ *              //     if #inInts>=1 then
+ *              //         IM,matrix_SF_COM=sim.getShapeInertia(inInts[1])
+ *              //         matrix0_SF=sim.getObjectMatrix(inInts[1],-1)
+ *              //         if inStrings[1] == 'absolute_frame' then
+ *              //             resultMatrix = sim.multiplyMatrices(matrix0_SF,matrix_SF_COM)
+ *              //         else
+ *              //             resultMatrix = matrix_SF_COM
+ *              //         end
+ *              //         return {},{resultMatrix[4], resultMatrix[8],resultMatrix[12]},{},''
+ *              //     end
+ *              // end
+ *              // In addition, it is assumed a FrankaEmikaPanda robot manipulator
+ *              // in the Coppelia scene.
+ *
+ *              DQ_VrepInterface vi;
+ *
+ *              int handle = vi.get_object_handle("Franka_link2_resp";
+ *              VectorXd center_of_mass = vi.get_center_of_mass(handle);
+ *              std::cout<<"Center of mass expressed in shape frame:\n"<<center_of_mass<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(handle, "absolute_frame")<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(handle, "absolute_frame", "get_center_of_mass")<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(handle, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
+ *
+ */
+VectorXd DQ_VrepInterface::get_center_of_mass(const int& handle,  const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
+{
+    int outFloatCnt;
+    float* output_floats;
+    int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {_remap_reference_frame(reference_frame)},
+                           0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
+    if (return_code != 0)
+    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
+    call_script_data data = _extract_call_script_data_from_pointers(return_code, 0, nullptr, outFloatCnt, output_floats, 0, nullptr);
+
+    if (data.output_floats.size() != 3){
+        throw std::range_error("Error in get_center_of_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
+    }
+    VectorXd center_of_mass = VectorXd(3);
+    center_of_mass << data.output_floats[0],data.output_floats[1],data.output_floats[2];
+    return center_of_mass;
+}
+
+/**
+ * @brief This method returns the center of mass of an object on the CoppeliaSim scene.
+ * @param link name The name of the object from which we want to extract the center of mass.
+ * @param reference_frame The referece frame ("shape_frame" or "absolute_frame") where the center of mass is expressed. (Default: "shape_frame")
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_center_of_mass")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
+ * @returns The center of mass.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //  function get_center_of_mass(inInts,inFloats,inStrings,inBuffer)
+ *              //     if #inInts>=1 then
+ *              //         IM,matrix_SF_COM=sim.getShapeInertia(inInts[1])
+ *              //         matrix0_SF=sim.getObjectMatrix(inInts[1],-1)
+ *              //         if inStrings[1] == 'absolute_frame' then
+ *              //             resultMatrix = sim.multiplyMatrices(matrix0_SF,matrix_SF_COM)
+ *              //         else
+ *              //             resultMatrix = matrix_SF_COM
+ *              //         end
+ *              //         return {},{resultMatrix[4], resultMatrix[8],resultMatrix[12]},{},''
+ *              //     end
+ *              // end
+ *              // In addition, it is assumed a FrankaEmikaPanda robot manipulator
+ *              // in the Coppelia scene.
+ *
+ *              DQ_VrepInterface vi;
+ *
+ *              std::string link = "Franka_link2_resp";
+ *              VectorXd center_of_mass = vi.get_center_of_mass(link);
+ *              std::cout<<"Center of mass expressed in shape frame:\n"<<center_of_mass<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame")<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass")<<std::endl;
+ *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
+ *
+ */
+VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
+{    
+    return get_center_of_mass(_get_handle_from_map(link_name), reference_frame,function_name, obj_name);
+}
+
+
+/**
+ * @brief This method returns the mass of an object on the CoppeliaSim scene.
+ * @param handle The handle of the object from which we want to extract the mass.
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_mass")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
+ * @returns The mass of the object.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //  function get_mass(inInts,inFloats,inStrings,inBuffer)
+ *              //     local mass = {}
+ *              //     if #inInts>=1 then
+ *              //         mass =sim.getShapeMass(inInts[1])
+ *              //         return {},{mass},{},''
+ *              //     end
+ *              //  end
+ *              // In addition, it is assumed that there is a FrankaEmikaPanda robot manipulator
+ *              // in the Coppelia scene.
+ *
+ *              DQ_VrepInterface vi;
+ *              int handle = vi.get_object_handle(link);
+ *              double mass = vi.get_mass(handle);
+ *                 // or    = vi.get_mass(handle, "get_mass")
+ *                 // or    = vi.get_mass(handle, "get_mass","DQRoboticsApiCommandServer")
+ *
+ */
+double DQ_VrepInterface::get_mass(const int& handle, const std::string& function_name, const std::string& obj_name)
+{
+    int outFloatCnt;
+    float* output_floats;
+    int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {},
+                           0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
+    if (return_code != 0)
+    {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
+    call_script_data data = _extract_call_script_data_from_pointers(return_code, 0, nullptr, outFloatCnt, output_floats, 0, nullptr);
+    if (data.output_floats.size() != 1){
+        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
+    }
+    return data.output_floats[0];
+}
+
+/**
+ * @brief This method returns the mass of an object on the CoppeliaSim scene.
+ * @param link name. The name of the object from which we want to extract the mass.
+ * @param function_name The name of the script function to call in the specified script. (Default: "get_mass")
+ * @param obj_name The name of the object where the script is attached to. (Default: "DQRoboticsApiCommandServer")
+ * @returns The mass of the object.
+ *
+ *              Example:
+ *              // This example assumes that in your CoppeliaSim there is a child script called
+ *              // "DQRoboticsApiCommandServer", where is defined the following Lua function:
+ *              //
+ *              //  function get_mass(inInts,inFloats,inStrings,inBuffer)
+ *              //     local mass = {}
+ *              //     if #inInts>=1 then
+ *              //         mass =sim.getShapeMass(inInts[1])
+ *              //         return {},{mass},{},''
+ *              //     end
+ *              //  end
+ *              // In addition, it is assumed that there is a FrankaEmikaPanda robot manipulator
+ *              // in the Coppelia scene.
+ *
+ *              DQ_VrepInterface vi;
+ *              double mass = vi.get_mass("Franka_link2_resp");
+ *                 // or    = vi.get_mass("Franka_link2_resp", "get_mass")
+ *                 // or    = vi.get_mass("Franka_link2_resp", "get_mass","DQRoboticsApiCommandServer")
+ *
+ */
+double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
+
+{
+    return get_mass(_get_handle_from_map(link_name), function_name,obj_name);
+}
+
+/**
+* @brief This protected method calls remotely a CoppeliaSim script function.
+* @param function_name The name of the script function to call in the specified script.
+* @param obj_name The name of the object where the script is attached to.
+* @param input_ints The input integer values.
+* @param input_floats The input float values.
+* @param input_strings The input string values.
+* @param outIntCnt (pointer) The number of returned integer values.
+* @param output_ints (pointer) The returned integer values.
+* @param outFloatCnt (pointer) The number of returned floating-point values.
+* @param output_floats (pointer) The returned floating-point values.
+* @param outStringCnt (pointer)  The number of returned strings.
+* @param output_strings (pointer) The returned strings.
+* @param scripttype The type of the script. (Default: ST_CHILD)
+* @param opmode The operation mode. (Default: OP_BLOCKING)
+* @returns The return code of the simxCallScriptFunction method.
+*
+*    Example:
+*        int outIntCnt;
+*        int* output_ints;
+*        int outFloatCnt;
+*        float* output_floats;
+*        int outStringCnt;
+*        char* output_strings;
+*        int return_code = _call_script_function(function_name, obj_name, {}, {}, {},&outIntCnt, &output_ints, &outFloatCnt, &output_floats, &outStringCnt, &output_strings);
+*
+*        //To get the returned values, you can use _extract_call_script_data_from_pointers().
+*        //Example:
+*         call_script_data data = _extract_call_script_data_from_pointers(return_code, outIntCnt, output_ints, outFloatCnt, output_floats, outStringCnt, output_strings);
+*
+*
+*/
+int DQ_VrepInterface::_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+                                int* outIntCnt, int** output_ints, int* outFloatCnt, float** output_floats, int* outStringCnt, char** output_strings,
+                                const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
+{
+    const int stringsize = input_strings.size();
+    std::string one_string;
+    if (stringsize >0)
+    {
+        for(int i = 0; i < stringsize; ++i)
+            {
+            one_string += input_strings[i]+'\0';
+            }
+    }
+
+    int return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), _remap_script_type(scripttype), function_name.c_str(),
+                                         input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
+                                         0, nullptr, outIntCnt, output_ints, outFloatCnt, output_floats,  outStringCnt,
+                                         output_strings, nullptr, nullptr, _remap_op_mode(opmode));
+    return return_code;
+}
 

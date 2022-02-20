@@ -1,5 +1,5 @@
 ﻿/**
-(C) Copyright 2019 DQ Robotics Developers
+(C) Copyright 2019-2022 DQ Robotics Developers
 
 This file is part of DQ Robotics.
 
@@ -18,6 +18,7 @@ This file is part of DQ Robotics.
 
 Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
+- Juan Jose Quiroz Omana   (juanjqo@g.ecc.u-tokyo.ac.jp)
 */
 
 #ifndef DQ_ROBOTICS_INTERFACE_VREP_HEADER_GUARD
@@ -37,6 +38,8 @@ const std::string VREP_OBJECTNAME_ABSOLUTE("VREP_OBJECTNAME_ABSOLUTE");
 using namespace DQ_robotics;
 using namespace Eigen;
 
+
+
 class DQ_VrepInterface
 {
 public:
@@ -47,6 +50,17 @@ public:
         OP_ONESHOT,
         OP_BUFFER,
         OP_AUTOMATIC
+    };
+    enum SCRIPT_TYPES
+    {
+        ST_CHILD,
+        ST_MAIN,
+        ST_CUSTOMIZATION
+    };
+    enum REFERENCE_FRAMES
+    {
+        BODY_FRAME,
+        ABSOLUTE_FRAME
     };
 
     /**
@@ -276,6 +290,38 @@ public:
     void stop_video_recording();
     bool is_video_recording();
 
+    //--New ones------
+    void     set_joint_target_velocity(const int& handle, const double& angle_dot_rad, const OP_MODES& opmode) const;
+    void     set_joint_target_velocity(const std::string& jointname, const double& angle_dot_rad, const OP_MODES& opmode=OP_ONESHOT);
+    void     set_joint_target_velocities(const std::vector<int>& handles, const VectorXd& angles_dot_rad, const OP_MODES& opmode) const;
+    void     set_joint_target_velocities(const std::vector<std::string>& jointnames, const VectorXd& angles_dot_rad, const OP_MODES& opmode=OP_ONESHOT);
+
+    double   get_joint_velocity(const int& handle, const OP_MODES& opmode) const;
+    double   get_joint_velocity(const std::string& jointname, const OP_MODES& opmode=OP_AUTOMATIC);
+    VectorXd get_joint_velocities(const std::vector<int>& handles, const OP_MODES& opmode) const;
+    VectorXd get_joint_velocities(const std::vector<std::string>& jointnames, const OP_MODES& opmode=OP_AUTOMATIC);
+
+    void     set_joint_torque(const int& handle, const double& torque, const OP_MODES& opmode) const;
+    void     set_joint_torque(const std::string& jointname, const double& torque, const OP_MODES& opmode=OP_ONESHOT);
+    void     set_joint_torques(const std::vector<int>& handles, const VectorXd& torques, const OP_MODES& opmode) const;
+    void     set_joint_torques(const std::vector<std::string>& jointnames, const VectorXd& torques, const OP_MODES& opmode=OP_ONESHOT);
+
+    double   get_joint_torque(const int& handle, const OP_MODES& opmode) const;
+    double   get_joint_torque(const std::string& jointname, const OP_MODES& opmode=OP_AUTOMATIC);
+    VectorXd get_joint_torques(const std::vector<int>& handles, const OP_MODES& opmode) const;
+    VectorXd get_joint_torques(const std::vector<std::string>& jointnames, const OP_MODES& opmode=OP_AUTOMATIC);
+
+    MatrixXd get_inertia_matrix(const std::string& link_name, const REFERENCE_FRAMES& reference_frame=BODY_FRAME, const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
+    MatrixXd get_inertia_matrix(const int& handle, const REFERENCE_FRAMES& reference_frame=BODY_FRAME, const std::string& function_name = "get_inertia", const std::string& obj_name= "DQRoboticsApiCommandServer");
+
+    VectorXd get_center_of_mass(const std::string& link_name, const REFERENCE_FRAMES& reference_frame=BODY_FRAME, const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
+    VectorXd get_center_of_mass(const int& handle, const REFERENCE_FRAMES& reference_frame=BODY_FRAME, const std::string& function_name = "get_center_of_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
+
+    double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
+    double get_mass(const int& handle, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
+
+
+
 private:
     std::map<std::string,DQ_VrepInterfaceMapElement> name_to_element_map_;
 
@@ -285,11 +331,16 @@ private:
     long int global_retry_count_;
     std::atomic_bool* no_blocking_loops_;
 
-    void __insert_or_update_map(const std::string& objectname, const DQ_VrepInterfaceMapElement& element);
+    void _insert_or_update_map(const std::string& objectname, const DQ_VrepInterfaceMapElement& element);
 
-    int __get_handle_from_map(const std::string& objectname);
+    int _get_handle_from_map(const std::string& objectname);
 
-    DQ_VrepInterfaceMapElement &__get_element_from_map(const std::string& objectname);
+    DQ_VrepInterfaceMapElement &_get_element_from_map(const std::string& objectname);
+
+    int _call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
+                                int* outIntCnt, int** output_ints, int* outFloatCnt, float** output_floats, int* outStringCnt, char** output_strings,
+                                const SCRIPT_TYPES& scripttype = ST_CHILD, const OP_MODES& opmode = OP_BLOCKING);
+
 };
 
 #endif
