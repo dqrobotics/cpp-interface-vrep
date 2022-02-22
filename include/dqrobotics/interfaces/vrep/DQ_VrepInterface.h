@@ -257,13 +257,6 @@ public:
     void     set_joint_target_position(const int& handle, const double& angle_rad, const OP_MODES& opmode) const;
     void     set_joint_target_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode=OP_ONESHOT);
 
-    /**
-     * @brief getJointPositions
-     * Gets the position of a collection of joints.
-     * @param handles
-     * @param opmode
-     * @return
-     */
     VectorXd get_joint_positions(const std::vector<int>& handles, const OP_MODES& opmode) const;
     VectorXd get_joint_positions(const std::vector<std::string>& jointnames, const OP_MODES& opmode=OP_AUTOMATIC);
 

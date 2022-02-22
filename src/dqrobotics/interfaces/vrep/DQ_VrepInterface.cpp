@@ -600,6 +600,12 @@ void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const i
 }
 
 
+/**
+ * @brief This method gets the position of a joint.
+ * @param handle The handle of the joint.
+ * @param opmode The operation mode.
+ * @returns The joint position.
+ */
 double DQ_VrepInterface::get_joint_position(const int &handle, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f;
@@ -608,6 +614,13 @@ double DQ_VrepInterface::get_joint_position(const int &handle, const OP_MODES &o
     return double(angle_rad_f);
 }
 
+
+/**
+ * @brief This method gets the position of a joint.
+ * @param jointname The name of the joint.
+ * @param opmode The operation mode.
+ * @returns The joint position.
+ */
 double DQ_VrepInterface::get_joint_position(const std::string& jointname, const OP_MODES& opmode)
 {
     if(opmode == OP_AUTOMATIC)
@@ -625,8 +638,8 @@ double DQ_VrepInterface::get_joint_position(const std::string& jointname, const 
 
 
 /**
- * @brief This method sets the position of a joint handle.
- * @param handle The name of the joint handle.
+ * @brief This method sets the position of a joint.
+ * @param handle The handle of the joint.
  * @param angles_rad The desired joint position.
  * @param opmode The operation mode.
  */
@@ -638,7 +651,7 @@ void DQ_VrepInterface::set_joint_position(const int &handle, const double &angle
 
 
 /**
- * @brief This method sets the position of a joint handle.
+ * @brief This method sets the position of a joint.
  * @param jointname The name of the joint.
  * @param angles_rad The desired joint position.
  * @param opmode The operation mode.
@@ -650,8 +663,8 @@ void DQ_VrepInterface::set_joint_position(const std::string& jointname, const do
 
 
 /**
- * @brief This method sets the target joint position of a joint handle.
- * @param handle The name of the joint handle.
+ * @brief This method sets the target joint position of a joint.
+ * @param handle The handle of the joint.
  * @param angles_rad The target joint position.
  * @param opmode The operation mode.
  */
@@ -663,7 +676,7 @@ void DQ_VrepInterface::set_joint_target_position(const int &handle, const double
 
 
 /**
- * @brief This method sets the target joint position of a joint name.
+ * @brief This method sets the target joint position of a joint.
  * @param jointname The name of the joint.
  * @param angles_rad The target joint position.
  * @param opmode The operation mode.
@@ -699,8 +712,8 @@ VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<std::string> &j
 
 
 /**
- * @brief This method sets the positions of a collection of joint handles.
- * @param handles The names of the joint handles.
+ * @brief This method sets the positions of a collection of joints.
+ * @param handles The handles of the joints.
  * @param angles_rad The desired joint position vector.
  * @param opmode  The operation mode.
  */
@@ -715,7 +728,7 @@ void DQ_VrepInterface::set_joint_positions(const std::vector<int> &handles, cons
 
 
 /**
- * @brief This method sets the positions of a collection of joint names.
+ * @brief This method sets the positions of a collection of joints.
  * @param jointnames The names of the joints.
  * @param angles_rad The desired joint position vector.
  * @param opmode  The operation mode.
@@ -737,8 +750,8 @@ void DQ_VrepInterface::set_joint_positions(const std::vector<std::string> &joint
 
 
 /**
- * @brief This method sets the target joint positions of a collection of joint handles.
- * @param handles The names of the joint handles.
+ * @brief This method sets the target joint positions of a collection of joints.
+ * @param handles The handles of the joints.
  * @param angles_rad The target joint position vector.
  * @param opmode The operation mode.
  */
@@ -753,7 +766,7 @@ void DQ_VrepInterface::set_joint_target_positions(const std::vector<int> &handle
 
 
 /**
- * @brief This method sets the target joint positions of a collection of joint names
+ * @brief This method sets the target joint positions of a collection of joints.
  * @param jointnames The names of the joints.
  * @param angles_rad The target joint position vector.
  * @param opmode The operation mode.
