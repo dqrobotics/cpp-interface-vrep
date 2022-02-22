@@ -130,6 +130,16 @@ void _retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_C
     throw std::runtime_error("Timeout in VREP communication. Error: " + _simx_int_to_string(function_result) +".");
 }
 
+
+/**
+ * @brief This protected method remaps the constant properties DQ_VrepInterface::OP_MODES to their equivalent
+ *        simx_opmode value.
+ * @param opmode The constant operation mode of DQ_VrepInterface::OP_MODES.
+ * @returns The simx_opmode value.
+ *
+ *              Example: op = _remap_op_mode(OP_BLOCKING);
+ *
+ */
 simxInt _remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
 {
     switch(opmode)
