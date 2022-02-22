@@ -686,6 +686,13 @@ void DQ_VrepInterface::set_joint_target_position(const std::string& jointname, c
     return set_joint_target_position(_get_handle_from_map(jointname),angle_rad,opmode);
 }
 
+
+/**
+ * @brief This method gets the joint positions.
+ * @param handle The handles of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint positions.
+ */
 VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<int> &handles, const OP_MODES &opmode) const
 {
     std::vector<double>::size_type n = handles.size();
@@ -697,6 +704,13 @@ VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<int> &handles, 
     return joint_positions;
 }
 
+
+/**
+ * @brief This method gets the joint positions.
+ * @param jointnames The names of the joints.
+ * @param opmode The operation mode.
+ * @returns the joint positions.
+ */
 VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<std::string> &jointnames, const OP_MODES &opmode)
 {
     std::vector<double>::size_type n = jointnames.size();
