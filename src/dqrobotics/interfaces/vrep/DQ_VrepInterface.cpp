@@ -491,7 +491,7 @@ int DQ_VrepInterface::wait_for_simulation_step_to_end()
 /**
  * @brief This method returns the handle of an object given its object name.
  * @param objectname The object name.
- * @returns handles The object handle.
+ * @returns The object handle.
  */
 int DQ_VrepInterface::get_object_handle(const std::string &objectname)
 {
@@ -523,9 +523,9 @@ std::vector<int> DQ_VrepInterface::get_object_handles(const std::vector<std::str
 
 /**
  * @brief This method gets the translation of an object.
- * @param handle
- * @param relative_to_handle
- * @param opmode
+ * @param handle The handle name.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
  * @return t The object translation.
  */
 DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
@@ -540,9 +540,9 @@ DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relati
 
 /**
  * @brief This method gets the translation of an object.
- * @param handle
- * @param relative_to_objectname
- * @param opmode
+ * @param handle The handle name.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
  * @return t The object translation.
  */
 DQ DQ_VrepInterface::get_object_translation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
@@ -553,9 +553,9 @@ DQ DQ_VrepInterface::get_object_translation(const int& handle, const std::string
 
 /**
  * @brief This method gets the translation of an object.
- * @param objectname
- * @param relative_to_handle
- * @param opmode
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
  * @return t The object translation.
  */
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
@@ -566,9 +566,9 @@ DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const
 
 /**
  * @brief This method gets the translation of an object.
- * @param objectname
- * @param relative_to_objectname
- * @param opmode
+ * @param objectname The object name.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
  * @return t The object translation.
  */
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
@@ -589,9 +589,9 @@ DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const
 
 /**
  * @brief This method gets the rotation of an object.
- * @param handle
- * @param relative_to_handle
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
  * @return r The object rotation.
  */
 DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
@@ -606,9 +606,9 @@ DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_
 
 /**
  * @brief This method gets the rotation of an object.
- * @param handle
- * @param relative_to_objectname
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
  * @return r The object rotation.
  */
 DQ DQ_VrepInterface::get_object_rotation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
@@ -619,9 +619,9 @@ DQ DQ_VrepInterface::get_object_rotation(const int& handle, const std::string& r
 
 /**
  * @brief This method gets the rotation of an object.
- * @param objectname
- * @param relative_to_handle
- * @param opmode
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
  * @return r The object rotation.
  */
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
@@ -632,9 +632,9 @@ DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const in
 
 /**
  * @brief This method gets the rotation of an object.
- * @param objectname
- * @param relative_to_objectname
- * @param opmode
+ * @param objectname The object name.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
  * @return r The object rotation.
  */
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
@@ -655,9 +655,9 @@ DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const st
 
 /**
  * @brief This method gets the pose of an object.
- * @param handle
- * @param relative_to_handle
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
  * @return h The pose of an object.
  */
 DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
@@ -671,9 +671,9 @@ DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_h
 
 /**
  * @brief This method gets the pose of an object.
- * @param handle
- * @param relative_to_objectname
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
  * @return h The pose of an object.
  */
 DQ DQ_VrepInterface::get_object_pose(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
@@ -684,9 +684,9 @@ DQ DQ_VrepInterface::get_object_pose(const int& handle, const std::string& relat
 
 /**
  * @brief This method gets the pose of an object.
- * @param objectname
- * @param relative_to_handle
- * @param opmode
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
  * @return h The pose of an object.
  */
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
@@ -697,9 +697,9 @@ DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const int& r
 
 /**
  * @brief This method gets the pose of an object.
- * @param objectname
- * @param relative_to_objectname
- * @param opmode
+ * @param objectname The object name.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
  * @return h The pose of an object.
  */
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
@@ -713,9 +713,9 @@ DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::s
 
 /**
  * @brief This method gets the poses of a collection of objects.
- * @param handles
- * @param relative_to_handle
- * @param opmode
+ * @param handles The handles of the objects.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
  * @return hs The poses of a collection of objects.
  */
 std::vector<DQ> DQ_VrepInterface::get_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const OP_MODES &opmode)
@@ -732,10 +732,10 @@ std::vector<DQ> DQ_VrepInterface::get_object_poses(const std::vector<int> &handl
 
 /**
  * @brief This method sets the object translation given by a pure quaternion.
- * @param handle
- * @param relative_to_handle
- * @param t
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param t The desired translation expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_translation(const int &handle, const int &relative_to_handle, const DQ& t, const OP_MODES &opmode) const
 {
@@ -750,10 +750,10 @@ void DQ_VrepInterface::set_object_translation(const int &handle, const int &rela
 
 /**
  * @brief This method sets the object translation given by a pure quaternion.
- * @param handle
- * @param relative_to_objectname
- * @param t
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param t The desired translation expressed with respect to relative_to_objectname.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_translation(const int& handle, const std::string& relative_to_objectname, const DQ& t, const OP_MODES& opmode)
 {
@@ -763,10 +763,10 @@ void DQ_VrepInterface::set_object_translation(const int& handle, const std::stri
 
 /**
  * @brief This method sets the object translation given by a pure quaternion.
- * @param objectname
- * @param relative_to_handle
- * @param t
- * @param opmode
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param t The desired translation expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const int& relative_to_handle, const DQ& t, const OP_MODES& opmode)
 {
@@ -776,10 +776,10 @@ void DQ_VrepInterface::set_object_translation(const std::string& objectname, con
 
 /**
  * @brief This method sets the object translation given by a pure quaternion.
- * @param objectname
- * @param t
- * @param relative_to_objectname
- * @param opmode
+ * @param objectname The object name.
+ * @param t The desired translation expressed with respect to relative_to_objectname.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const DQ& t, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -789,10 +789,10 @@ void DQ_VrepInterface::set_object_translation(const std::string& objectname, con
 
 /**
  * @brief This method sets the object rotation given by a unit quaternion.
- * @param handle
- * @param relative_to_handle
- * @param r
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param r The desired rotation expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relative_to_handle, const DQ& r, const OP_MODES &opmode) const
 {
@@ -808,10 +808,10 @@ void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relativ
 
 /**
  * @brief This method sets the object rotation given by a unit quaternion.
- * @param handle
- * @param relative_to_objectname
- * @param r
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param r The desired rotation expressed with respect to relative_to_objectname.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_rotation(const int& handle, const std::string& relative_to_objectname, const DQ& r, const OP_MODES& opmode)
 {
@@ -821,10 +821,10 @@ void DQ_VrepInterface::set_object_rotation(const int& handle, const std::string&
 
 /**
  * @brief This method sets the object rotation given by a unit quaternion.
- * @param objectname
- * @param relative_to_handle
- * @param r
- * @param opmode
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param r The desired rotation expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const int& relative_to_handle, const DQ& r, const OP_MODES& opmode)
 {
@@ -834,10 +834,10 @@ void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const 
 
 /**
  * @brief This method sets the object rotation given by a unit quaternion.
- * @param objectname
- * @param r
- * @param relative_to_objectname
- * @param opmode
+ * @param objectname The object name.
+ * @param r The desired rotation expressed with respect to relative_to_objectname.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const DQ& r, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -847,10 +847,10 @@ void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const 
 
 /**
  * @brief This method sets the pose of an object.
- * @param handle
- * @param relative_to_handle
- * @param h
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param h The desired pose expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_pose(const int &handle, const int &relative_to_handle, const DQ& h, const OP_MODES &opmode) const
 {
@@ -861,10 +861,10 @@ void DQ_VrepInterface::set_object_pose(const int &handle, const int &relative_to
 
 /**
  * @brief This method sets the pose of an object.
- * @param handle
- * @param relative_to_objectname
- * @param h
- * @param opmode
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param h The desired pose is expressed with respect to relative_to_objectname.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_pose(const int& handle, const std::string& relative_to_objectname, const DQ& h, const OP_MODES& opmode)
 {
@@ -874,10 +874,10 @@ void DQ_VrepInterface::set_object_pose(const int& handle, const std::string& rel
 
 /**
  * @brief This method sets the pose of an object.
- * @param objectname
- * @param relative_to_handle
- * @param h
- * @param opmode
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param h The desired pose expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const int& relative_to_handle, const DQ& h, const OP_MODES& opmode)
 {
@@ -886,10 +886,10 @@ void DQ_VrepInterface::set_object_pose(const std::string& objectname, const int&
 
 /**
  * @brief This method sets the pose of an object.
- * @param objectname
- * @param h
- * @param relative_to_objectname
- * @param opmode
+ * @param objectname The object name.
+ * @param h The desired pose expressed with respect to relative_to_objectname.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const DQ& h, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -899,10 +899,10 @@ void DQ_VrepInterface::set_object_pose(const std::string& objectname, const DQ& 
 
 /**
  * @brief This method sets the poses of collection of objects.
- * @param handles
- * @param relative_to_handle
- * @param hs
- * @param opmode
+ * @param handles The object handles.
+ * @param relative_to_handle The reference handle.
+ * @param hs The desired poses expressed with respect to the relative_to_handle.
+ * @param opmode The operation mode.
  */
 void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const std::vector<DQ> &hs, const OP_MODES &opmode) const
 {
@@ -918,7 +918,7 @@ void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const i
  * @brief This method gets the joint position.
  * @param handle The handle of the joint.
  * @param opmode The operation mode.
- * @returns The joint position.
+ * @returns angle_rad_f The joint position.
  */
 double DQ_VrepInterface::get_joint_position(const int &handle, const OP_MODES &opmode) const
 {
@@ -933,7 +933,7 @@ double DQ_VrepInterface::get_joint_position(const int &handle, const OP_MODES &o
  * @brief This method gets the joint position.
  * @param jointname The name of the joint.
  * @param opmode The operation mode.
- * @returns The joint position.
+ * @returns angle_rad_f The joint position.
  */
 double DQ_VrepInterface::get_joint_position(const std::string& jointname, const OP_MODES& opmode)
 {
@@ -1005,7 +1005,7 @@ void DQ_VrepInterface::set_joint_target_position(const std::string& jointname, c
  * @brief This method gets the joint positions.
  * @param handle The handles of the joints.
  * @param opmode The operation mode.
- * @returns the joint positions.
+ * @returns joint_positions The joint positions.
  */
 VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<int> &handles, const OP_MODES &opmode) const
 {
@@ -1023,7 +1023,7 @@ VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<int> &handles, 
  * @brief This method gets the joint positions.
  * @param jointnames The names of the joints.
  * @param opmode The operation mode.
- * @returns the joint positions.
+ * @returns joint_positions The joint positions.
  */
 VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<std::string> &jointnames, const OP_MODES &opmode)
 {
@@ -1229,7 +1229,7 @@ void DQ_VrepInterface::set_joint_target_velocities(const std::vector<std::string
  * @brief This method gets the joint velocity.
  * @param handle The handle of the joint.
  * @param opmode The operation mode.
- * @returns the joint velocity.
+ * @returns angle_dot_rad_f The joint velocity.
  */
 double DQ_VrepInterface::get_joint_velocity(const int &handle, const OP_MODES &opmode) const
 {
@@ -1244,7 +1244,7 @@ double DQ_VrepInterface::get_joint_velocity(const int &handle, const OP_MODES &o
  * @brief This method gets the joint velocity.
  * @param jointname The name of the joint.
  * @param opmode The operation mode.
- * @returns the joint velocity.
+ * @returns angle_dot_rad_f The joint velocity.
  */
 double DQ_VrepInterface::get_joint_velocity(const std::string& jointname, const OP_MODES& opmode)
 {
@@ -1266,7 +1266,7 @@ double DQ_VrepInterface::get_joint_velocity(const std::string& jointname, const 
  * @brief This method gets the joint velocities.
  * @param handle The handles of the joints.
  * @param opmode The operation mode.
- * @returns the joint velocities.
+ * @returns joint_velocities The joint velocities.
  */
 VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<int> &handles, const OP_MODES &opmode) const
 {
@@ -1284,7 +1284,7 @@ VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<int> &handles,
  * @brief This method gets the joint velocities.
  * @param jointnames The names of the joints.
  * @param opmode The operation mode.
- * @returns the joint velocities.
+ * @returns joint_velocities The joint velocities.
  *
  *      Example:
  *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
@@ -1389,7 +1389,7 @@ void DQ_VrepInterface::set_joint_torques(const std::vector<std::string> &jointna
  * @brief This method gets the joint torque.
  * @param handle The handle of the joint.
  * @param opmode The operation mode.
- * @returns the joint torque.
+ * @returns torque The joint torque.
  */
 double DQ_VrepInterface::get_joint_torque(const int &handle, const OP_MODES &opmode) const
 {
@@ -1405,7 +1405,7 @@ double DQ_VrepInterface::get_joint_torque(const int &handle, const OP_MODES &opm
  * @brief This method gets the joint torque.
  * @param jointname The name of the joint.
  * @param opmode The operation mode.
- * @returns the joint torque.
+ * @returns torque The joint torque.
  */
 double DQ_VrepInterface::get_joint_torque(const std::string& jointname, const OP_MODES& opmode)
 {
@@ -1427,7 +1427,7 @@ double DQ_VrepInterface::get_joint_torque(const std::string& jointname, const OP
  * @brief This method gets the joint torques.
  * @param handle The handles of the joints.
  * @param opmode The operation mode.
- * @returns the joint torques.
+ * @returns joint_torques The joint torques.
  */
 VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<int> &handles, const OP_MODES &opmode) const
 {
@@ -1445,7 +1445,7 @@ VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<int> &handles, co
  * @brief This method gets the joint torques.
  * @param jointnames The names of the joints.
  * @param opmode The operation mode.
- * @returns the joint torques.
+ * @returns joint_torques The joint torques.
  *
  *      Example:
  *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
@@ -1518,7 +1518,6 @@ VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<std::string> &joi
  *
  */
 MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
-
 {
     int outFloatCnt;
     float* output_floats;
@@ -1590,7 +1589,6 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const REFERENCE
  *
  */
 MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
-
 {    
     return get_inertia_matrix(_get_handle_from_map(link_name), reference_frame, function_name, obj_name);
 }
@@ -1765,7 +1763,6 @@ double DQ_VrepInterface::get_mass(const int& handle, const std::string& function
  *
  */
 double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
-
 {
     return get_mass(_get_handle_from_map(link_name), function_name,obj_name);
 }
