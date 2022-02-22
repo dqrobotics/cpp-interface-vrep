@@ -429,6 +429,13 @@ std::vector<int> DQ_VrepInterface::get_object_handles(const std::vector<std::str
 }
 
 
+/**
+ * @brief This method gets the translation of an object.
+ * @param handle
+ * @param relative_to_handle
+ * @param opmode
+ * @return t The object translation.
+ */
 DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     simxFloat tp[3];
@@ -437,14 +444,41 @@ DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relati
     const DQ t(0,tp[0],tp[1],tp[2]);
     return t;
 }
+
+
+/**
+ * @brief This method gets the translation of an object.
+ * @param handle
+ * @param relative_to_objectname
+ * @param opmode
+ * @return t The object translation.
+ */
 DQ DQ_VrepInterface::get_object_translation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return get_object_translation(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
+
+
+/**
+ * @brief This method gets the translation of an object.
+ * @param objectname
+ * @param relative_to_handle
+ * @param opmode
+ * @return t The object translation.
+ */
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
     return get_object_translation(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
+
+
+/**
+ * @brief This method gets the translation of an object.
+ * @param objectname
+ * @param relative_to_objectname
+ * @param opmode
+ * @return t The object translation.
+ */
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     if(opmode == OP_AUTOMATIC)
@@ -461,6 +495,13 @@ DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const
 }
 
 
+/**
+ * @brief This method gets the rotation of an object.
+ * @param handle
+ * @param relative_to_handle
+ * @param opmode
+ * @return r The object rotation.
+ */
 DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     simxFloat rp[4];
@@ -469,14 +510,41 @@ DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_
     const DQ r(rp[3],rp[0],rp[1],rp[2],0,0,0,0);
     return normalize(r); //We need to normalize here because vrep uses 32bit precision and our DQ are 64bit precision.
 }
+
+
+/**
+ * @brief This method gets the rotation of an object.
+ * @param handle
+ * @param relative_to_objectname
+ * @param opmode
+ * @return r The object rotation.
+ */
 DQ DQ_VrepInterface::get_object_rotation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return get_object_rotation(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
+
+
+/**
+ * @brief This method gets the rotation of an object.
+ * @param objectname
+ * @param relative_to_handle
+ * @param opmode
+ * @return r The object rotation.
+ */
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
     return get_object_rotation(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
+
+
+/**
+ * @brief This method gets the rotation of an object.
+ * @param objectname
+ * @param relative_to_objectname
+ * @param opmode
+ * @return r The object rotation.
+ */
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     if(opmode == OP_AUTOMATIC)
@@ -492,6 +560,14 @@ DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const st
         return get_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),opmode);
 }
 
+
+/**
+ * @brief This method gets the pose of an object.
+ * @param handle
+ * @param relative_to_handle
+ * @param opmode
+ * @return h The pose of an object.
+ */
 DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     DQ t = get_object_translation(handle,relative_to_handle,opmode);
@@ -499,14 +575,41 @@ DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_h
     DQ h = r+0.5*E_*t*r;
     return h;
 }
+
+
+/**
+ * @brief This method gets the pose of an object.
+ * @param handle
+ * @param relative_to_objectname
+ * @param opmode
+ * @return h The pose of an object.
+ */
 DQ DQ_VrepInterface::get_object_pose(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return get_object_pose(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
+
+
+/**
+ * @brief This method gets the pose of an object.
+ * @param objectname
+ * @param relative_to_handle
+ * @param opmode
+ * @return h The pose of an object.
+ */
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
     return get_object_pose(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
+
+
+/**
+ * @brief This method gets the pose of an object.
+ * @param objectname
+ * @param relative_to_objectname
+ * @param opmode
+ * @return h The pose of an object.
+ */
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     DQ t = get_object_translation(objectname,relative_to_objectname,opmode);
@@ -515,6 +618,14 @@ DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::s
     return h;
 }
 
+
+/**
+ * @brief This method gets the poses of a collection of objects.
+ * @param handles
+ * @param relative_to_handle
+ * @param opmode
+ * @return hs The poses of a collection of objects.
+ */
 std::vector<DQ> DQ_VrepInterface::get_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const OP_MODES &opmode)
 {
     std::vector<double>::size_type n = handles.size();
