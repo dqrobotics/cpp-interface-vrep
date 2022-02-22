@@ -1122,18 +1122,30 @@ void DQ_VrepInterface::set_joint_target_positions(const std::vector<std::string>
     //simxPauseSimulation(clientid_,0);
 }
 
+
+/**
+ * @brief This method starts the video recording.
+ */
 void DQ_VrepInterface::start_video_recording()
 {
     const unsigned char video_recording_state = 1;
     simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,_remap_op_mode(OP_ONESHOT));
 }
 
+
+/**
+ * @brief This method stops the video recording.
+ */
 void DQ_VrepInterface::stop_video_recording()
 {
     const unsigned char video_recording_state = 0;
     simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,_remap_op_mode(OP_ONESHOT));
 }
 
+
+/**
+ * @brief This method returns the video recording status.
+ */
 bool DQ_VrepInterface::is_video_recording()
 {
     unsigned char video_recording_state;
