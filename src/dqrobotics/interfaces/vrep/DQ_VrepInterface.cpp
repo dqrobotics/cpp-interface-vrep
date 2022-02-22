@@ -407,6 +407,12 @@ int DQ_VrepInterface::wait_for_simulation_step_to_end()
     return ping_time;
 }
 
+
+/**
+ * @brief This method returns the handle of an object given its object name.
+ * @param objectname The object name.
+ * @returns handles The object handle.
+ */
 int DQ_VrepInterface::get_object_handle(const std::string &objectname)
 {
     int hp;
@@ -417,6 +423,12 @@ int DQ_VrepInterface::get_object_handle(const std::string &objectname)
     return hp;
 }
 
+
+/**
+ * @brief This method returns the handles several objects given their object names.
+ * @param objectnames The names of the objects.
+ * @returns handles The object handles.
+ */
 std::vector<int> DQ_VrepInterface::get_object_handles(const std::vector<std::string>& objectnames)
 {
     int n = objectnames.size();
