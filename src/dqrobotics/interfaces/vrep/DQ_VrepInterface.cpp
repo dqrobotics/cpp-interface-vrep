@@ -633,11 +633,26 @@ void DQ_VrepInterface::set_joint_position(const std::string& jointname, const do
     return set_joint_position(_get_handle_from_map(jointname),angle_rad,opmode);
 }
 
+
+/**
+ * @brief This method sets the target joint position of a joint handle.
+ * @param handle The name of the joint handle.
+ * @param angles_rad The target joint position.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_target_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
     simxSetJointTargetPosition(clientid_,handle,angle_rad_f,_remap_op_mode(opmode));
 }
+
+
+/**
+ * @brief This method sets the target joint position of a joint name.
+ * @param jointname The name of the joint.
+ * @param angles_rad The target joint position.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_target_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
     return set_joint_target_position(_get_handle_from_map(jointname),angle_rad,opmode);
@@ -692,6 +707,13 @@ void DQ_VrepInterface::set_joint_positions(const std::vector<std::string> &joint
     //simxPauseSimulation(clientid_,0);
 }
 
+
+/**
+ * @brief This method sets the target joint positions of a collection of joint handles.
+ * @param handles The names of the joint handles.
+ * @param angles_rad The target joint position vector.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_target_positions(const std::vector<int> &handles, const VectorXd &angles_rad, const OP_MODES &opmode) const
 {
     std::vector<double>::size_type n = handles.size();
@@ -701,6 +723,21 @@ void DQ_VrepInterface::set_joint_target_positions(const std::vector<int> &handle
     }
 }
 
+
+/**
+ * @brief This method sets the target joint positions of a collection of joint names
+ * @param jointnames The names of the joints.
+ * @param angles_rad The target joint position vector.
+ * @param opmode The operation mode.
+ *
+ *        Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           VectorXd u = VectorXd::Zero(7);
+ *           vi.set_joint_target_positions(jointnames, u);
+ *
+ */
 void DQ_VrepInterface::set_joint_target_positions(const std::vector<std::string> &jointnames, const VectorXd &angles_rad, const OP_MODES &opmode)
 {
     if(int(jointnames.size()) != int(angles_rad.size()))

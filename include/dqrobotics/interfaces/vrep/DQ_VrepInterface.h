@@ -276,13 +276,7 @@ public:
     void     set_joint_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const OP_MODES& opmode) const;
     void     set_joint_positions(const std::vector<std::string>& jointnames, const VectorXd& angles_rad, const OP_MODES& opmode=OP_ONESHOT);
 
-    /**
-     * @brief set_joint_target_positions
-     * Sets the target joint positions of a collection of joints
-     * @param handles
-     * @param angles_rad
-     * @param opmode
-     */
+
     void     set_joint_target_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const OP_MODES& opmode) const;
     void     set_joint_target_positions(const std::vector<std::string>& jointnames, const VectorXd& angles_rad, const OP_MODES& opmode=OP_ONESHOT);
 
