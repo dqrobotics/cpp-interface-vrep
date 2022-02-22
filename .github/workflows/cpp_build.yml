@@ -5,6 +5,10 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        testbranches: ['release','master']
 
     steps:
       - uses: actions/checkout@v2
@@ -20,8 +24,9 @@ jobs:
         run: |
           sudo apt install cmake g++ libeigen3-dev fakeroot
           
-      - name: Build & install DQRobotics
+      - name: Build & install DQRobotics (${{ matrix.testbranches }})
         run: |
+          git clone -b ${{ matrix.testbranches }} https://github.com/dqrobotics/cpp
           cd cpp
           chmod +x debian/rules
           fakeroot debian/rules clean
@@ -32,6 +37,7 @@ jobs:
           
       - name: Build & install cpp-interface-vrep
         run: |
+          git checkout 
           chmod +x debian/rules
           fakeroot debian/rules clean
           fakeroot debian/rules build
@@ -39,8 +45,8 @@ jobs:
           cd ..
           sudo apt install ./*.deb
           
-      - name: Clone cpp-examples
-        run: git clone https://github.com/dqrobotics/cpp-examples.git
+      - name: Clone cpp-examples (${{ matrix.testbranches }})
+        run: git clone -b ${{ matrix.testbranches }} https://github.com/dqrobotics/cpp-examples.git
           
       - name: Build examples
         run: |
