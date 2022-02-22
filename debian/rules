@@ -6,7 +6,6 @@ BUILDDIR = build_dir
 build:
 ifeq ($(CI),)
 	echo "Not CI, hopefully launchpad. Clonning submodules manually..."
-	git clone --single-branch --branch release https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/cpp cpp
 	rm -rf coppeliarobotics/{*,.*}
 	rm -rf coppeliarobotics
 	mkdir -p coppeliarobotics
