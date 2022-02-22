@@ -526,6 +526,14 @@ std::vector<DQ> DQ_VrepInterface::get_object_poses(const std::vector<int> &handl
     return hs;
 }
 
+
+/**
+ * @brief This method sets the object translation given by a pure quaternion.
+ * @param handle
+ * @param relative_to_handle
+ * @param t
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_translation(const int &handle, const int &relative_to_handle, const DQ& t, const OP_MODES &opmode) const
 {
     simxFloat tp[3];
@@ -535,19 +543,54 @@ void DQ_VrepInterface::set_object_translation(const int &handle, const int &rela
 
     simxSetObjectPosition(clientid_,handle,relative_to_handle,tp,_remap_op_mode(opmode));
 }
+
+
+/**
+ * @brief This method sets the object translation given by a pure quaternion.
+ * @param handle
+ * @param relative_to_objectname
+ * @param t
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_translation(const int& handle, const std::string& relative_to_objectname, const DQ& t, const OP_MODES& opmode)
 {
     return set_object_translation(handle,_get_handle_from_map(relative_to_objectname),t,opmode);
 }
+
+
+/**
+ * @brief This method sets the object translation given by a pure quaternion.
+ * @param objectname
+ * @param relative_to_handle
+ * @param t
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const int& relative_to_handle, const DQ& t, const OP_MODES& opmode)
 {
     return set_object_translation(_get_handle_from_map(objectname),relative_to_handle,t,opmode);
 }
+
+
+/**
+ * @brief This method sets the object translation given by a pure quaternion.
+ * @param objectname
+ * @param t
+ * @param relative_to_objectname
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const DQ& t, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return set_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),t,opmode);
 }
 
+
+/**
+ * @brief This method sets the object rotation given by a unit quaternion.
+ * @param handle
+ * @param relative_to_handle
+ * @param r
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relative_to_handle, const DQ& r, const OP_MODES &opmode) const
 {
     simxFloat rp[4];
@@ -558,38 +601,106 @@ void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relativ
 
     simxSetObjectQuaternion(clientid_,handle,relative_to_handle,rp,_remap_op_mode(opmode));
 }
+
+
+/**
+ * @brief This method sets the object rotation given by a unit quaternion.
+ * @param handle
+ * @param relative_to_objectname
+ * @param r
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_rotation(const int& handle, const std::string& relative_to_objectname, const DQ& r, const OP_MODES& opmode)
 {
     return set_object_rotation(handle,_get_handle_from_map(relative_to_objectname),r,opmode);
 }
+
+
+/**
+ * @brief This method sets the object rotation given by a unit quaternion.
+ * @param objectname
+ * @param relative_to_handle
+ * @param r
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const int& relative_to_handle, const DQ& r, const OP_MODES& opmode)
 {
     return set_object_rotation(_get_handle_from_map(objectname),relative_to_handle,r,opmode);
 }
+
+
+/**
+ * @brief This method sets the object rotation given by a unit quaternion.
+ * @param objectname
+ * @param r
+ * @param relative_to_objectname
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const DQ& r, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return set_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),r,opmode);
 }
 
 
+/**
+ * @brief This method sets the pose of an object.
+ * @param handle
+ * @param relative_to_handle
+ * @param h
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_pose(const int &handle, const int &relative_to_handle, const DQ& h, const OP_MODES &opmode) const
 {
     set_object_translation(handle,relative_to_handle,translation(h),opmode);
     set_object_rotation(handle,relative_to_handle,P(h),opmode);
 }
+
+
+/**
+ * @brief This method sets the pose of an object.
+ * @param handle
+ * @param relative_to_objectname
+ * @param h
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_pose(const int& handle, const std::string& relative_to_objectname, const DQ& h, const OP_MODES& opmode)
 {
     return set_object_pose(handle,_get_handle_from_map(relative_to_objectname),h,opmode);
 }
+
+
+/**
+ * @brief This method sets the pose of an object.
+ * @param objectname
+ * @param relative_to_handle
+ * @param h
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const int& relative_to_handle, const DQ& h, const OP_MODES& opmode)
 {
     return set_object_pose(_get_handle_from_map(objectname),relative_to_handle,h,opmode);
 }
+
+/**
+ * @brief This method sets the pose of an object.
+ * @param objectname
+ * @param h
+ * @param relative_to_objectname
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const DQ& h, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return set_object_pose(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),h,opmode);
 }
 
+
+/**
+ * @brief This method sets the poses of collection of objects.
+ * @param handles
+ * @param relative_to_handle
+ * @param hs
+ * @param opmode
+ */
 void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const std::vector<DQ> &hs, const OP_MODES &opmode) const
 {
     std::vector<double>::size_type n = handles.size();
