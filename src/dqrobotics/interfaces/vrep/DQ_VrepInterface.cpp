@@ -526,7 +526,7 @@ std::vector<int> DQ_VrepInterface::get_object_handles(const std::vector<std::str
  * @param handle The handle name.
  * @param relative_to_handle The reference handle.
  * @param opmode The operation mode.
- * @return t The object translation.
+ * @return t The object translation expressed with respect to relative_to_handle.
  */
 DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
@@ -543,7 +543,7 @@ DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relati
  * @param handle The handle name.
  * @param relative_to_objectname The name of the reference object.
  * @param opmode The operation mode.
- * @return t The object translation.
+ * @return t The object translation expressed with respect to relative_to_objectname.
  */
 DQ DQ_VrepInterface::get_object_translation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -556,7 +556,7 @@ DQ DQ_VrepInterface::get_object_translation(const int& handle, const std::string
  * @param objectname The object name.
  * @param relative_to_handle The reference handle.
  * @param opmode The operation mode.
- * @return t The object translation.
+ * @return t The object translation expressed with respect to relative_to_handle.
  */
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
@@ -569,7 +569,7 @@ DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const
  * @param objectname The object name.
  * @param relative_to_objectname The name of the reference object.
  * @param opmode The operation mode.
- * @return t The object translation.
+ * @return t The object translation expressed with respect to relative_to_objectname.
  */
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -592,7 +592,7 @@ DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const
  * @param handle The object handle.
  * @param relative_to_handle The reference handle.
  * @param opmode The operation mode.
- * @return r The object rotation.
+ * @return r The object rotation expressed with respect to relative_to_handle.
  */
 DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
@@ -609,7 +609,7 @@ DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_
  * @param handle The object handle.
  * @param relative_to_objectname The name of the reference object.
  * @param opmode The operation mode.
- * @return r The object rotation.
+ * @return r The object rotation expressed with respect to relative_to_objectname.
  */
 DQ DQ_VrepInterface::get_object_rotation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -622,7 +622,7 @@ DQ DQ_VrepInterface::get_object_rotation(const int& handle, const std::string& r
  * @param objectname The object name.
  * @param relative_to_handle The reference handle.
  * @param opmode The operation mode.
- * @return r The object rotation.
+ * @return r The object rotation expressed with respect to relative_to_handle.
  */
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
@@ -635,7 +635,7 @@ DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const in
  * @param objectname The object name.
  * @param relative_to_objectname The name of the reference object.
  * @param opmode The operation mode.
- * @return r The object rotation.
+ * @return r The object rotation expressed with respect to relative_to_objectname.
  */
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -658,7 +658,7 @@ DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const st
  * @param handle The object handle.
  * @param relative_to_handle The reference handle.
  * @param opmode The operation mode.
- * @return h The pose of an object.
+ * @return h The pose of an object expressed with respect to relative_to_handle.
  */
 DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
@@ -674,7 +674,7 @@ DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_h
  * @param handle The object handle.
  * @param relative_to_objectname The name of the reference object.
  * @param opmode The operation mode.
- * @return h The pose of an object.
+ * @return h The pose of an object expressed with respect to relative_to_objectname.
  */
 DQ DQ_VrepInterface::get_object_pose(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -687,7 +687,7 @@ DQ DQ_VrepInterface::get_object_pose(const int& handle, const std::string& relat
  * @param objectname The object name.
  * @param relative_to_handle The reference handle.
  * @param opmode The operation mode.
- * @return h The pose of an object.
+ * @return h The pose of an object expressed with respect to relative_to_handle.
  */
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
@@ -700,7 +700,7 @@ DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const int& r
  * @param objectname The object name.
  * @param relative_to_objectname The name of the reference object.
  * @param opmode The operation mode.
- * @return h The pose of an object.
+ * @return h The pose of an object expressed with respect to relative_to_objectname.
  */
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
@@ -716,7 +716,7 @@ DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::s
  * @param handles The handles of the objects.
  * @param relative_to_handle The reference handle.
  * @param opmode The operation mode.
- * @return hs The poses of a collection of objects.
+ * @return hs The poses of a collection of objects expressed with respect to relative_to_handle.
  */
 std::vector<DQ> DQ_VrepInterface::get_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const OP_MODES &opmode)
 {
