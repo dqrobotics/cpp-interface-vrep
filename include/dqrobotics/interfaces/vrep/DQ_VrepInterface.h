@@ -266,13 +266,7 @@ public:
      */
     VectorXd get_joint_positions(const std::vector<int>& handles, const OP_MODES& opmode) const;
     VectorXd get_joint_positions(const std::vector<std::string>& jointnames, const OP_MODES& opmode=OP_AUTOMATIC);
-    /**
-     * @brief setJointPositions
-     * Sets the positions of a collection of joints.
-     * @param handles
-     * @param angles_rad
-     * @param opmode
-     */
+
     void     set_joint_positions(const std::vector<int>& handles, const VectorXd& angles_rad, const OP_MODES& opmode) const;
     void     set_joint_positions(const std::vector<std::string>& jointnames, const VectorXd& angles_rad, const OP_MODES& opmode=OP_ONESHOT);
 

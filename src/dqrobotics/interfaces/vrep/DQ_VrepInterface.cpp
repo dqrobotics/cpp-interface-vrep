@@ -623,11 +623,26 @@ double DQ_VrepInterface::get_joint_position(const std::string& jointname, const 
         return get_joint_position(_get_handle_from_map(jointname),opmode);
 }
 
+
+/**
+ * @brief This method sets the position of a joint handle.
+ * @param handle The name of the joint handle.
+ * @param angles_rad The desired joint position.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
     simxSetJointPosition(clientid_,handle,angle_rad_f,_remap_op_mode(opmode));
 }
+
+
+/**
+ * @brief This method sets the position of a joint handle.
+ * @param jointname The name of the joint.
+ * @param angles_rad The desired joint position.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
     return set_joint_position(_get_handle_from_map(jointname),angle_rad,opmode);
@@ -683,6 +698,12 @@ VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<std::string> &j
 }
 
 
+/**
+ * @brief This method sets the positions of a collection of joint handles.
+ * @param handles The names of the joint handles.
+ * @param angles_rad The desired joint position vector.
+ * @param opmode  The operation mode.
+ */
 void DQ_VrepInterface::set_joint_positions(const std::vector<int> &handles, const VectorXd &angles_rad, const OP_MODES &opmode) const
 {
     std::vector<double>::size_type n = handles.size();
@@ -692,6 +713,13 @@ void DQ_VrepInterface::set_joint_positions(const std::vector<int> &handles, cons
     }
 }
 
+
+/**
+ * @brief This method sets the positions of a collection of joint names.
+ * @param jointnames The names of the joints.
+ * @param angles_rad The desired joint position vector.
+ * @param opmode  The operation mode.
+ */
 void DQ_VrepInterface::set_joint_positions(const std::vector<std::string> &jointnames, const VectorXd &angles_rad, const OP_MODES &opmode)
 {
     if(jointnames.size() != angles_rad.size())
