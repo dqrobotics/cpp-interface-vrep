@@ -63,50 +63,23 @@ public:
         ABSOLUTE_FRAME
     };
 
-    /**
-     * @brief DQ_VrepInterface
-     * Default constructor
-     */
+
     DQ_VrepInterface(std::atomic_bool *no_blocking_loops=nullptr);
 
-    /**
-     * @brief ~DQ_VrepInterface
-     * Default desconstructor. Calls disconnect.
-     */
+
     ~DQ_VrepInterface();
 
-    /**
-     * @brief connect
-     * Connects to the VREP remote api server.
-     * Calling this function is required before anything else can happen.
-     * @param port
-     * @param TIMEOUT_IN_MILISECONDS
-     * @param MAX_TRY_COUNT
-     * @return
-     */
+
     bool connect(const int &port, const int& TIMEOUT_IN_MILISECONDS, const int& MAX_TRY_COUNT);
     bool connect(const std::string& ip, const int& port, const int& TIMEOUT_IN_MILISECONDS, const int& MAX_TRY_COUNT);
-    /**
-     * @brief disconnect
-     * Call this after the last use of this object, or the clientid_ used
-     * in this session might become unusable in the future.
-     */
+
     void disconnect();
-    /**
-     * @brief disconnectAll
-     * Tries disconnecting all remote API clients. Be careful with this.
-     */
+
     void disconnect_all();
 
-    /**
-     * @brief startSimulation
-     * Starts VREP simulation.
-     */
+
     void start_simulation() const;
-    /**
-     * @brief stopSimulation
-     * Stops VREP simulation
-     */
+
     void stop_simulation()  const;
 
     bool is_simulation_running() const;

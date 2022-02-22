@@ -301,6 +301,11 @@ simxInt _remap_script_type(const DQ_VrepInterface::SCRIPT_TYPES& script_type)
 ///                        PUBLIC FUNCTIONS
 /// ***************************************************************************************
 
+
+/**
+ * @brief DQ_VrepInterface
+ * Default constructor
+ */
 DQ_VrepInterface::DQ_VrepInterface(std::atomic_bool* no_blocking_loops)
 {
     no_blocking_loops_ = no_blocking_loops;
@@ -309,11 +314,25 @@ DQ_VrepInterface::DQ_VrepInterface(std::atomic_bool* no_blocking_loops)
     _insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,DQ_VrepInterfaceMapElement(-1));
 }
 
+
+/**
+ * @brief ~DQ_VrepInterface
+ * Default desconstructor. Calls disconnect.
+ */
 DQ_VrepInterface::~DQ_VrepInterface()
 {
     disconnect();
 }
 
+
+/**
+ * @brief This method connects to the VREP remote api server.
+ *        Calling this function is required before anything else can happen.
+ * @param port
+ * @param TIMEOUT_IN_MILISECONDS
+ * @param MAX_TRY_COUNT
+ * @return
+ */
 bool DQ_VrepInterface::connect(const int &port, const int& TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
 {
     TIMEOUT_IN_MILISECONDS_ = TIMEOUT_IN_MILISECONDS;
@@ -335,6 +354,16 @@ bool DQ_VrepInterface::connect(const int &port, const int& TIMEOUT_IN_MILISECOND
         return false;
 }
 
+
+/**
+ * @brief This method connects to the VREP remote api server.
+ *        Calling this function is required before anything else can happen.
+ * @param ip
+ * @param port
+ * @param TIMEOUT_IN_MILISECONDS
+ * @param MAX_TRY_COUNT
+ * @returns bool status.
+ */
 bool DQ_VrepInterface::connect(const std::string &ip, const int &port, const int &TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
 {
     TIMEOUT_IN_MILISECONDS_ = TIMEOUT_IN_MILISECONDS;
@@ -355,27 +384,52 @@ bool DQ_VrepInterface::connect(const std::string &ip, const int &port, const int
         return false;
 }
 
+/**
+ * @brief disconnect
+ * Call this after the last use of this object, or the clientid_ used
+ * in this session might become unusable in the future.
+ */
 void DQ_VrepInterface::disconnect()
 {
     if(clientid_>-1)
         simxFinish(clientid_);
 }
 
+
+/**
+ * @brief This method tries disconnecting all remote API clients. Be careful with this.
+ */
 void DQ_VrepInterface::disconnect_all()
 {
     simxFinish(-1);
 }
 
+
+/**
+ * @brief This method starts the VREP simulation.
+ *
+ */
 void DQ_VrepInterface::start_simulation() const
 {
     simxStartSimulation(clientid_,simx_opmode_blocking);
 }
 
+
+/**
+ * @brief This method stops the VREP simulation.
+ *
+ */
 void DQ_VrepInterface::stop_simulation() const
 {
     simxStopSimulation(clientid_,simx_opmode_blocking);
 }
 
+
+/**
+ * @brief This method returns the simulation status.
+ * @returns The simulation status.
+ *
+ */
 bool DQ_VrepInterface::is_simulation_running() const
 {
     simxInt simulation_state;
@@ -390,16 +444,42 @@ bool DQ_VrepInterface::is_simulation_running() const
     }
 }
 
+
+/**
+ * @brief This method enables or disables the stepped mode for the remote API server service that the client is connected to.
+ *        Example:
+ *                       DQ_VrepInterface vi;
+ *                       vi.connect(19997,100,10);
+ *                       vi.set_synchronous(true);
+ *
+ */
 void DQ_VrepInterface::set_synchronous(const bool &flag)
 {
     simxSynchronous(clientid_, flag);
 }
 
+
+/**
+ * @brief This method sends a synchronization trigger signal to the server, which performs
+ *        a simulation step when the synchronous mode is used.
+ *        Example:
+ *                       DQ_VrepInterface vi;
+ *                       vi.connect(19997,100,10);
+ *                       vi.set_synchronous(true);
+ *                       vi.trigger_next_simulation_step();
+ *
+ *
+ */
 void DQ_VrepInterface::trigger_next_simulation_step()
 {
     simxSynchronousTrigger(clientid_);
 }
 
+
+/**
+ * @brief This method returns the time needed for a command to be sent to the server, executed, and sent back.
+ * @returns ping_time
+ */
 int DQ_VrepInterface::wait_for_simulation_step_to_end()
 {
     int ping_time;
