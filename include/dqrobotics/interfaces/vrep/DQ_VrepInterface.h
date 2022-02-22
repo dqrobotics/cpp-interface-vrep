@@ -227,33 +227,12 @@ public:
      */
     void     set_object_poses(const std::vector<int>& handles, const int& relative_to_handle, const std::vector<DQ>& hs, const OP_MODES& opmode) const;
 
-    /**
-     * @brief getJointPosition
-     * Gets the position of a joint.
-     * @param handle
-     * @param opmode
-     * @return
-     */
     double   get_joint_position(const int& handle, const OP_MODES& opmode) const;
     double   get_joint_position(const std::string& jointname, const OP_MODES& opmode=OP_AUTOMATIC);
 
-    /**
-     * @brief setJointPosition
-     * Sets the position of a joint.
-     * @param handle
-     * @param angle_rad
-     * @param opmode
-     */
     void     set_joint_position(const int& handle, const double& angle_rad, const OP_MODES& opmode) const;
     void     set_joint_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode=OP_ONESHOT);
 
-    /**
-     * @brief set_joint_target_position
-     * Sets the target position of a joint.
-     * @param handle
-     * @param angle_rad
-     * @param opmode
-     */
     void     set_joint_target_position(const int& handle, const double& angle_rad, const OP_MODES& opmode) const;
     void     set_joint_target_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode=OP_ONESHOT);
 
