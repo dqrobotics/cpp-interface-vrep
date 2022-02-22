@@ -1314,7 +1314,7 @@ double DQ_VrepInterface::get_mass(const int& handle, const std::string& function
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
     call_script_data data = _extract_call_script_data_from_pointers(return_code, 0, nullptr, outFloatCnt, output_floats, 0, nullptr);
     if (data.output_floats.size() != 1){
-        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
+        throw std::range_error("Error in get_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
     }
     return data.output_floats[0];
 }
