@@ -130,6 +130,16 @@ void _retry_function(const std::function<simxInt(void)> &f, const int& MAX_TRY_C
     throw std::runtime_error("Timeout in VREP communication. Error: " + _simx_int_to_string(function_result) +".");
 }
 
+
+/**
+ * @brief This protected method remaps the constant properties DQ_VrepInterface::OP_MODES to their equivalent
+ *        simx_opmode value.
+ * @param opmode The constant operation mode of DQ_VrepInterface::OP_MODES.
+ * @returns The simx_opmode value.
+ *
+ *              Example: op = _remap_op_mode(OP_BLOCKING);
+ *
+ */
 simxInt _remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
 {
     switch(opmode)
@@ -143,7 +153,7 @@ simxInt _remap_op_mode(const DQ_VrepInterface::OP_MODES& opmode)
     case DQ_VrepInterface::OP_STREAMING:
         return simx_opmode_streaming;
     }
-    throw std::range_error("Unknown opmode in __remap_op_mode");
+    throw std::range_error("Unknown opmode in _remap_op_mode");
 }
 
 /**
@@ -301,6 +311,11 @@ simxInt _remap_script_type(const DQ_VrepInterface::SCRIPT_TYPES& script_type)
 ///                        PUBLIC FUNCTIONS
 /// ***************************************************************************************
 
+
+/**
+ * @brief DQ_VrepInterface
+ * Default constructor
+ */
 DQ_VrepInterface::DQ_VrepInterface(std::atomic_bool* no_blocking_loops)
 {
     no_blocking_loops_ = no_blocking_loops;
@@ -309,11 +324,25 @@ DQ_VrepInterface::DQ_VrepInterface(std::atomic_bool* no_blocking_loops)
     _insert_or_update_map(VREP_OBJECTNAME_ABSOLUTE,DQ_VrepInterfaceMapElement(-1));
 }
 
+
+/**
+ * @brief ~DQ_VrepInterface
+ * Default desconstructor. Calls disconnect.
+ */
 DQ_VrepInterface::~DQ_VrepInterface()
 {
     disconnect();
 }
 
+
+/**
+ * @brief This method connects to the VREP remote api server.
+ *        Calling this function is required before anything else can happen.
+ * @param port
+ * @param TIMEOUT_IN_MILISECONDS
+ * @param MAX_TRY_COUNT
+ * @return
+ */
 bool DQ_VrepInterface::connect(const int &port, const int& TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
 {
     TIMEOUT_IN_MILISECONDS_ = TIMEOUT_IN_MILISECONDS;
@@ -335,6 +364,16 @@ bool DQ_VrepInterface::connect(const int &port, const int& TIMEOUT_IN_MILISECOND
         return false;
 }
 
+
+/**
+ * @brief This method connects to the VREP remote api server.
+ *        Calling this function is required before anything else can happen.
+ * @param ip
+ * @param port
+ * @param TIMEOUT_IN_MILISECONDS
+ * @param MAX_TRY_COUNT
+ * @returns bool status.
+ */
 bool DQ_VrepInterface::connect(const std::string &ip, const int &port, const int &TIMEOUT_IN_MILISECONDS, const int &MAX_TRY_COUNT)
 {
     TIMEOUT_IN_MILISECONDS_ = TIMEOUT_IN_MILISECONDS;
@@ -355,27 +394,52 @@ bool DQ_VrepInterface::connect(const std::string &ip, const int &port, const int
         return false;
 }
 
+/**
+ * @brief disconnect
+ * Call this after the last use of this object, or the clientid_ used
+ * in this session might become unusable in the future.
+ */
 void DQ_VrepInterface::disconnect()
 {
     if(clientid_>-1)
         simxFinish(clientid_);
 }
 
+
+/**
+ * @brief This method tries disconnecting all remote API clients. Be careful with this.
+ */
 void DQ_VrepInterface::disconnect_all()
 {
     simxFinish(-1);
 }
 
+
+/**
+ * @brief This method starts the VREP simulation.
+ *
+ */
 void DQ_VrepInterface::start_simulation() const
 {
     simxStartSimulation(clientid_,simx_opmode_blocking);
 }
 
+
+/**
+ * @brief This method stops the VREP simulation.
+ *
+ */
 void DQ_VrepInterface::stop_simulation() const
 {
     simxStopSimulation(clientid_,simx_opmode_blocking);
 }
 
+
+/**
+ * @brief This method returns the simulation status.
+ * @returns The simulation status.
+ *
+ */
 bool DQ_VrepInterface::is_simulation_running() const
 {
     simxInt simulation_state;
@@ -390,16 +454,42 @@ bool DQ_VrepInterface::is_simulation_running() const
     }
 }
 
+
+/**
+ * @brief This method enables or disables the stepped mode for the remote API server service that the client is connected to.
+ *        Example:
+ *                       DQ_VrepInterface vi;
+ *                       vi.connect(19997,100,10);
+ *                       vi.set_synchronous(true);
+ *
+ */
 void DQ_VrepInterface::set_synchronous(const bool &flag)
 {
     simxSynchronous(clientid_, flag);
 }
 
+
+/**
+ * @brief This method sends a synchronization trigger signal to the server, which performs
+ *        a simulation step when the synchronous mode is used.
+ *        Example:
+ *                       DQ_VrepInterface vi;
+ *                       vi.connect(19997,100,10);
+ *                       vi.set_synchronous(true);
+ *                       vi.trigger_next_simulation_step();
+ *
+ *
+ */
 void DQ_VrepInterface::trigger_next_simulation_step()
 {
     simxSynchronousTrigger(clientid_);
 }
 
+
+/**
+ * @brief This method returns the time needed for a command to be sent to the server, executed, and sent back.
+ * @returns ping_time
+ */
 int DQ_VrepInterface::wait_for_simulation_step_to_end()
 {
     int ping_time;
@@ -407,6 +497,12 @@ int DQ_VrepInterface::wait_for_simulation_step_to_end()
     return ping_time;
 }
 
+
+/**
+ * @brief This method returns the handle of an object given its object name.
+ * @param objectname The object name.
+ * @returns The object handle.
+ */
 int DQ_VrepInterface::get_object_handle(const std::string &objectname)
 {
     int hp;
@@ -417,6 +513,12 @@ int DQ_VrepInterface::get_object_handle(const std::string &objectname)
     return hp;
 }
 
+
+/**
+ * @brief This method returns the handles several objects given their object names.
+ * @param objectnames The names of the objects.
+ * @returns handles The object handles.
+ */
 std::vector<int> DQ_VrepInterface::get_object_handles(const std::vector<std::string>& objectnames)
 {
     int n = objectnames.size();
@@ -429,6 +531,13 @@ std::vector<int> DQ_VrepInterface::get_object_handles(const std::vector<std::str
 }
 
 
+/**
+ * @brief This method gets the translation of an object.
+ * @param handle The handle name.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
+ * @return t The object translation expressed with respect to relative_to_handle.
+ */
 DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     simxFloat tp[3];
@@ -437,14 +546,41 @@ DQ DQ_VrepInterface::get_object_translation(const int &handle, const int &relati
     const DQ t(0,tp[0],tp[1],tp[2]);
     return t;
 }
+
+
+/**
+ * @brief This method gets the translation of an object.
+ * @param handle The handle name.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
+ * @return t The object translation expressed with respect to relative_to_objectname.
+ */
 DQ DQ_VrepInterface::get_object_translation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return get_object_translation(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
+
+
+/**
+ * @brief This method gets the translation of an object.
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
+ * @return t The object translation expressed with respect to relative_to_handle.
+ */
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
     return get_object_translation(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
+
+
+/**
+ * @brief This method gets the translation of an object.
+ * @param objectname The object name.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
+ * @return t The object translation expressed with respect to relative_to_objectname.
+ */
 DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     if(opmode == OP_AUTOMATIC)
@@ -461,6 +597,13 @@ DQ DQ_VrepInterface::get_object_translation(const std::string& objectname, const
 }
 
 
+/**
+ * @brief This method gets the rotation of an object.
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
+ * @return r The object rotation expressed with respect to relative_to_handle.
+ */
 DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     simxFloat rp[4];
@@ -469,14 +612,41 @@ DQ DQ_VrepInterface::get_object_rotation(const int &handle, const int &relative_
     const DQ r(rp[3],rp[0],rp[1],rp[2],0,0,0,0);
     return normalize(r); //We need to normalize here because vrep uses 32bit precision and our DQ are 64bit precision.
 }
+
+
+/**
+ * @brief This method gets the rotation of an object.
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
+ * @return r The object rotation expressed with respect to relative_to_objectname.
+ */
 DQ DQ_VrepInterface::get_object_rotation(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return get_object_rotation(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
+
+
+/**
+ * @brief This method gets the rotation of an object.
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
+ * @return r The object rotation expressed with respect to relative_to_handle.
+ */
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
     return get_object_rotation(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
+
+
+/**
+ * @brief This method gets the rotation of an object.
+ * @param objectname The object name.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
+ * @return r The object rotation expressed with respect to relative_to_objectname.
+ */
 DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     if(opmode == OP_AUTOMATIC)
@@ -492,6 +662,14 @@ DQ DQ_VrepInterface::get_object_rotation(const std::string& objectname, const st
         return get_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),opmode);
 }
 
+
+/**
+ * @brief This method gets the pose of an object.
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
+ * @return h The pose of an object expressed with respect to relative_to_handle.
+ */
 DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_handle, const OP_MODES &opmode)
 {
     DQ t = get_object_translation(handle,relative_to_handle,opmode);
@@ -499,14 +677,41 @@ DQ DQ_VrepInterface::get_object_pose(const int &handle, const int &relative_to_h
     DQ h = r+0.5*E_*t*r;
     return h;
 }
+
+
+/**
+ * @brief This method gets the pose of an object.
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
+ * @return h The pose of an object expressed with respect to relative_to_objectname.
+ */
 DQ DQ_VrepInterface::get_object_pose(const int& handle, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return get_object_pose(handle,_get_handle_from_map(relative_to_objectname),opmode);
 }
+
+
+/**
+ * @brief This method gets the pose of an object.
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
+ * @return h The pose of an object expressed with respect to relative_to_handle.
+ */
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const int& relative_to_handle, const OP_MODES& opmode)
 {
     return get_object_pose(_get_handle_from_map(objectname),relative_to_handle,opmode);
 }
+
+
+/**
+ * @brief This method gets the pose of an object.
+ * @param objectname The object name.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
+ * @return h The pose of an object expressed with respect to relative_to_objectname.
+ */
 DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     DQ t = get_object_translation(objectname,relative_to_objectname,opmode);
@@ -515,6 +720,14 @@ DQ DQ_VrepInterface::get_object_pose(const std::string& objectname, const std::s
     return h;
 }
 
+
+/**
+ * @brief This method gets the poses of a collection of objects.
+ * @param handles The handles of the objects.
+ * @param relative_to_handle The reference handle.
+ * @param opmode The operation mode.
+ * @return hs The poses of a collection of objects expressed with respect to relative_to_handle.
+ */
 std::vector<DQ> DQ_VrepInterface::get_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const OP_MODES &opmode)
 {
     std::vector<double>::size_type n = handles.size();
@@ -526,6 +739,14 @@ std::vector<DQ> DQ_VrepInterface::get_object_poses(const std::vector<int> &handl
     return hs;
 }
 
+
+/**
+ * @brief This method sets the object translation given by a pure quaternion.
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param t The desired translation expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_translation(const int &handle, const int &relative_to_handle, const DQ& t, const OP_MODES &opmode) const
 {
     simxFloat tp[3];
@@ -535,19 +756,54 @@ void DQ_VrepInterface::set_object_translation(const int &handle, const int &rela
 
     simxSetObjectPosition(clientid_,handle,relative_to_handle,tp,_remap_op_mode(opmode));
 }
+
+
+/**
+ * @brief This method sets the object translation given by a pure quaternion.
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param t The desired translation expressed with respect to relative_to_objectname.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_translation(const int& handle, const std::string& relative_to_objectname, const DQ& t, const OP_MODES& opmode)
 {
     return set_object_translation(handle,_get_handle_from_map(relative_to_objectname),t,opmode);
 }
+
+
+/**
+ * @brief This method sets the object translation given by a pure quaternion.
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param t The desired translation expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const int& relative_to_handle, const DQ& t, const OP_MODES& opmode)
 {
     return set_object_translation(_get_handle_from_map(objectname),relative_to_handle,t,opmode);
 }
+
+
+/**
+ * @brief This method sets the object translation given by a pure quaternion.
+ * @param objectname The object name.
+ * @param t The desired translation expressed with respect to relative_to_objectname.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_translation(const std::string& objectname, const DQ& t, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return set_object_translation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),t,opmode);
 }
 
+
+/**
+ * @brief This method sets the object rotation given by a unit quaternion.
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param r The desired rotation expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relative_to_handle, const DQ& r, const OP_MODES &opmode) const
 {
     simxFloat rp[4];
@@ -558,38 +814,106 @@ void DQ_VrepInterface::set_object_rotation(const int &handle, const int &relativ
 
     simxSetObjectQuaternion(clientid_,handle,relative_to_handle,rp,_remap_op_mode(opmode));
 }
+
+
+/**
+ * @brief This method sets the object rotation given by a unit quaternion.
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param r The desired rotation expressed with respect to relative_to_objectname.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_rotation(const int& handle, const std::string& relative_to_objectname, const DQ& r, const OP_MODES& opmode)
 {
     return set_object_rotation(handle,_get_handle_from_map(relative_to_objectname),r,opmode);
 }
+
+
+/**
+ * @brief This method sets the object rotation given by a unit quaternion.
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param r The desired rotation expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const int& relative_to_handle, const DQ& r, const OP_MODES& opmode)
 {
     return set_object_rotation(_get_handle_from_map(objectname),relative_to_handle,r,opmode);
 }
+
+
+/**
+ * @brief This method sets the object rotation given by a unit quaternion.
+ * @param objectname The object name.
+ * @param r The desired rotation expressed with respect to relative_to_objectname.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_rotation(const std::string& objectname, const DQ& r, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return set_object_rotation(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),r,opmode);
 }
 
 
+/**
+ * @brief This method sets the pose of an object.
+ * @param handle The object handle.
+ * @param relative_to_handle The reference handle.
+ * @param h The desired pose expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_pose(const int &handle, const int &relative_to_handle, const DQ& h, const OP_MODES &opmode) const
 {
     set_object_translation(handle,relative_to_handle,translation(h),opmode);
     set_object_rotation(handle,relative_to_handle,P(h),opmode);
 }
+
+
+/**
+ * @brief This method sets the pose of an object.
+ * @param handle The object handle.
+ * @param relative_to_objectname The name of the reference object.
+ * @param h The desired pose is expressed with respect to relative_to_objectname.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_pose(const int& handle, const std::string& relative_to_objectname, const DQ& h, const OP_MODES& opmode)
 {
     return set_object_pose(handle,_get_handle_from_map(relative_to_objectname),h,opmode);
 }
+
+
+/**
+ * @brief This method sets the pose of an object.
+ * @param objectname The object name.
+ * @param relative_to_handle The reference handle.
+ * @param h The desired pose expressed with respect to relative_to_handle.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const int& relative_to_handle, const DQ& h, const OP_MODES& opmode)
 {
     return set_object_pose(_get_handle_from_map(objectname),relative_to_handle,h,opmode);
 }
+
+/**
+ * @brief This method sets the pose of an object.
+ * @param objectname The object name.
+ * @param h The desired pose expressed with respect to relative_to_objectname.
+ * @param relative_to_objectname The name of the reference object.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_pose(const std::string& objectname, const DQ& h, const std::string& relative_to_objectname, const OP_MODES& opmode)
 {
     return set_object_pose(_get_handle_from_map(objectname),_get_handle_from_map(relative_to_objectname),h,opmode);
 }
 
+
+/**
+ * @brief This method sets the poses of collection of objects.
+ * @param handles The object handles.
+ * @param relative_to_handle The reference handle.
+ * @param hs The desired poses expressed with respect to the relative_to_handle.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const int &relative_to_handle, const std::vector<DQ> &hs, const OP_MODES &opmode) const
 {
     std::vector<double>::size_type n = handles.size();
@@ -600,6 +924,12 @@ void DQ_VrepInterface::set_object_poses(const std::vector<int> &handles, const i
 }
 
 
+/**
+ * @brief This method gets the joint position.
+ * @param handle The handle of the joint.
+ * @param opmode The operation mode.
+ * @returns angle_rad_f The joint position.
+ */
 double DQ_VrepInterface::get_joint_position(const int &handle, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f;
@@ -608,6 +938,13 @@ double DQ_VrepInterface::get_joint_position(const int &handle, const OP_MODES &o
     return double(angle_rad_f);
 }
 
+
+/**
+ * @brief This method gets the joint position.
+ * @param jointname The name of the joint.
+ * @param opmode The operation mode.
+ * @returns angle_rad_f The joint position.
+ */
 double DQ_VrepInterface::get_joint_position(const std::string& jointname, const OP_MODES& opmode)
 {
     if(opmode == OP_AUTOMATIC)
@@ -623,26 +960,63 @@ double DQ_VrepInterface::get_joint_position(const std::string& jointname, const 
         return get_joint_position(_get_handle_from_map(jointname),opmode);
 }
 
+
+/**
+ * @brief This method sets the joint position.
+ * @param handle The handle of the joint.
+ * @param angles_rad The desired joint position.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
     simxSetJointPosition(clientid_,handle,angle_rad_f,_remap_op_mode(opmode));
 }
+
+
+/**
+ * @brief This method sets the joint position.
+ * @param jointname The name of the joint.
+ * @param angles_rad The desired joint position.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
     return set_joint_position(_get_handle_from_map(jointname),angle_rad,opmode);
 }
 
+
+/**
+ * @brief This method sets the target joint position.
+ * @param handle The handle of the joint.
+ * @param angles_rad The target joint position.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_target_position(const int &handle, const double &angle_rad, const OP_MODES &opmode) const
 {
     simxFloat angle_rad_f = simxFloat(angle_rad);
     simxSetJointTargetPosition(clientid_,handle,angle_rad_f,_remap_op_mode(opmode));
 }
+
+
+/**
+ * @brief This method sets the target joint position.
+ * @param jointname The name of the joint.
+ * @param angles_rad The target joint position.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_target_position(const std::string& jointname, const double& angle_rad, const OP_MODES& opmode)
 {
     return set_joint_target_position(_get_handle_from_map(jointname),angle_rad,opmode);
 }
 
+
+/**
+ * @brief This method gets the joint positions.
+ * @param handle The handles of the joints.
+ * @param opmode The operation mode.
+ * @returns joint_positions The joint positions.
+ */
 VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<int> &handles, const OP_MODES &opmode) const
 {
     std::vector<double>::size_type n = handles.size();
@@ -654,6 +1028,13 @@ VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<int> &handles, 
     return joint_positions;
 }
 
+
+/**
+ * @brief This method gets the joint positions.
+ * @param jointnames The names of the joints.
+ * @param opmode The operation mode.
+ * @returns joint_positions The joint positions.
+ */
 VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<std::string> &jointnames, const OP_MODES &opmode)
 {
     std::vector<double>::size_type n = jointnames.size();
@@ -668,6 +1049,12 @@ VectorXd DQ_VrepInterface::get_joint_positions(const std::vector<std::string> &j
 }
 
 
+/**
+ * @brief This method sets the joint positions.
+ * @param handles The handles of the joints.
+ * @param angles_rad The desired joint position vector.
+ * @param opmode  The operation mode.
+ */
 void DQ_VrepInterface::set_joint_positions(const std::vector<int> &handles, const VectorXd &angles_rad, const OP_MODES &opmode) const
 {
     std::vector<double>::size_type n = handles.size();
@@ -677,6 +1064,13 @@ void DQ_VrepInterface::set_joint_positions(const std::vector<int> &handles, cons
     }
 }
 
+
+/**
+ * @brief This method sets the joint positions.
+ * @param jointnames The names of the joints.
+ * @param angles_rad The desired joint position vector.
+ * @param opmode  The operation mode.
+ */
 void DQ_VrepInterface::set_joint_positions(const std::vector<std::string> &jointnames, const VectorXd &angles_rad, const OP_MODES &opmode)
 {
     if(jointnames.size() != angles_rad.size())
@@ -692,6 +1086,13 @@ void DQ_VrepInterface::set_joint_positions(const std::vector<std::string> &joint
     //simxPauseSimulation(clientid_,0);
 }
 
+
+/**
+ * @brief This method sets the target joint positions.
+ * @param handles The handles of the joints.
+ * @param angles_rad The target joint position vector.
+ * @param opmode The operation mode.
+ */
 void DQ_VrepInterface::set_joint_target_positions(const std::vector<int> &handles, const VectorXd &angles_rad, const OP_MODES &opmode) const
 {
     std::vector<double>::size_type n = handles.size();
@@ -701,6 +1102,21 @@ void DQ_VrepInterface::set_joint_target_positions(const std::vector<int> &handle
     }
 }
 
+
+/**
+ * @brief This method sets the target joint positions.
+ * @param jointnames The names of the joints.
+ * @param angles_rad The target joint position vector.
+ * @param opmode The operation mode.
+ *
+ *        Example:
+ *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
+ *                                                  "Franka_joint5", "Franka_joint6","Franka_joint7"};
+ *           DQ_VrepInterface vi;
+ *           VectorXd u = VectorXd::Zero(7);
+ *           vi.set_joint_target_positions(jointnames, u);
+ *
+ */
 void DQ_VrepInterface::set_joint_target_positions(const std::vector<std::string> &jointnames, const VectorXd &angles_rad, const OP_MODES &opmode)
 {
     if(int(jointnames.size()) != int(angles_rad.size()))
@@ -716,18 +1132,30 @@ void DQ_VrepInterface::set_joint_target_positions(const std::vector<std::string>
     //simxPauseSimulation(clientid_,0);
 }
 
+
+/**
+ * @brief This method starts the video recording.
+ */
 void DQ_VrepInterface::start_video_recording()
 {
     const unsigned char video_recording_state = 1;
     simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,_remap_op_mode(OP_ONESHOT));
 }
 
+
+/**
+ * @brief This method stops the video recording.
+ */
 void DQ_VrepInterface::stop_video_recording()
 {
     const unsigned char video_recording_state = 0;
     simxSetBooleanParameter(clientid_,sim_boolparam_video_recording_triggered,video_recording_state,_remap_op_mode(OP_ONESHOT));
 }
 
+
+/**
+ * @brief This method returns the video recording status.
+ */
 bool DQ_VrepInterface::is_video_recording()
 {
     unsigned char video_recording_state;
@@ -811,7 +1239,7 @@ void DQ_VrepInterface::set_joint_target_velocities(const std::vector<std::string
  * @brief This method gets the joint velocity.
  * @param handle The handle of the joint.
  * @param opmode The operation mode.
- * @returns the joint velocity.
+ * @returns angle_dot_rad_f The joint velocity.
  */
 double DQ_VrepInterface::get_joint_velocity(const int &handle, const OP_MODES &opmode) const
 {
@@ -826,7 +1254,7 @@ double DQ_VrepInterface::get_joint_velocity(const int &handle, const OP_MODES &o
  * @brief This method gets the joint velocity.
  * @param jointname The name of the joint.
  * @param opmode The operation mode.
- * @returns the joint velocity.
+ * @returns angle_dot_rad_f The joint velocity.
  */
 double DQ_VrepInterface::get_joint_velocity(const std::string& jointname, const OP_MODES& opmode)
 {
@@ -848,7 +1276,7 @@ double DQ_VrepInterface::get_joint_velocity(const std::string& jointname, const 
  * @brief This method gets the joint velocities.
  * @param handle The handles of the joints.
  * @param opmode The operation mode.
- * @returns the joint velocities.
+ * @returns joint_velocities The joint velocities.
  */
 VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<int> &handles, const OP_MODES &opmode) const
 {
@@ -866,7 +1294,7 @@ VectorXd DQ_VrepInterface::get_joint_velocities(const std::vector<int> &handles,
  * @brief This method gets the joint velocities.
  * @param jointnames The names of the joints.
  * @param opmode The operation mode.
- * @returns the joint velocities.
+ * @returns joint_velocities The joint velocities.
  *
  *      Example:
  *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
@@ -971,7 +1399,7 @@ void DQ_VrepInterface::set_joint_torques(const std::vector<std::string> &jointna
  * @brief This method gets the joint torque.
  * @param handle The handle of the joint.
  * @param opmode The operation mode.
- * @returns the joint torque.
+ * @returns torque The joint torque.
  */
 double DQ_VrepInterface::get_joint_torque(const int &handle, const OP_MODES &opmode) const
 {
@@ -987,7 +1415,7 @@ double DQ_VrepInterface::get_joint_torque(const int &handle, const OP_MODES &opm
  * @brief This method gets the joint torque.
  * @param jointname The name of the joint.
  * @param opmode The operation mode.
- * @returns the joint torque.
+ * @returns torque The joint torque.
  */
 double DQ_VrepInterface::get_joint_torque(const std::string& jointname, const OP_MODES& opmode)
 {
@@ -1009,7 +1437,7 @@ double DQ_VrepInterface::get_joint_torque(const std::string& jointname, const OP
  * @brief This method gets the joint torques.
  * @param handle The handles of the joints.
  * @param opmode The operation mode.
- * @returns the joint torques.
+ * @returns joint_torques The joint torques.
  */
 VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<int> &handles, const OP_MODES &opmode) const
 {
@@ -1027,7 +1455,7 @@ VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<int> &handles, co
  * @brief This method gets the joint torques.
  * @param jointnames The names of the joints.
  * @param opmode The operation mode.
- * @returns the joint torques.
+ * @returns joint_torques The joint torques.
  *
  *      Example:
  *           std::vector<std::string> jointnames = {"Franka_joint1", "Franka_joint2","Franka_joint3", "Franka_joint4",
@@ -1100,7 +1528,6 @@ VectorXd DQ_VrepInterface::get_joint_torques(const std::vector<std::string> &joi
  *
  */
 MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
-
 {
     int outFloatCnt;
     float* output_floats;
@@ -1172,7 +1599,6 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const REFERENCE
  *
  */
 MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
-
 {    
     return get_inertia_matrix(_get_handle_from_map(link_name), reference_frame, function_name, obj_name);
 }
@@ -1314,7 +1740,7 @@ double DQ_VrepInterface::get_mass(const int& handle, const std::string& function
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
     call_script_data data = _extract_call_script_data_from_pointers(return_code, 0, nullptr, outFloatCnt, output_floats, 0, nullptr);
     if (data.output_floats.size() != 1){
-        throw std::range_error("Error in get_center_of mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
+        throw std::range_error("Error in get_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 1)");
     }
     return data.output_floats[0];
 }
@@ -1347,7 +1773,6 @@ double DQ_VrepInterface::get_mass(const int& handle, const std::string& function
  *
  */
 double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
-
 {
     return get_mass(_get_handle_from_map(link_name), function_name,obj_name);
 }
