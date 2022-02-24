@@ -1641,7 +1641,7 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, cons
  *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(handle, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-VectorXd DQ_VrepInterface::get_center_of_mass(const int& handle,  const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
+DQ DQ_VrepInterface::get_center_of_mass(const int& handle,  const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
 {
     int outFloatCnt;
     float* output_floats;
@@ -1654,8 +1654,8 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const int& handle,  const REFERENC
     if (data.output_floats.size() != 3){
         throw std::range_error("Error in get_center_of_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
     }
-    VectorXd center_of_mass = VectorXd(3);
-    center_of_mass << data.output_floats[0],data.output_floats[1],data.output_floats[2];
+    DQ center_of_mass = data.output_floats[0]*i_ + data.output_floats[1]*j_
+                       + data.output_floats[2]*k_;
     return center_of_mass;
 }
 
@@ -1696,7 +1696,7 @@ VectorXd DQ_VrepInterface::get_center_of_mass(const int& handle,  const REFERENC
  *              std::cout<<"Center of mass expressed in absolute frame"<<vi.get_center_of_mass(link, "absolute_frame", "get_center_of_mass","DQRoboticsApiCommandServer")<<std::endl;
  *
  */
-VectorXd DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
+DQ DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
 {    
     return get_center_of_mass(_get_handle_from_map(link_name), reference_frame,function_name, obj_name);
 }
