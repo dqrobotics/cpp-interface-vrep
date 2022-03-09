@@ -28,12 +28,10 @@ jobs:
         run: |
           git clone -b ${{ matrix.testbranches }} https://github.com/dqrobotics/cpp
           cd cpp
-          chmod +x debian/rules
-          fakeroot debian/rules clean
-          fakeroot debian/rules build
-          fakeroot debian/rules binary
+          sh .github/scripts/ubuntu/install_prerequisites.sh
+          sh .github/scripts/ubuntu/build.sh
+          sh .github/scripts/ubuntu/install.sh
           cd ..
-          sudo apt install ./*.deb
           
       - name: Build & install cpp-interface-vrep
         run: |
