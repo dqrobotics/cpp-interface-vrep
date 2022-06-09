@@ -38,7 +38,7 @@ LBR4pVrepRobot::LBR4pVrepRobot(const std::string& robot_name, DQ_VrepInterface* 
 
     std::string robot_index("");
     if(splited_name.size() > 1)
-        robot_index = splited_name[1];
+        robot_index = "#"+splited_name[1];
 
     for(int i=1;i<8;i++)
     {
@@ -71,6 +71,11 @@ DQ_SerialManipulatorDH LBR4pVrepRobot::kinematics()
 void LBR4pVrepRobot::send_q_to_vrep(const VectorXd &q)
 {
     vrep_interface_->set_joint_positions(joint_names_,q);
+}
+
+void LBR4pVrepRobot::send_q_target_to_vrep(const VectorXd &q_target)
+{
+    vrep_interface_->set_joint_target_positions(joint_names_,q_target);
 }
 
 VectorXd LBR4pVrepRobot::get_q_from_vrep()

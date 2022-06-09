@@ -38,6 +38,7 @@ public:
     LBR4pVrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
 
     void send_q_to_vrep(const VectorXd &q) override;
+    void send_q_target_to_vrep(const VectorXd& q_target);
     VectorXd get_q_from_vrep() override;
 
     DQ_SerialManipulatorDH kinematics();
