@@ -53,7 +53,7 @@ DQ_SerialManipulatorDH LBR4pVrepRobot::kinematics()
 {
     const double pi2 = pi/2.0;
 
-    Matrix<double,4,7> dh(4,7);
+    Matrix<double,5,7> dh(5,7);
     dh <<  0,     0,     0,   0,   0,    0,   0,
                  0.200, 0,     0.4, 0,   0.39, 0,   0,
                  0,     0,     0,   0,   0,    0,   0,
