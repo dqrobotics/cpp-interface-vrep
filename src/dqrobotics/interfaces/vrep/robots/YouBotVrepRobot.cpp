@@ -59,11 +59,12 @@ DQ_robotics::DQ_WholeBody YouBotVrepRobot::kinematics()
 {
     const double pi2 = pi/2.0;
 
-    Matrix<double,4,5> dh(4,5);
+    Matrix<double,5,5> dh(5,5);
     dh <<    0,      pi2,       0,      pi2,    0,
             0.147,    0,       0,        0,    0.218,
             0.033,    0.155,   0.135,    0,    0,
-            pi2,      0,       0,      pi2,    0;
+            pi2,      0,       0,      pi2,    0,
+            0, 0, 0, 0, 0;
 
 
     auto arm = std::make_shared<DQ_SerialManipulatorDH>(DQ_SerialManipulatorDH(dh));
