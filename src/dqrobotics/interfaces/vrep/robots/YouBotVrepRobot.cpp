@@ -1,5 +1,5 @@
 /**
-(C) Copyright 2019 DQ Robotics Developers
+(C) Copyright 2019-2022 DQ Robotics Developers
 
 This file is part of DQ Robotics.
 
@@ -55,7 +55,7 @@ YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, DQ_VrepInterface
 
 }
 
-DQ_robotics::DQ_WholeBody YouBotVrepRobot::kinematics()
+DQ_robotics::DQ_SerialWholeBody YouBotVrepRobot::kinematics()
 {
     const double pi2 = pi/2.0;
 
@@ -74,7 +74,7 @@ DQ_robotics::DQ_WholeBody YouBotVrepRobot::kinematics()
 
     base->set_frame_displacement(x_bm);
 
-    DQ_WholeBody kin(std::static_pointer_cast<DQ_Kinematics>(base));
+    DQ_SerialWholeBody kin(std::static_pointer_cast<DQ_Kinematics>(base));
     kin.add(std::static_pointer_cast<DQ_Kinematics>(arm));
 
     DQ effector = 1 + E_*0.5*0.3*k_;
