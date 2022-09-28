@@ -1777,35 +1777,75 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
     return get_mass(_get_handle_from_map(link_name), function_name,obj_name);
 }
 
-int DQ_VrepInterface::getObjectParent(int objectHandle, OP_MODES const &opMode) {
+/**
+ * @brief This method gets the parent of an object.
+ * @param object_handle The object handle.
+ * @param op_mode The operation mode.
+ */
+int DQ_VrepInterface::get_object_parent(int object_handle, const OP_MODES &op_mode) {
     int parentObjectHandle;
-    const std::function<simxInt(void)> f = std::bind(simxGetObjectParent, clientid_, objectHandle, &parentObjectHandle, opMode);
-    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opMode);
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectParent, clientid_, object_handle, &parentObjectHandle, op_mode);
+    _retry_function(f, MAX_TRY_COUNT_, TIMEOUT_IN_MILISECONDS_, no_blocking_loops_, op_mode);
     return parentObjectHandle;
 }
 
-int DQ_VrepInterface::getObjectParent(std::string const &objectName, OP_MODES const &opMode) {
-    return this->getObjectParent(_get_handle_from_map(objectName), opMode);
+/**
+ * @brief This method gets the parent of an object.
+ *        This acts as a convenience function for achieving the same functionality without having an object's handle
+ * @param object_name The object name.
+ * @param op_mode The operation mode.
+ */
+int DQ_VrepInterface::get_object_parent(const std::string &object_name, const OP_MODES &op_mode) {
+    return this->get_object_parent(_get_handle_from_map(object_name), op_mode);
 }
 
-void DQ_VrepInterface::setObjectParent(int objectHandle, int parentObjectHandle, bool keepInPlace,
-                                       OP_MODES const &opMode) {
-    const std::function<simxInt(void)> f = std::bind(simxSetObjectParent, clientid_, objectHandle, parentObjectHandle, keepInPlace, opMode);
-    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opMode);
+/**
+ * @brief This method sets the parent of an object.
+ * @param object_handle The object handle.
+ * @param parent_object_handle The handle of the object that will become the parent of object_handle.
+ * @param keep_in_place if true, the object's pose will be interpreted relative to the global coordinate frame
+ *                      if false, the object's pose will be interpreted relative to the parent's coordinate frame
+ * @param op_mode The operation mode.
+ */
+void DQ_VrepInterface::set_object_parent(int object_handle, int parent_object_handle, bool keep_in_place, const OP_MODES &op_mode) {
+    const std::function<simxInt(void)> f = std::bind(simxSetObjectParent, clientid_, object_handle, parent_object_handle, keep_in_place, op_mode);
+    _retry_function(f, MAX_TRY_COUNT_, TIMEOUT_IN_MILISECONDS_, no_blocking_loops_, op_mode);
 }
 
-void DQ_VrepInterface::setObjectParent(std::string const &objectName, std::string const &parentObjectName,
-                                       bool keepInPlace, OP_MODES const &opMode) {
-    this->setObjectParent(_get_handle_from_map(objectName), _get_handle_from_map(parentObjectName), keepInPlace,
-                          opMode);
+/**
+ * @brief This method sets the parent of an object.
+ *        This acts as a convenience function for achieving the same functionality without having the objects' handle
+ * @param object_name The object name.
+ * @param parent_object_name The name of the object that will become the parent of object_name.
+ * @param keep_in_place if true, the object's pose will be interpreted relative to the global coordinate frame
+ *                      if false, the object's pose will be interpreted relative to the parent's coordinate frame
+ * @param op_mode The operation mode.
+ */
+void DQ_VrepInterface::set_object_parent(const std::string &object_name, const std::string &parent_object_name, bool keep_in_place, const OP_MODES &op_mode) {
+    this->set_object_parent(_get_handle_from_map(object_name), _get_handle_from_map(parent_object_name), keep_in_place, op_mode);
 }
 
-void DQ_VrepInterface::removeObjectParents(int objectHandle, bool keepInPlace, OP_MODES const &opMode) {
-    this->setObjectParent(objectHandle, -1, keepInPlace, opMode);
+/**
+ * @brief This method removes all parents of an object making the object part of the "global" scene hierarchy.
+ * @param object_handle The object handle.
+ * @param keep_in_place if true, the object's pose will be interpreted relative to the global coordinate frame
+ *                      if false, the object's pose will be interpreted relative to the parent's coordinate frame
+ * @param op_mode The operation mode.
+ */
+void DQ_VrepInterface::remove_object_parents(int object_handle, bool keep_in_place, const OP_MODES &op_mode) {
+    this->set_object_parent(object_handle, -1, keep_in_place, op_mode);
 }
 
-void DQ_VrepInterface::removeObjectParents(std::string const &objectName, bool keepInPlace, OP_MODES const &opMode) {
-    this->setObjectParent(_get_handle_from_map(objectName), -1, keepInPlace, opMode);
+/**
+ * @brief This method removes all parents of an object making the object part of the "global" scene hierarchy.
+ *        This acts as a convenience function for achieving the same functionality without having the object's handle
+ * @param object_name The object name.
+ * @param keep_in_place if true, the object's pose will be interpreted relative to the global coordinate frame
+ *                      if false, the object's pose will be interpreted relative to the parent's coordinate frame
+ * @param op_mode The operation mode.
+ */
+void DQ_VrepInterface::remove_object_parents(const std::string &object_name, bool keep_in_place, const OP_MODES &op_mode) {
+    this->set_object_parent(_get_handle_from_map(object_name), -1, keep_in_place, op_mode);
 }
 
 /**

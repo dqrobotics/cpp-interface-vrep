@@ -187,19 +187,14 @@ public:
     double get_mass(const std::string& link_name, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
     double get_mass(const int& handle, const std::string& function_name = "get_mass", const std::string& obj_name= "DQRoboticsApiCommandServer");
 
-    int  getObjectParent(int objectHandle, OP_MODES const &opMode = OP_AUTOMATIC);
+    int  get_object_parent(int object_handle, const OP_MODES &op_mode = OP_AUTOMATIC);
+    int  get_object_parent(const std::string &object_name, const OP_MODES &op_mode = OP_AUTOMATIC);
 
-    int  getObjectParent(std::string const &objectName, OP_MODES const &opMode = OP_AUTOMATIC);
+    void set_object_parent(int object_handle, int parent_object_handle, bool keep_in_place, const OP_MODES &op_mode = OP_AUTOMATIC);
+    void set_object_parent(const std::string &object_name, const std::string &parent_object_name, bool keep_in_place, const OP_MODES &op_mode = OP_AUTOMATIC);
 
-    void setObjectParent(int objectHandle, int parentObjectHandle, bool keepInPlace,
-                         OP_MODES const &opMode = OP_AUTOMATIC);
-
-    void setObjectParent(std::string const &objectName, std::string const &parentObjectName, bool keepInPlace,
-                         OP_MODES const &opMode = OP_AUTOMATIC);
-
-    void removeObjectParents(int objectHandle, bool keepInPlace, OP_MODES const &opMode = OP_AUTOMATIC);
-
-    void removeObjectParents(std::string const &objectName, bool keepInPlace, OP_MODES const &opMode = OP_AUTOMATIC);
+    void remove_object_parents(int object_handle, bool keep_in_place, const OP_MODES &op_mode = OP_AUTOMATIC);
+    void remove_object_parents(const std::string &object_name, bool keep_in_place, const OP_MODES &op_mode = OP_AUTOMATIC);
 
 
 private:
