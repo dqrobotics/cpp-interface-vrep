@@ -238,7 +238,7 @@ std::vector<std::string> _extract_vector_string_from_char_pointer(const char *st
  *
  */
 call_script_data _extract_call_script_data_from_pointers(int return_code, int outIntCnt, int* output_ints, int outFloatCnt, float* output_floats, int outStringCnt, char* output_strings)
-{    
+{
     struct call_script_data data;
     data.return_code = return_code;
 
@@ -1599,7 +1599,7 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const REFERENCE
  *
  */
 MatrixXd DQ_VrepInterface::get_inertia_matrix(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
-{    
+{
     return get_inertia_matrix(_get_handle_from_map(link_name), reference_frame, function_name, obj_name);
 }
 
@@ -1697,7 +1697,7 @@ DQ DQ_VrepInterface::get_center_of_mass(const int& handle,  const REFERENCE_FRAM
  *
  */
 DQ DQ_VrepInterface::get_center_of_mass(const std::string& link_name, const REFERENCE_FRAMES& reference_frame, const std::string& function_name, const std::string& obj_name)
-{    
+{
     return get_center_of_mass(_get_handle_from_map(link_name), reference_frame,function_name, obj_name);
 }
 
@@ -1775,6 +1775,37 @@ double DQ_VrepInterface::get_mass(const int& handle, const std::string& function
 double DQ_VrepInterface::get_mass(const std::string& link_name, const std::string& function_name, const std::string& obj_name)
 {
     return get_mass(_get_handle_from_map(link_name), function_name,obj_name);
+}
+
+int DQ_VrepInterface::getObjectParent(int objectHandle, OP_MODES const &opMode) {
+    int parentObjectHandle;
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectParent, clientid_, objectHandle, &parentObjectHandle, opMode);
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opMode);
+    return parentObjectHandle;
+}
+
+int DQ_VrepInterface::getObjectParent(std::string const &objectName, OP_MODES const &opMode) {
+    return this->getObjectParent(_get_handle_from_map(objectName), opMode);
+}
+
+void DQ_VrepInterface::setObjectParent(int objectHandle, int parentObjectHandle, bool keepInPlace,
+                                       OP_MODES const &opMode) {
+    const std::function<simxInt(void)> f = std::bind(simxSetObjectParent, clientid_, objectHandle, parentObjectHandle, keepInPlace, opMode);
+    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,opMode);
+}
+
+void DQ_VrepInterface::setObjectParent(std::string const &objectName, std::string const &parentObjectName,
+                                       bool keepInPlace, OP_MODES const &opMode) {
+    this->setObjectParent(_get_handle_from_map(objectName), _get_handle_from_map(parentObjectName), keepInPlace,
+                          opMode);
+}
+
+void DQ_VrepInterface::removeObjectParents(int objectHandle, bool keepInPlace, OP_MODES const &opMode) {
+    this->setObjectParent(objectHandle, -1, keepInPlace, opMode);
+}
+
+void DQ_VrepInterface::removeObjectParents(std::string const &objectName, bool keepInPlace, OP_MODES const &opMode) {
+    this->setObjectParent(_get_handle_from_map(objectName), -1, keepInPlace, opMode);
 }
 
 /**
