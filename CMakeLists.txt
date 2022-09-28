@@ -25,9 +25,11 @@ add_definitions(-DNON_MATLAB_PARSING)
 add_definitions(-DMAX_EXT_API_CONNECTIONS=255)
 add_definitions(-DDO_NOT_USE_SHARED_MEMORY)
 
+set(COPPELIA_SIM_CODE_LOCATION "coppeliarobotics" CACHE STRING "The path (absolute or relative) to the coppeliaSim code directory")
+
 INCLUDE_DIRECTORIES(${PROJECT_NAME} include)
-INCLUDE_DIRECTORIES(${PROJECT_NAME} coppeliarobotics/remoteApi)
-INCLUDE_DIRECTORIES(${PROJECT_NAME} coppeliarobotics/include)
+INCLUDE_DIRECTORIES(${PROJECT_NAME} ${COPPELIA_SIM_CODE_LOCATION}/remoteApi)
+INCLUDE_DIRECTORIES(${PROJECT_NAME} ${COPPELIA_SIM_CODE_LOCATION}/include)
 
 ################################################################
 # DEFINE AND INSTALL LIBRARY AND INCLUDE FOLDER
@@ -39,8 +41,8 @@ ADD_LIBRARY(${PROJECT_NAME} SHARED
     src/dqrobotics/interfaces/vrep/DQ_VrepRobot.cpp
     src/dqrobotics/interfaces/vrep/robots/LBR4pVrepRobot.cpp
     src/dqrobotics/interfaces/vrep/robots/YouBotVrepRobot.cpp
-    coppeliarobotics/remoteApi/extApi.c
-    coppeliarobotics/remoteApi/extApiPlatform.c
+    ${COPPELIA_SIM_CODE_LOCATION}/remoteApi/extApi.c
+    ${COPPELIA_SIM_CODE_LOCATION}/remoteApi/extApiPlatform.c
     )
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME} 
