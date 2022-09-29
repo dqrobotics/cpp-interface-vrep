@@ -1796,7 +1796,7 @@ int DQ_VrepInterface::get_object_parent(int object_handle, const OP_MODES &op_mo
  * @param op_mode The operation mode.
  */
 int DQ_VrepInterface::get_object_parent(const std::string &object_name, const OP_MODES &op_mode) {
-    return this->get_object_parent(_get_handle_from_map(object_name), op_mode);
+    return get_object_parent(_get_handle_from_map(object_name), op_mode);
 }
 
 /**
@@ -1822,7 +1822,7 @@ void DQ_VrepInterface::set_object_parent(int object_handle, int parent_object_ha
  * @param op_mode The operation mode.
  */
 void DQ_VrepInterface::set_object_parent(const std::string &object_name, const std::string &parent_object_name, bool keep_in_place, const OP_MODES &op_mode) {
-    this->set_object_parent(_get_handle_from_map(object_name), _get_handle_from_map(parent_object_name), keep_in_place, op_mode);
+    set_object_parent(_get_handle_from_map(object_name), _get_handle_from_map(parent_object_name), keep_in_place, op_mode);
 }
 
 /**
@@ -1833,7 +1833,7 @@ void DQ_VrepInterface::set_object_parent(const std::string &object_name, const s
  * @param op_mode The operation mode.
  */
 void DQ_VrepInterface::remove_object_parents(int object_handle, bool keep_in_place, const OP_MODES &op_mode) {
-    this->set_object_parent(object_handle, -1, keep_in_place, op_mode);
+    set_object_parent(object_handle, -1, keep_in_place, op_mode);
 }
 
 /**
@@ -1845,7 +1845,7 @@ void DQ_VrepInterface::remove_object_parents(int object_handle, bool keep_in_pla
  * @param op_mode The operation mode.
  */
 void DQ_VrepInterface::remove_object_parents(const std::string &object_name, bool keep_in_place, const OP_MODES &op_mode) {
-    this->set_object_parent(_get_handle_from_map(object_name), -1, keep_in_place, op_mode);
+    set_object_parent(_get_handle_from_map(object_name), -1, keep_in_place, op_mode);
 }
 
 /**
