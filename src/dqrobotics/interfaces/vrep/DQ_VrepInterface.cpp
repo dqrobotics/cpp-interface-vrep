@@ -1808,7 +1808,7 @@ int DQ_VrepInterface::get_object_parent(const std::string &object_name) {
  * @param op_mode The operation mode.
  */
 void DQ_VrepInterface::set_object_parent(int object_handle, int parent_object_handle, bool keep_in_place, const OP_MODES &op_mode) {
-    const std::function<simxInt(void)> f = std::bind(simxSetObjectParent, clientid_, object_handle, parent_object_handle, keep_in_place, op_mode);
+    const std::function<simxInt(void)> f = std::bind(simxSetObjectParent, clientid_, object_handle, parent_object_handle, keep_in_place, _remap_op_mode(op_mode));
     _retry_function(f, MAX_TRY_COUNT_, TIMEOUT_IN_MILISECONDS_, no_blocking_loops_, op_mode);
 }
 
