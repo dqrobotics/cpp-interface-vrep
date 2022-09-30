@@ -1782,10 +1782,10 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
  * @param object_handle The object handle.
  * @param op_mode The operation mode.
  */
-int DQ_VrepInterface::get_object_parent(int object_handle, const OP_MODES &op_mode) {
+int DQ_VrepInterface::get_object_parent(int object_handle) {
     int parentObjectHandle;
-    const std::function<simxInt(void)> f = std::bind(simxGetObjectParent, clientid_, object_handle, &parentObjectHandle, op_mode);
-    _retry_function(f, MAX_TRY_COUNT_, TIMEOUT_IN_MILISECONDS_, no_blocking_loops_, op_mode);
+    const std::function<simxInt(void)> f = std::bind(simxGetObjectParent, clientid_, object_handle, &parentObjectHandle, simx_opmode_blocking);
+    _retry_function(f, MAX_TRY_COUNT_, TIMEOUT_IN_MILISECONDS_, no_blocking_loops_, OP_BLOCKING);
     return parentObjectHandle;
 }
 
@@ -1795,8 +1795,8 @@ int DQ_VrepInterface::get_object_parent(int object_handle, const OP_MODES &op_mo
  * @param object_name The object name.
  * @param op_mode The operation mode.
  */
-int DQ_VrepInterface::get_object_parent(const std::string &object_name, const OP_MODES &op_mode) {
-    return get_object_parent(_get_handle_from_map(object_name), op_mode);
+int DQ_VrepInterface::get_object_parent(const std::string &object_name) {
+    return get_object_parent(_get_handle_from_map(object_name));
 }
 
 /**
