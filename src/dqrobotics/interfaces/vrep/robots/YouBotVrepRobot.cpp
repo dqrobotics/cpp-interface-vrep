@@ -39,7 +39,7 @@ YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, DQ_VrepInterface
 
     if(robot_label.compare(std::string("youBot")) != 0)
     {
-        std::runtime_error("Expected youBot");
+        throw std::runtime_error("Expected youBot");
     }
 
     std::string robot_index("");
