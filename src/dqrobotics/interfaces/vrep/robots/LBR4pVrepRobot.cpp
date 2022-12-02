@@ -1,5 +1,5 @@
 /**
-(C) Copyright 2019 DQ Robotics Developers
+(C) Copyright 2019-2022 DQ Robotics Developers
 
 This file is part of DQ Robotics.
 
@@ -33,7 +33,7 @@ LBR4pVrepRobot::LBR4pVrepRobot(const std::string& robot_name, DQ_VrepInterface* 
 
     if(robot_label.compare(std::string("LBR4p")) != 0)
     {
-        std::runtime_error("Expected LBR4p");
+        throw std::runtime_error("Expected LBR4p");
     }
 
     std::string robot_index("");
