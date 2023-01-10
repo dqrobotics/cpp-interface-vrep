@@ -61,7 +61,7 @@ DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep
 
 
 /**
- * @brief Construct a DQ_VrepRobot::DQ_VrepRobot object
+ * @brief Constructor of the DQ_VrepRobot class
  * 
  * @param robot_name The name of robot used on the vrep scene.
  * @param vrep_interface_sptr The DQ_VrepInterface smart pointer.
