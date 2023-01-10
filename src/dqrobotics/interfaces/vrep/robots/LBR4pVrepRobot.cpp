@@ -36,11 +36,33 @@ LBR4pVrepRobot::LBR4pVrepRobot(const std::string& robot_name, DQ_VrepInterface* 
   _set_names(robot_name);
 }
 
+
+/**
+ * @brief Construct a new LBR4pVrepRobot::LBR4pVrepRobot object
+ * 
+ * @param robot_name The name of robot used on the vrep scene.
+ * @param vrep_interface_sptr The DQ_VrepInterface smart pointer.
+ * 
+ *               Example:
+ *               auto vi = std::make_shared<DQ_VrepInterface>(DQ_VrepInterface());
+ *               vi->connect(19997,100,5);
+ *               vi->start_simulation();
+ *               LBR4pVrepRobot lbr4p_vreprobot("LBR4p", vi);
+ *               auto q = lbr4p_vreprobot.get_q_from_vrep();
+ *               vi->stop_simulation();
+ *               vi->disconnect();
+ */
 LBR4pVrepRobot::LBR4pVrepRobot(const std::string& robot_name, const std::shared_ptr<DQ_VrepInterface>& vrep_interface_sptr): DQ_VrepRobot(robot_name, vrep_interface_sptr)
 {
   _set_names(robot_name);
 }
 
+
+/**
+ * @brief _set_names sets the joint_names_ and the base_frame_name_ attributes.
+ * 
+ * @param robot_name The name of robot used on the vrep scene.
+ */
 void LBR4pVrepRobot::_set_names(const std::string& robot_name)
 {
   std::vector<std::string> splited_name = strsplit(robot_name_,'#');

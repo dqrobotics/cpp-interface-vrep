@@ -39,12 +39,34 @@ YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, DQ_VrepInterface
     _set_names(robot_name);
 }
 
+
+/**
+ * @brief Construct a new YouBotVrepRobot::YouBotVrepRobot object
+ * 
+ * @param robot_name The name of robot used on the vrep scene.
+ * @param vrep_interface_sptr The DQ_VrepInterface smart pointer.
+ * 
+ *               Example:
+ *               auto vi = std::make_shared<DQ_VrepInterface>(DQ_VrepInterface());
+ *               vi->connect(19997,100,5);
+ *               vi->start_simulation();
+ *               YouBotVrepRobot youbot_vreprobot("youBot", vi);
+ *               auto q = youbot_vreprobot.get_q_from_vrep();
+ *               vi->stop_simulation();
+ *               vi->disconnect();
+ */
 YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, const std::shared_ptr<DQ_VrepInterface>& vrep_interface_sptr):DQ_VrepRobot(robot_name, vrep_interface_sptr)
 {
     adjust_ = ((cos(pi/2) + i_*sin(pi/2)) * (cos(pi/4) + j_*sin(pi/4)))*(1+0.5*E_*-0.1*k_);
     _set_names(robot_name);
 }
 
+
+/**
+ * @brief _set_names sets the joint_names_ and the base_frame_name_ attributes.
+ * 
+ * @param robot_name The name of robot used on the vrep scene.
+ */
 void YouBotVrepRobot::_set_names(const std::string& robot_name)
 {
     std::vector<std::string> splited_name = strsplit(robot_name_,'#');
