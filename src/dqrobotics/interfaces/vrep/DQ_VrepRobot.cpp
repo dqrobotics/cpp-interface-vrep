@@ -59,6 +59,11 @@ DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep
     vrep_interface_ = vrep_interface;
 }
 
+/**
+ * @brief Constructor of the class.
+ * @param robot_name The name of robot used on the vrep scene.
+ * @param vrep_interface_sptr The DQ_VrepInterface smart pointer.
+ */
 DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, const std::shared_ptr<DQ_VrepInterface>& vrep_interface_sptr)
 {
     robot_name_ = robot_name;
@@ -67,11 +72,20 @@ DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, const std::shared_ptr<
     vrep_interface_sptr_ = vrep_interface_sptr;
 }
 
+
+/**
+ * @brief _get_interface_ptr returns the DQ_VrepInterface raw pointer
+ * @returns The desired raw pointer.
+ */
 DQ_VrepInterface *DQ_VrepRobot::_get_interface_ptr() const
 {
     return vrep_interface_sptr_ ? vrep_interface_sptr_.get() : vrep_interface_;
 }
 
+/**
+ * @brief _get_interface_sptr returns the DQ_VrepInterface smart pointer
+ * @returns The desired smart pointer.
+ */
 std::shared_ptr<DQ_VrepInterface> DQ_VrepRobot::_get_interface_sptr() const
 {
     if(!vrep_interface_sptr_)
