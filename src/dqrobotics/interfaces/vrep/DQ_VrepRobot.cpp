@@ -1,5 +1,5 @@
 /**
-(C) Copyright 2019 DQ Robotics Developers
+(C) Copyright 2019-2023 DQ Robotics Developers
 
 This file is part of DQ Robotics.
 
@@ -18,6 +18,11 @@ This file is part of DQ Robotics.
 
 Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
+        - Responsible for the original implementation.
+        
+- Juan Jose Quiroz Omana   (juanjqo@g.ecc.u-tokyo.ac.jp)
+        - Added smart pointers, deprecated raw pointers. 
+         (Adapted from DQ_PseudoinverseController.h and DQ_KinematicController.h)
 */
 
 #include<dqrobotics/interfaces/vrep/DQ_VrepRobot.h>
@@ -53,4 +58,41 @@ DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep
         throw std::runtime_error("Null reference to vrep_interface, initialize it first!");
     vrep_interface_ = vrep_interface;
 }
+
+
+/**
+ * @brief Constructor of the DQ_VrepRobot class
+ * 
+ * @param robot_name The name of robot used on the vrep scene.
+ * @param vrep_interface_sptr The DQ_VrepInterface smart pointer.
+ */
+DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, const std::shared_ptr<DQ_VrepInterface>& vrep_interface_sptr)
+{
+    robot_name_ = robot_name;
+    if(!vrep_interface_sptr)
+        throw std::runtime_error("Null reference to vrep_interface, initialize it first!");
+    vrep_interface_sptr_ = vrep_interface_sptr;
+}
+
+
+/**
+ * @brief _get_interface_ptr returns the DQ_VrepInterface raw pointer
+ * @returns The desired raw pointer.
+ */
+DQ_VrepInterface *DQ_VrepRobot::_get_interface_ptr() const
+{
+    return vrep_interface_sptr_ ? vrep_interface_sptr_.get() : vrep_interface_;
+}
+
+/**
+ * @brief _get_interface_sptr returns the DQ_VrepInterface smart pointer
+ * @returns The desired smart pointer.
+ */
+std::shared_ptr<DQ_VrepInterface> DQ_VrepRobot::_get_interface_sptr() const
+{
+    if(!vrep_interface_sptr_)
+        throw std::runtime_error("DQ_VrepRobot::_get_interface_sptr invalid interface pointer");
+    return vrep_interface_sptr_;   
+}
+
 }

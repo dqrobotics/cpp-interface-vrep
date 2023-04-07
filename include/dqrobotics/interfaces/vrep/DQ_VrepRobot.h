@@ -1,5 +1,5 @@
 /**
-(C) Copyright 2019 DQ Robotics Developers
+(C) Copyright 2019-2023 DQ Robotics Developers
 
 This file is part of DQ Robotics.
 
@@ -18,13 +18,16 @@ This file is part of DQ Robotics.
 
 Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
+        - Responsible for the original implementation.
+        
+- Juan Jose Quiroz Omana   (juanjqo@g.ecc.u-tokyo.ac.jp)
+        - Added smart pointers, deprecated raw pointers. 
+         (Adapted from DQ_PseudoinverseController.h and DQ_KinematicController.h)
 */
 
-#ifndef DQ_ROBOTICS_VREP_ROBOT_HEADER_GUARD
-#define DQ_ROBOTICS_VREP_ROBOT_HEADER_GUARD
-
+#pragma once
 #include<string>
-
+#include<memory>
 #include<dqrobotics/robot_modeling/DQ_Kinematics.h>
 #include<dqrobotics/interfaces/vrep/DQ_VrepInterface.h>
 namespace DQ_robotics
@@ -37,13 +40,19 @@ protected:
     std::string robot_name_;
     //Just an observing pointer, we do not take or share ownership (As implied by the raw pointer)
     DQ_VrepInterface* vrep_interface_;
+    std::shared_ptr<DQ_VrepInterface> vrep_interface_sptr_;
+
+    //For backwards compatibility reasons, to be removed
+    DQ_VrepInterface* _get_interface_ptr() const;
+    std::shared_ptr<DQ_VrepInterface> _get_interface_sptr() const;
 
     DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
+    DQ_VrepRobot(const std::string& robot_name, const std::shared_ptr<DQ_VrepInterface>& vrep_interface_sptr);
 public:
     virtual ~DQ_VrepRobot() = default;
     virtual void send_q_to_vrep(const VectorXd& q) = 0;
     virtual VectorXd get_q_from_vrep() = 0;
 };
 }
-#endif
+
 
