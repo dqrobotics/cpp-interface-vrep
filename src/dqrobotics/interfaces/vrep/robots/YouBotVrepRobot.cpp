@@ -117,7 +117,7 @@ DQ_robotics::DQ_SerialWholeBody YouBotVrepRobot::kinematics()
     return kin;
 }
 
-void YouBotVrepRobot::send_q_to_vrep(const VectorXd &q)
+void YouBotVrepRobot::set_configuration_space_positions(const VectorXd &q)
 {
     double x = q(0);
     double y = q(1);
@@ -131,7 +131,7 @@ void YouBotVrepRobot::send_q_to_vrep(const VectorXd &q)
     _get_interface_ptr()->set_object_pose(base_frame_name_, pose * conj(adjust_));
 }
 
-VectorXd YouBotVrepRobot::get_q_from_vrep()
+VectorXd YouBotVrepRobot::get_configuration_space_positions()
 {
     DQ base_x = _get_interface_ptr()->get_object_pose(base_frame_name_) * adjust_;
     VectorXd base_t = vec4(translation(base_x));

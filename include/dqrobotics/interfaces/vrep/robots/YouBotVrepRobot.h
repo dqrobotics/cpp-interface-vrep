@@ -19,6 +19,7 @@ This file is part of DQ Robotics.
 Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
         - Responsible for the original implementation.
+        - [2023/04] Adjusted class to use the new {set,get}_configuration_space_positions.
         
 - Juan Jose Quiroz Omana   (juanjqo@g.ecc.u-tokyo.ac.jp)
         - Added smart pointers, deprecated raw pointers. 
@@ -46,8 +47,8 @@ public:
     YouBotVrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
     YouBotVrepRobot(const std::string& robot_name, const std::shared_ptr<DQ_VrepInterface>& vrep_interface_sptr);
 
-    void send_q_to_vrep(const VectorXd &q) override;
-    VectorXd get_q_from_vrep() override;
+    void set_configuration_space_positions(const VectorXd &q) override;
+    VectorXd get_configuration_space_positions() override;
 
     DQ_SerialWholeBody kinematics();
 };

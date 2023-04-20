@@ -57,6 +57,76 @@ std::vector<std::string> DQ_SerialVrepRobot::get_joint_names()
     return joint_names_;
 }
 
+/**
+ * @brief DQ_SerialVrepRobot::set_configuration_space_positions Sends the current configuration to CoppeliaSim.
+ * Note that this calls "set_joint_positions" in the remoteAPI, meaning that it is only suitable
+ * for passive joints.
+ * @param q the configuration-space vector.
+ */
+void DQ_SerialVrepRobot::set_configuration_space_positions(const VectorXd &q)
+{
+    _get_interface_ptr()->set_joint_positions(joint_names_,q);
+}
+
+/**
+ * @brief DQ_SerialVrepRobot::get_configuration_space_positions Obtains the current configuration from CoppeliaSim.
+ * @return the configuration-space vector.
+ */
+VectorXd DQ_SerialVrepRobot::get_configuration_space_positions()
+{
+    return _get_interface_ptr()->get_joint_positions(joint_names_);
+}
+
+/**
+ * @brief DQ_SerialVrepRobot::set_target_configuration_space_positions Sends the current configuration to CoppeliaSim as
+ * a target configuration for the joint controllers. It calls "set_target_joint_positions" on CoppeliaSim,
+ * meaning that it is only suitable for active joints.
+ * @param q_target the configuration-space vector.
+ */
+void DQ_SerialVrepRobot::set_target_configuration_space_positions(const VectorXd &q_target)
+{
+    _get_interface_ptr()->set_joint_target_positions(joint_names_,q_target);
+}
+
+/**
+ * @brief DQ_SerialVrepRobot::get_configuration_space_velocities Obtains the current configuration velocities from CoppeliaSim.
+ * @return the configuration-space velocity vector.
+ */
+VectorXd DQ_SerialVrepRobot::get_configuration_space_velocities()
+{
+    return _get_interface_ptr()->get_joint_velocities(joint_names_);
+}
+
+/**
+ * @brief DQ_SerialVrepRobot::set_target_configuration_space_velocities Sends the current configuration velocities to CoppeliaSim as
+ * a target configuration velocity for the joint controllers. It calls "set_joint_target_velocities" on CoppeliaSim,
+ * meaning that it is only suitable for active joints.
+ * @param v_target the configuration-space velocity vector.
+ */
+void DQ_SerialVrepRobot::set_target_configuration_space_velocities(const VectorXd &v_target)
+{
+    _get_interface_ptr()->set_joint_target_velocities(joint_names_,v_target);
+}
+
+/**
+ * @brief DQ_SerialVrepRobot::set_configuration_space_torques ends the current configuration torques to CoppeliaSim.
+ *  It calls "set_joint_torques" on CoppeliaSim, meaning that it is only suitable for active joints.
+ * @param t the configuration-space torque vector.
+ */
+void DQ_SerialVrepRobot::set_configuration_space_torques(const VectorXd &t)
+{
+    _get_interface_ptr()->set_joint_torques(joint_names_,t);
+}
+
+/**
+ * @brief DQ_SerialVrepRobot::get_configuration_space_torques Obtains the current configuration torques from CoppeliaSim.
+ * @return the configuration-space torque vector.
+ */
+VectorXd DQ_SerialVrepRobot::get_configuration_space_torques()
+{
+    return _get_interface_ptr()->get_joint_torques(joint_names_);
+}
+
 
 /**
  * @brief Initialize joint_names_ from CoppeliaSim considering the conventional naming for serially connected robots.
@@ -89,34 +159,11 @@ void DQ_SerialVrepRobot::_initialize_joint_names_from_vrep(const std::string &ba
 }
 
 /**
- * @brief DQ_SerialVrepRobot::send_q_to_vrep Sends the current configuration to CoppeliaSim.
- * Note that this calls "set_joint_positions" in the remoteAPI, meaning that it is only suitable
- * for passive joints.
- * @param q the configuration-space vector.
- */
-void DQ_SerialVrepRobot::send_q_to_vrep(const VectorXd &q)
-{
-    _get_interface_ptr()->set_joint_positions(joint_names_,q);
-}
-
-/**
- * @brief DQ_SerialVrepRobot::send_q_target_to_vrep Sends the current configuration to CoppeliaSim as
- * a target configuration for the joint controllers. It calls "set_target_joint_positions" on CoppeliaSim,
- * meaning that it is only suitable for active joints.
- * @param q_target the configuration-space vector.
+ * For backwards compatibility only. Do not use this method.
  */
 void DQ_SerialVrepRobot::send_q_target_to_vrep(const VectorXd &q_target)
 {
-    _get_interface_ptr()->set_joint_target_positions(joint_names_,q_target);
-}
-
-/**
- * @brief DQ_SerialVrepRobot::get_q_from_vrep Obtains the current configuration from CoppeliaSim.
- * @return the configuration-space vector.
- */
-VectorXd DQ_SerialVrepRobot::get_q_from_vrep()
-{
-    return _get_interface_ptr()->get_joint_positions(joint_names_);
+    set_target_configuration_space_velocities(q_target);
 }
 
 }

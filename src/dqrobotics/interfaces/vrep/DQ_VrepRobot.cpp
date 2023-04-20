@@ -62,6 +62,22 @@ DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep
     vrep_interface_ = vrep_interface;
 }
 
+/**
+ * For backwards compatibility only. Do not use this method.
+ */
+void DQ_VrepRobot::send_q_to_vrep(const VectorXd &q)
+{
+    set_configuration_space_positions(q);
+}
+
+/**
+ * For backwards compatibility only. Do not use this method.
+ */
+VectorXd DQ_VrepRobot::get_q_from_vrep()
+{
+    return get_configuration_space_positions();
+}
+
 
 /**
  * @brief Constructor of the DQ_VrepRobot class

@@ -19,6 +19,7 @@ This file is part of DQ Robotics.
 Contributors:
 - Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
         - Responsible for the original implementation.
+        - [2023/04] Added {get,set}_configuration_space_positions, deprecated {send,get}_q_{to,from}_vrep.
         
 - Juan Jose Quiroz Omana   (juanjqo@g.ecc.u-tokyo.ac.jp)
         - Added smart pointers, deprecated raw pointers. 
@@ -50,8 +51,15 @@ protected:
 
 public:
     virtual ~DQ_VrepRobot() = default;
-    virtual void send_q_to_vrep(const VectorXd& q) = 0;
-    virtual VectorXd get_q_from_vrep() = 0;
+
+    virtual void set_configuration_space_positions(const VectorXd& q)  = 0;
+    virtual VectorXd get_configuration_space_positions()  = 0;
+
+    //For backwards compatibility, to be removed in a future version of dqrobotics
+    [[deprecated("Use set_configuration_space_positions instead")]]
+    virtual void send_q_to_vrep(const VectorXd& q);
+    [[deprecated("Use get_configuration_space_positions instead")]]
+    virtual VectorXd get_q_from_vrep();
 };
 }
 
