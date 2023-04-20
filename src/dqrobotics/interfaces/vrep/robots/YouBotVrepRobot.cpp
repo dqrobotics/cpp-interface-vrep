@@ -69,7 +69,7 @@ YouBotVrepRobot::YouBotVrepRobot(const std::string& robot_name, const std::share
  */
 void YouBotVrepRobot::_set_names(const std::string& robot_name)
 {
-    std::vector<std::string> splited_name = strsplit(robot_name_,'#');
+    std::vector<std::string> splited_name = _strsplit(robot_name_,'#');
     std::string robot_label = splited_name[0];
 
     if(robot_label.compare(std::string("youBot")) != 0)

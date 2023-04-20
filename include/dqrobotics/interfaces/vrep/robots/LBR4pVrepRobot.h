@@ -27,25 +27,17 @@ Contributors:
 
 #pragma once
 #include <vector>
-#include <dqrobotics/interfaces/vrep/DQ_VrepRobot.h>
+#include <dqrobotics/interfaces/vrep/DQ_SerialVrepRobot.h>
 #include <dqrobotics/robot_modeling/DQ_SerialManipulatorDH.h>
 
 namespace DQ_robotics
 {
-class LBR4pVrepRobot: public DQ_VrepRobot
+class LBR4pVrepRobot: public DQ_SerialVrepRobot
 {
-private:
-    std::vector<std::string> joint_names_;
-    std::string base_frame_name_;
-    void _set_names(const std::string& robot_name);
 public:
     [[deprecated("Use the smart pointer version instead")]]
     LBR4pVrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
     LBR4pVrepRobot(const std::string& robot_name, const std::shared_ptr<DQ_VrepInterface>& vrep_interface_sptr);
-
-    void send_q_to_vrep(const VectorXd &q) override;
-    void send_q_target_to_vrep(const VectorXd& q_target);
-    VectorXd get_q_from_vrep() override;
 
     DQ_SerialManipulatorDH kinematics();
 };

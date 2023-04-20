@@ -30,7 +30,7 @@ Contributors:
 namespace DQ_robotics
 {
 //Very simple strsplit
-std::vector<std::string> DQ_VrepRobot::strsplit(const std::string& str, const char& delimiter)
+std::vector<std::string> DQ_VrepRobot::_strsplit(const std::string& str, const char& delimiter)
 {
     std::vector<std::string> string_vector;
 
@@ -51,6 +51,9 @@ std::vector<std::string> DQ_VrepRobot::strsplit(const std::string& str, const ch
 }
 
 
+/**
+ * For backwards compatibility only. Do not use this Constructor.
+ */
 DQ_VrepRobot::DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface)
 {
     robot_name_ = robot_name;

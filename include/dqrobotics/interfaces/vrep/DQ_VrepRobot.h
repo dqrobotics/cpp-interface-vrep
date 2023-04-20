@@ -35,19 +35,19 @@ namespace DQ_robotics
 class DQ_VrepRobot
 {
 protected:
-    std::vector<std::string> strsplit(const std::string& str, const char& delimiter);
+    std::vector<std::string> _strsplit(const std::string& str, const char& delimiter);
 
     std::string robot_name_;
-    //Just an observing pointer, we do not take or share ownership (As implied by the raw pointer)
-    DQ_VrepInterface* vrep_interface_;
+
     std::shared_ptr<DQ_VrepInterface> vrep_interface_sptr_;
-
-    //For backwards compatibility reasons, to be removed
-    DQ_VrepInterface* _get_interface_ptr() const;
     std::shared_ptr<DQ_VrepInterface> _get_interface_sptr() const;
-
-    DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
     DQ_VrepRobot(const std::string& robot_name, const std::shared_ptr<DQ_VrepInterface>& vrep_interface_sptr);
+
+    //For backwards compatibility reasons, to be removed in a future version of dqrobotics
+    DQ_VrepInterface* vrep_interface_;
+    DQ_VrepInterface* _get_interface_ptr() const;
+    DQ_VrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
+
 public:
     virtual ~DQ_VrepRobot() = default;
     virtual void send_q_to_vrep(const VectorXd& q) = 0;
