@@ -17,7 +17,7 @@ This file is part of DQ Robotics.
     along with DQ Robotics.  If not, see <http://www.gnu.org/licenses/>.
 
 Contributors:
-- Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
+- Murilo M. Marinho        (murilomarinho@ieee.org)
         - Responsible for the original implementation.
         - [2023/04] Changed the inheritance to DQ_SerialVrepRobot from DQ_VrepRobot.
 

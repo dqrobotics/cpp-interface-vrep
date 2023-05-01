@@ -17,7 +17,7 @@ This file is part of DQ Robotics.
     along with DQ Robotics.  If not, see <http://www.gnu.org/licenses/>.
 
 Contributors:
-- Murilo M. Marinho        (murilo@nml.t.u-tokyo.ac.jp)
+- Murilo M. Marinho        (murilomarinho@ieee.org)
         - Responsible for the original implementation.
         - [2023/04] Added {get,set}_configuration_space_positions, deprecated {send,get}_q_{to,from}_vrep.
         
