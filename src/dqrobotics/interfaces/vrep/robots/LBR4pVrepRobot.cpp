@@ -23,6 +23,8 @@ Contributors:
 #include<dqrobotics/interfaces/vrep/robots/LBR4pVrepRobot.h>
 #include<dqrobotics/utils/DQ_Constants.h>
 
+using namespace Eigen;
+
 namespace DQ_robotics
 {
 

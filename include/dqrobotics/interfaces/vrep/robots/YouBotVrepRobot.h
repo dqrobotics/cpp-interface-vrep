@@ -39,8 +39,8 @@ private:
 public:
     YouBotVrepRobot(const std::string& robot_name, DQ_VrepInterface* vrep_interface);
 
-    void send_q_to_vrep(const VectorXd &q) override;
-    VectorXd get_q_from_vrep() override;
+    void send_q_to_vrep(const Eigen::VectorXd &q) override;
+    Eigen::VectorXd get_q_from_vrep() override;
 
     DQ_SerialWholeBody kinematics();
 };
