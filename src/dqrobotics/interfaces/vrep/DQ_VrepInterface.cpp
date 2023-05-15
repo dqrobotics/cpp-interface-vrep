@@ -18,6 +18,8 @@ This file is part of DQ Robotics.
 
 Contributors:
 - Murilo M. Marinho        (murilomarinho@ieee.org)
+  - Initial implementation.
+  - 2023/5/15 Added better error description for get_object_handle().
 - Juan Jose Quiroz Omana   (juanjqo@g.ecc.u-tokyo.ac.jp)
 */
 
@@ -188,25 +190,25 @@ std::vector<std::string> _extract_vector_string_from_char_pointer(const char *st
     //int count=0;
     int words = 0;
     while (words != size)
-     {
+    {
         c = string[j];
         if (c =='\0')
         {
             //count++;
             if (c_0 != '\0')
             {
-               if (words<size)
+                if (words<size)
                 {
-                 words++;
-                 output_string.push_back(str);
-                 str = {};
+                    words++;
+                    output_string.push_back(str);
+                    str = {};
                 }
             }
         }
         c_0 = c;
         j++;
         str.push_back(c);
-     }
+    }
 
     return output_string;
 }
@@ -243,7 +245,7 @@ call_script_data _extract_call_script_data_from_pointers(int return_code, int ou
     data.return_code = return_code;
 
     if (return_code == simx_return_ok)
-     {
+    {
         if (outIntCnt >0)
         {
             data.output_ints = Map<VectorXi >(output_ints, outIntCnt);
@@ -276,9 +278,9 @@ std::string _remap_reference_frame(const DQ_VrepInterface::REFERENCE_FRAMES& ref
 {
     switch(reference_frame)
     {
-      case DQ_VrepInterface::BODY_FRAME:
+    case DQ_VrepInterface::BODY_FRAME:
         return "body_frame";
-      case DQ_VrepInterface::ABSOLUTE_FRAME:
+    case DQ_VrepInterface::ABSOLUTE_FRAME:
         return "absolute_frame";
     }
     throw std::range_error("Unknown reference_frame in _remap_reference_frame");
@@ -507,9 +509,24 @@ int DQ_VrepInterface::get_object_handle(const std::string &objectname)
 {
     int hp;
     const std::function<simxInt(void)> f = std::bind(simxGetObjectHandle,clientid_,objectname.c_str(),&hp,simx_opmode_blocking);
-    _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,OP_BLOCKING);
-    ///Updates handle map
+
+    try
+    {
+        _retry_function(f,MAX_TRY_COUNT_,TIMEOUT_IN_MILISECONDS_,no_blocking_loops_,OP_BLOCKING);
+    }
+    catch(const std::runtime_error& e)
+    {
+        throw std::runtime_error(
+                    std::string(e.what())
+                    + " "
+                    + std::string("The most common source of this error is that the object `")
+                    + objectname
+                    + std::string("` does not exist in the current scene in CoppeliaSim.")
+                    );
+    }
+
     _insert_or_update_map(objectname,DQ_VrepInterfaceMapElement(hp));
+
     return hp;
 }
 
@@ -1532,7 +1549,7 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const REFERENCE
     int outFloatCnt;
     float* output_floats;
     int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {_remap_reference_frame(reference_frame)},
-                           0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
+                                            0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
     call_script_data data = _extract_call_script_data_from_pointers(return_code, 0, nullptr, outFloatCnt, output_floats, 0, nullptr);
@@ -1542,8 +1559,8 @@ MatrixXd DQ_VrepInterface::get_inertia_matrix(const int& handle, const REFERENCE
     }
     MatrixXd inertia_matrix = MatrixXd(3,3);
     inertia_matrix << data.output_floats[0],data.output_floats[1],data.output_floats[2],
-                      data.output_floats[3],data.output_floats[4],data.output_floats[5],
-                      data.output_floats[6],data.output_floats[7],data.output_floats[8];
+            data.output_floats[3],data.output_floats[4],data.output_floats[5],
+            data.output_floats[6],data.output_floats[7],data.output_floats[8];
     return inertia_matrix;
 }
 
@@ -1646,7 +1663,7 @@ DQ DQ_VrepInterface::get_center_of_mass(const int& handle,  const REFERENCE_FRAM
     int outFloatCnt;
     float* output_floats;
     int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {_remap_reference_frame(reference_frame)},
-                           0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
+                                            0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
     call_script_data data = _extract_call_script_data_from_pointers(return_code, 0, nullptr, outFloatCnt, output_floats, 0, nullptr);
@@ -1655,7 +1672,7 @@ DQ DQ_VrepInterface::get_center_of_mass(const int& handle,  const REFERENCE_FRAM
         throw std::range_error("Error in get_center_of_mass. Incorrect number of returned values from CoppeliaSim. (Expected: 3)");
     }
     DQ center_of_mass = data.output_floats[0]*i_ + data.output_floats[1]*j_
-                       + data.output_floats[2]*k_;
+            + data.output_floats[2]*k_;
     return center_of_mass;
 }
 
@@ -1735,7 +1752,7 @@ double DQ_VrepInterface::get_mass(const int& handle, const std::string& function
     int outFloatCnt;
     float* output_floats;
     int return_code = _call_script_function(function_name, obj_name, {handle}, {}, {},
-                           0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
+                                            0, nullptr, &outFloatCnt, &output_floats,0, nullptr);
     if (return_code != 0)
     {std::cout<<"Remote function call failed. Error: "<<return_code<<std::endl;}
     call_script_data data = _extract_call_script_data_from_pointers(return_code, 0, nullptr, outFloatCnt, output_floats, 0, nullptr);
@@ -1810,23 +1827,23 @@ double DQ_VrepInterface::get_mass(const std::string& link_name, const std::strin
 *
 */
 int DQ_VrepInterface::_call_script_function(const std::string&  function_name, const std::string&  obj_name, const std::vector<int>& input_ints, const std::vector<float>& input_floats, const std::vector<std::string> &input_strings,
-                                int* outIntCnt, int** output_ints, int* outFloatCnt, float** output_floats, int* outStringCnt, char** output_strings,
-                                const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
+                                            int* outIntCnt, int** output_ints, int* outFloatCnt, float** output_floats, int* outStringCnt, char** output_strings,
+                                            const SCRIPT_TYPES& scripttype, const OP_MODES& opmode)
 {
     const int stringsize = input_strings.size();
     std::string one_string;
     if (stringsize >0)
     {
         for(int i = 0; i < stringsize; ++i)
-            {
+        {
             one_string += input_strings[i]+'\0';
-            }
+        }
     }
 
     int return_code = simxCallScriptFunction(clientid_, obj_name.c_str(), _remap_script_type(scripttype), function_name.c_str(),
-                                         input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
-                                         0, nullptr, outIntCnt, output_ints, outFloatCnt, output_floats,  outStringCnt,
-                                         output_strings, nullptr, nullptr, _remap_op_mode(opmode));
+                                             input_ints.size(), input_ints.data(), input_floats.size(), input_floats.data(), stringsize, one_string.data(),
+                                             0, nullptr, outIntCnt, output_ints, outFloatCnt, output_floats,  outStringCnt,
+                                             output_strings, nullptr, nullptr, _remap_op_mode(opmode));
     return return_code;
 }
 
