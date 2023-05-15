@@ -29,6 +29,9 @@ Contributors:
 #include<thread>
 #include<chrono>
 
+using namespace DQ_robotics;
+using namespace Eigen;
+
 ///****************************************************************************************
 ///                        PRIVATE FUNCTIONS
 /// ***************************************************************************************
