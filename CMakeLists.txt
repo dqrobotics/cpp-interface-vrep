@@ -16,6 +16,7 @@ if(APPLE)
 endif()
 
 if(WIN32)
+    FIND_LIBRARY(DQROBOTICS_LIB NAMES dqrobotics)
     ADD_DEFINITIONS(-D_USE_MATH_DEFINES)
     FIND_PACKAGE(Eigen3 CONFIG REQUIRED)
     INCLUDE_DIRECTORIES(${EIGEN3_INCLUDE_DIR})
@@ -59,6 +60,12 @@ INSTALL(TARGETS ${PROJECT_NAME}
 if(APPLE)
     TARGET_LINK_LIBRARIES(${PROJECT_NAME}
         -ldqrobotics)
+endif()
+
+# The directive above does not seem to work on Windows
+if(WIN32)
+    TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+        ${DQROBOTICS_LIB})
 endif()
 
 ################################################################
