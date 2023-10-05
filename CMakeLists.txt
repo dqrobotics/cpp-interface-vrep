@@ -29,7 +29,7 @@ add_definitions(-DDO_NOT_USE_SHARED_MEMORY)
 
 INCLUDE_DIRECTORIES(${PROJECT_NAME} include)
 INCLUDE_DIRECTORIES(${PROJECT_NAME} coppeliarobotics/remoteApi)
-INCLUDE_DIRECTORIES(${PROJECT_NAME} coppeliarobotics/include)
+INCLUDE_DIRECTORIES(${PROJECT_NAME} coppeliarobotics/include/simLib)
 
 ################################################################
 # DEFINE AND INSTALL LIBRARY AND INCLUDE FOLDER
