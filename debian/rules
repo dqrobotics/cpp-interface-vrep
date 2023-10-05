@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 
 BUILDDIR = build_dir
+COPPELIASIMTAG = coppeliasim-v4.5.1-rev4
 
 # secondly called by launchpad
 build:
@@ -9,8 +10,8 @@ ifeq ($(CI),)
 	rm -rf coppeliarobotics/{*,.*}
 	rm -rf coppeliarobotics
 	mkdir -p coppeliarobotics
-	git clone --single-branch --branch coppeliasim-v4.2.0-rev5 https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include coppeliarobotics/include
-	git clone --single-branch --branch coppeliasim-v4.2.0-rev5 https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi coppeliarobotics/remoteApi
+	git clone --single-branch --branch $(COPPELIASIMTAG) https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include coppeliarobotics/include
+	git clone --single-branch --branch $(COPPELIASIMTAG) https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi coppeliarobotics/remoteApi
 else
 	echo "CI detected, skipping manual submodule load"
 endif
