@@ -26,7 +26,7 @@ Contributors:
 #include <dqrobotics/interfaces/vrep/DQ_VrepInterface.h>
 
 #include"extApi.h"
-#include"simConst.h"
+#include"simLib/simConst.h"
 
 #include<thread>
 #include<chrono>
