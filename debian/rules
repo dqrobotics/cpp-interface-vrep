@@ -30,7 +30,7 @@ binary-indep:
 binary-arch:
 	cd $(BUILDDIR); cmake -P cmake_install.cmake
 	mkdir -p debian/tmp/DEBIAN
-	dpkg-gencontrol -plibdqrobotics-interface-vrep
+	dpkg-gencontrol -plibdqrobotics-interface-vrep-$(PACKAGETAG)
 	dpkg --build debian/tmp ..
 
 # firstly called by launchpad
