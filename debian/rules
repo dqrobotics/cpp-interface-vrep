@@ -2,6 +2,8 @@
 
 BUILDDIR = build_dir
 COPPELIASIMTAG = coppeliasim-v4.5.1-rev4
+# A more standardized naming of the version above
+PACKAGETAG = 4.5.1-4
 
 # secondly called by launchpad
 build:
@@ -28,7 +30,7 @@ binary-indep:
 binary-arch:
 	cd $(BUILDDIR); cmake -P cmake_install.cmake
 	mkdir -p debian/tmp/DEBIAN
-	dpkg-gencontrol -plibdqrobotics-interface-vrep
+	dpkg-gencontrol -plibdqrobotics-interface-vrep-$(PACKAGETAG)
 	dpkg --build debian/tmp ..
 
 # firstly called by launchpad
