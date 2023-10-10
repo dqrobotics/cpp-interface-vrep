@@ -6,6 +6,8 @@ Refer to the [docs](https://dqroboticsgithubio.readthedocs.io/en/latest/installa
 
 ### Workflow cpp-interface-vrep
 
+The following instructions describe the workflow to create a `cpp-interface-vrep` branch with a specific version of CoppeliaSim. 
+
 - Clone the repository 
   ```shell
   git clone https://github.com/dqrobotics/cpp-interface-vrep.git --recursive && cd cpp-interface-vrep
@@ -27,6 +29,6 @@ Refer to the [docs](https://dqroboticsgithubio.readthedocs.io/en/latest/installa
   git checkout coppeliasim-v4.5.1-rev4 
   ```
 - Implement the required modifications to ensure that `cpp-interface-vrep` compiles and passes the tests.
-- Update the `debian` folder `{rules, control, changelog}`. Check this [example](https://github.com/dqrobotics/cpp-interface-vrep/tree/master-v4.5.1-rev4/debian), and this [PR](https://github.com/dqrobotics/cpp-interface-vrep/pull/14/files)
+- Update the `debian` folder `{rules, control, changelog}`. Check this [example](https://github.com/dqrobotics/cpp-interface-vrep/tree/master-v4.5.1-rev4/debian), and this [PR](https://github.com/dqrobotics/cpp-interface-vrep/pull/14/files).
 - Open a PR.
 
