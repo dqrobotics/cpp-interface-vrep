@@ -30,5 +30,16 @@ The following instructions describe the workflow to create a `cpp-interface-vrep
   ```
 - Implement the required modifications to ensure that `cpp-interface-vrep` compiles and passes the tests.
 - Update the `debian` folder `{rules, control, changelog}`. Check this [example](https://github.com/dqrobotics/cpp-interface-vrep/tree/master-v4.5.1-rev4/debian), and this [PR](https://github.com/dqrobotics/cpp-interface-vrep/pull/14/files).
+
+- Check that `cpp-interface-vrep` compiles and installs using the developer workflow. For instance:
+
+  ```shell
+  chmod +x debian/rules
+  fakeroot debian/rules clean
+  fakeroot debian/rules build
+  fakeroot debian/rules binary
+  cd ..
+  sudo dpkg -i libdqrobotics-interface-vrep-4.5.1-4_19.10.0_amd64.deb
+  ```
 - Open a PR.
 
