@@ -1,12 +1,11 @@
-Source: libdqrobotics-interface-vrep-4.4.0-0
+Source: libdqrobotics-interface-vrep
 Section: devel
 Priority: optional
 Maintainer: Murilo Marinho <murilo@g.ecc.u-tokyo.ac.jp>
 Build-Depends: cmake, libeigen3-dev, git, libdqrobotics
 Homepage: https://dqrobotics.github.io/
 
-Package: libdqrobotics-interface-vrep-4.4.0-0
-Conflicts: libdqrobotics-interface-vrep
+Package: libdqrobotics-interface-vrep
 Architecture: any
 Depends: libdqrobotics
 Description: DQ Robotics interface with V-REP
