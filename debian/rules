@@ -1,9 +1,6 @@
 #!/usr/bin/make -f
 
 BUILDDIR = build_dir
-COPPELIASIMTAG = coppeliasim-v4.4.0-rev0
-# A more standardized naming of the version above
-PACKAGETAG = 4.4.0-0
 
 # secondly called by launchpad
 build:
@@ -12,8 +9,8 @@ ifeq ($(CI),)
 	rm -rf coppeliarobotics/{*,.*}
 	rm -rf coppeliarobotics
 	mkdir -p coppeliarobotics
-	git clone --single-branch --branch $(COPPELIASIMTAG) https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include coppeliarobotics/include
-	git clone --single-branch --branch $(COPPELIASIMTAG) https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi coppeliarobotics/remoteApi
+	git clone --single-branch --branch coppeliasim-v4.2.0-rev5 https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-include coppeliarobotics/include
+	git clone --single-branch --branch coppeliasim-v4.2.0-rev5 https://git.launchpad.net/~dqrobotics-dev/dqrobotics/+git/coppelia-remoteApi coppeliarobotics/remoteApi
 else
 	echo "CI detected, skipping manual submodule load"
 endif
@@ -30,7 +27,7 @@ binary-indep:
 binary-arch:
 	cd $(BUILDDIR); cmake -P cmake_install.cmake
 	mkdir -p debian/tmp/DEBIAN
-	dpkg-gencontrol -plibdqrobotics-interface-vrep-$(PACKAGETAG)
+	dpkg-gencontrol -plibdqrobotics-interface-vrep
 	dpkg --build debian/tmp ..
 
 # firstly called by launchpad
