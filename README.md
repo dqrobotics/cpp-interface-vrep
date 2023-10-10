@@ -27,6 +27,6 @@ Refer to the [docs](https://dqroboticsgithubio.readthedocs.io/en/latest/installa
   git checkout coppeliasim-v4.5.1-rev4 
   ```
 - Implement the required modifications to ensure that `cpp-interface-vrep` compiles and passes the tests.
-- Update the `debian` folder `{rules, control, changelog}`. You can find an example [here](https://github.com/dqrobotics/cpp-interface-vrep/tree/master-v4.5.1-rev4/debian).
+- Update the `debian` folder `{rules, control, changelog}`. You can find an example [here](https://github.com/dqrobotics/cpp-interface-vrep/tree/master-v4.5.1-rev4/debian), and [here](https://github.com/dqrobotics/cpp-interface-vrep/pull/14/files)
 - Open a PR.
 
