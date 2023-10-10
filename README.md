@@ -33,21 +33,21 @@ The following instructions describe the workflow to create a `cpp-interface-vrep
 
   - Update the first line of `debian/changelog` with the package name:
 
-    https://github.com/juanjqo/cpp-interface-vrep/blob/325ff22aebeee0cd8066b42780ca23bb4a985631/debian/changelog#L1
+    https://github.com/dqrobotics/cpp-interface-vrep/blob/60141a7934e6c8cf8ebbdc820010051e7db1f40d/debian/changelog#L1
 
   - Update the source, package, and conflicts in `debian/control`:
 
-    https://github.com/juanjqo/cpp-interface-vrep/blob/325ff22aebeee0cd8066b42780ca23bb4a985631/debian/control#L1
+    https://github.com/dqrobotics/cpp-interface-vrep/blob/60141a7934e6c8cf8ebbdc820010051e7db1f40d/debian/control#L1
 
-    https://github.com/juanjqo/cpp-interface-vrep/blob/325ff22aebeee0cd8066b42780ca23bb4a985631/debian/control#L8-L9
+    https://github.com/dqrobotics/cpp-interface-vrep/blob/60141a7934e6c8cf8ebbdc820010051e7db1f40d/debian/control#L8-L9
 
   - Update the COPPELIASIMTAG and PACKAGETAG in `debian/rules`:
 
-    https://github.com/juanjqo/cpp-interface-vrep/blob/325ff22aebeee0cd8066b42780ca23bb4a985631/debian/rules#L4-L6
+    https://github.com/dqrobotics/cpp-interface-vrep/blob/60141a7934e6c8cf8ebbdc820010051e7db1f40d/debian/rules#L4-L6
 
-    https://github.com/juanjqo/cpp-interface-vrep/blob/325ff22aebeee0cd8066b42780ca23bb4a985631/debian/rules#L15-L16
+    https://github.com/dqrobotics/cpp-interface-vrep/blob/60141a7934e6c8cf8ebbdc820010051e7db1f40d/debian/rules#L15-L16
 
-    https://github.com/juanjqo/cpp-interface-vrep/blob/325ff22aebeee0cd8066b42780ca23bb4a985631/debian/rules#L33
+    https://github.com/dqrobotics/cpp-interface-vrep/blob/60141a7934e6c8cf8ebbdc820010051e7db1f40d/debian/rules#L33
 
 - Check that `cpp-interface-vrep` compiles and installs using the developer workflow. For instance:
 
