@@ -20,13 +20,14 @@ Contributors:
 - Murilo M. Marinho        (murilomarinho@ieee.org)
   - Initial implementation.
   - 2023/5/15 Added better error description for get_object_handle().
+  - 2024/7/30 Modified path for simConst.h to simLib/simConst.h
 - Juan Jose Quiroz Omana   (juanjqo@g.ecc.u-tokyo.ac.jp)
 */
 
 #include <dqrobotics/interfaces/vrep/DQ_VrepInterface.h>
 
 #include"extApi.h"
-#include"simConst.h"
+#include"simLib/simConst.h"
 
 #include<thread>
 #include<chrono>

@@ -1,11 +1,5 @@
-libdqrobotics-interface-vrep (19.10.0) UNRELEASED; urgency=medium
+libdqrobotics-interface-vrep-4.7.0-2 (24.04.0) UNRELEASED; urgency=medium
 
-  * Initial release of 19.10.0 
+  * Initial release of 24.04.0
 
- -- Murilo <murilo@ubuntu>  Tue, 01 Oct 2019 20:43:16 -0700
-
-libdqrobotics-interface-vrep (0.1-0ppa0) oneiric; urgency=low
-
-  * Initial upload!
-
- -- Murilo Marinho <murlou@gmail.com>  Sun, 26 Apr 2019 16:45:26 +0900
+ -- Murilo <murilo@ubuntu>  Fri, 06 Oct 2023 20:43:16 -0700
