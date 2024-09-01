@@ -6,6 +6,7 @@ Build-Depends: cmake, libeigen3-dev, git, libdqrobotics
 Homepage: https://dqrobotics.github.io/
 
 Package: libdqrobotics-interface-vrep-4.7.0-2
+Conflicts: libdqrobotics-interface-vrep
 Architecture: any
 Depends: libdqrobotics
 Description: DQ Robotics interface with V-REP
